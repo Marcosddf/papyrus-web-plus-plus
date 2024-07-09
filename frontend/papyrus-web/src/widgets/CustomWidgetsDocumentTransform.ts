@@ -174,6 +174,26 @@ export const customWidgetsDocumentTransform = new DocumentTransform((document) =
           },
         };
 
+        const customImageInlineFragment: InlineFragmentNode = {
+          kind: Kind.INLINE_FRAGMENT,
+          selectionSet: {
+            kind: Kind.SELECTION_SET,
+            selections: [
+              fieldBuilder('id'),
+              fieldBuilder('label'),
+              fieldBuilder('iconURL'),
+              fieldBuilder('currentUuid'),
+            ],
+          },
+          typeCondition: {
+            kind: Kind.NAMED_TYPE,
+            name: {
+              kind: Kind.NAME,
+              value: 'CustomImageWidget',
+            },
+          },
+        };
+
         return {
           ...node,
           selectionSet: {
@@ -184,6 +204,7 @@ export const customWidgetsDocumentTransform = new DocumentTransform((document) =
               primitiveListInlineFragment,
               languageExpressionInlineFragment,
               primitiveRadioInlineFragment,
+              customImageInlineFragment,
             ],
           },
         };
