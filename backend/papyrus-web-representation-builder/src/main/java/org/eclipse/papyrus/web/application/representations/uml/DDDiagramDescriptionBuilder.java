@@ -11,6 +11,7 @@
  * Contributors:
  *  Obeo - Initial API and implementation
  *  Aurelien Didier (Artal Technologies) - Issue 199
+ *  Titouan BOUËTE-GIRAUD (Artal Technologies) - titouan.bouete-giraud@artal.fr - Issue 219
  *****************************************************************************/
 package org.eclipse.papyrus.web.application.representations.uml;
 
@@ -30,6 +31,7 @@ import org.eclipse.sirius.components.view.diagram.ArrowStyle;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramFactory;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeStyle;
@@ -69,6 +71,16 @@ public final class DDDiagramDescriptionBuilder extends AbstractRepresentationDes
     public static final String DD_PREFIX = "DD_";
 
     /**
+     * The suffix used to identify <i>receptions</i> compartments.
+     */
+    public static final String SYMBOLS_COMPARTMENT_SUFFIX = "Symbols";
+
+    /**
+     * The name used to identify the Tool section.
+     */
+    public static final String SHOW_HIDE = "SHOW_HIDE";
+
+    /**
      * The default width and height of 3D boxes for {@link Node}s and {@link Device}s.
      */
     private static final String SIZE_100 = "100";
@@ -98,6 +110,12 @@ public final class DDDiagramDescriptionBuilder extends AbstractRepresentationDes
         // create diagram tool sections
         this.createDefaultToolSectionInDiagramDescription(diagramDescription);
         diagramDescription.setPreconditionExpression(CallQuery.queryServiceOnSelf(Services.IS_NOT_PROFILE_MODEL));
+
+        DiagramToolSection showHideToolSection = this.getViewBuilder().createDiagramToolSection(SHOW_HIDE);
+        diagramDescription.getPalette().getToolSections().add(showHideToolSection);
+        this.createHideSymbolTool(diagramDescription,
+                SHOW_HIDE);
+        this.createShowSymbolTool(diagramDescription, SHOW_HIDE);
 
         // create node descriptions with their tools
         this.createArtifactTopNodeDescription(diagramDescription);
@@ -130,6 +148,15 @@ public final class DDDiagramDescriptionBuilder extends AbstractRepresentationDes
         this.createDeploymentEdgeDescription(diagramDescription);
         this.createGeneralizationEdgeDescription(diagramDescription);
         this.createManifestationEdgeDescription(diagramDescription);
+
+        List<EClass> symbolOwners = List.of(
+                this.umlPackage.getArtifact(),
+                this.umlPackage.getDeploymentSpecification(),
+                this.umlPackage.getExecutionEnvironment(),
+                this.umlPackage.getPackage(),
+                this.umlPackage.getNode(),
+                this.umlPackage.getDevice());
+        this.createSymbolSharedNodeDescription(diagramDescription, this.ddSharedDescription, symbolOwners, List.of(), SYMBOLS_COMPARTMENT_SUFFIX);
 
         diagramDescription.getPalette().setDropTool(this.getViewBuilder().createGenericSemanticDropTool(this.getIdBuilder().getDiagramSemanticDropToolName()));
 
