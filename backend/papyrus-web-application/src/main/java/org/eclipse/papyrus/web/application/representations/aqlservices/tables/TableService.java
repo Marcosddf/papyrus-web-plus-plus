@@ -502,7 +502,7 @@ public class TableService {
                 .orElse(self);
     }
 
-    public List<Object> getPackageTableTreeSemanticElements(Package self, IEditingContext editingContext, String globalFilter, List<ColumnFilter> columnFilters, List<String> expandedIds) {
+    public List<Object> getPackageTableTreeSemanticElements(Package self, IEditingContext editingContext, String globalFilter, List<ColumnFilter> columnFilters, List<String> expandedIds, List<String> activeRowFilterIds) {
         Predicate<Object> predicate = object -> {
             boolean isValidCandidate = true;
             if (object instanceof NamedElement element) {
@@ -516,7 +516,7 @@ public class TableService {
             }
             return isValidCandidate;
         };
-        return this.getSemanticElements(self, expandedIds).stream()
+        return this.getSemanticElements(self, expandedIds, activeRowFilterIds).stream()
                 .filter(predicate)
                 .toList();
     }
@@ -533,39 +533,41 @@ public class TableService {
         return false;
     }
 
-    private List<Object> getSemanticElements(Package pack, List<String> expandedIds) {
+    private List<Object> getSemanticElements(Package pack, List<String> expandedIds, List<String> activeRowFilterIds) {
         return new ArrayList<>(pack.getPackagedElements().stream()
-                .flatMap(pe -> this.getSemanticElements(pe, expandedIds).stream())
+                .flatMap(pe -> this.getSemanticElements(pe, expandedIds, activeRowFilterIds).stream())
                 .toList());
     }
 
-    private List<Object> getSemanticElements(PackageableElement element, List<String> expandedIds) {
+    private List<Object> getSemanticElements(PackageableElement element, List<String> expandedIds, List<String> activeRowFilterIds) {
         var classElements = new ArrayList<>();
         if (element instanceof Class clazz) {
             classElements.add(clazz);
             String classId = this.objectService.getId(clazz);
             if (expandedIds.contains(classId)) {
-                String ownedAttributesId = this.getVirtualRowId(OWNED_ATTRIBUTES, clazz);
-                classElements.add(ownedAttributesId);
-                if (expandedIds.contains(ownedAttributesId)) {
-                    classElements.addAll(clazz.getOwnedAttributes());
+                if (!activeRowFilterIds.contains("hide-attributes")) {
+                    String ownedAttributesId = this.getVirtualRowId(OWNED_ATTRIBUTES, clazz);
+                    classElements.add(ownedAttributesId);
+                    if (expandedIds.contains(ownedAttributesId)) {
+                        classElements.addAll(clazz.getOwnedAttributes());
+                    }
                 }
                 String ownedOperationsId = this.getVirtualRowId(OWNED_OPERATIONS, clazz);
                 classElements.add(ownedOperationsId);
                 if (expandedIds.contains(ownedOperationsId)) {
-                    classElements.addAll(clazz.getOperations().stream().flatMap(operation -> this.getSemanticElements(operation, expandedIds).stream()).toList());
+                    classElements.addAll(clazz.getOperations().stream().flatMap(operation -> this.getSemanticElements(operation, expandedIds, activeRowFilterIds).stream()).toList());
                 }
                 String ownedNestedClassesId = this.getVirtualRowId(OWNED_NESTED_CLASSES, clazz);
                 classElements.add(ownedNestedClassesId);
                 if (expandedIds.contains(ownedNestedClassesId)) {
-                    classElements.addAll(clazz.getNestedClassifiers().stream().flatMap(nestedClass -> this.getSemanticElements(nestedClass, expandedIds).stream()).toList());
+                    classElements.addAll(clazz.getNestedClassifiers().stream().flatMap(nestedClass -> this.getSemanticElements(nestedClass, expandedIds, activeRowFilterIds).stream()).toList());
                 }
             }
         }
         return classElements;
     }
 
-    private List<Object> getSemanticElements(Operation operation, List<String> expandedIds) {
+    private List<Object> getSemanticElements(Operation operation, List<String> expandedIds, List<String> activeRowFilterIds) {
         var operationElements = new ArrayList<>();
         operationElements.add(operation);
         String operationId = this.objectService.getId(operation);
