@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,8 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.papyrus.uml.domain.services.EMFUtils;
 import org.eclipse.papyrus.web.custom.widgets.IAQLInterpreterProvider;
+import org.eclipse.papyrus.web.custom.widgets.OperationInterpreter;
+import org.eclipse.papyrus.web.custom.widgets.OperationInterpreterViewSwitch;
 import org.eclipse.papyrus.web.custom.widgets.papyruswidgets.ContainmentReferenceWidgetDescription;
 import org.eclipse.papyrus.web.custom.widgets.papyruswidgets.PapyrusWidgetsPackage;
 import org.eclipse.sirius.components.collaborative.widget.reference.api.IReferenceWidgetCreateElementHandler;
@@ -42,8 +44,6 @@ import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IRepresentationDescriptionIdProvider;
-import org.eclipse.sirius.components.view.emf.OperationInterpreter;
-import org.eclipse.sirius.components.view.emf.OperationInterpreterViewSwitch;
 import org.eclipse.sirius.components.view.emf.form.IFormIdProvider;
 import org.eclipse.sirius.components.view.emf.form.api.IViewFormDescriptionSearchService;
 import org.springframework.core.Ordered;
@@ -61,21 +61,21 @@ public class ContainmentReferenceCreateElementHandler implements IReferenceWidge
 
     private final IEMFKindService emfKindService;
 
+    private final IEditService editService;
+
     private final IObjectService objectService;
 
     private final IViewFormDescriptionSearchService viewFormSearchService;
 
     private final IAQLInterpreterProvider interpreterProvider;
 
-    private final IEditService editService;
-
-    public ContainmentReferenceCreateElementHandler(IEMFKindService emfKindService, IObjectService objectService, IViewFormDescriptionSearchService viewFormSearchService,
-            IAQLInterpreterProvider interpreterProvider, IEditService editService) {
+    public ContainmentReferenceCreateElementHandler(IEMFKindService emfKindService, IEditService editService, IObjectService objectService, IViewFormDescriptionSearchService viewFormSearchService,
+            IAQLInterpreterProvider interpreterProvider) {
         this.emfKindService = Objects.requireNonNull(emfKindService);
+        this.editService = Objects.requireNonNull(editService);
         this.objectService = Objects.requireNonNull(objectService);
         this.viewFormSearchService = Objects.requireNonNull(viewFormSearchService);
         this.interpreterProvider = Objects.requireNonNull(interpreterProvider);
-        this.editService = Objects.requireNonNull(editService);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class ContainmentReferenceCreateElementHandler implements IReferenceWidge
     public List<ChildCreationDescription> getChildCreationDescriptions(IEditingContext editingContext, String kind, String referenceKind, String descriptionId) {
         return this.getInstanciableTypesOf(editingContext, referenceKind) //
                 .stream() //
-                .map(type -> this.createChildCreationDescription(type)) //
+                .map(this::createChildCreationDescription) //
                 .sorted(Comparator.comparing(ChildCreationDescription::getLabel)) //
                 .toList();
     }
@@ -165,14 +165,12 @@ public class ContainmentReferenceCreateElementHandler implements IReferenceWidge
             if (optionalView.isPresent() && reference.getName() != null) {
                 var createOperation = reference.getCreateElementOperation();
                 VariableManager variableManager = this.createVariableManagerForElementCreation(parent, childCreationDescriptionId, reference.getName());
-                VariableManager childVariableManager = variableManager.createChild();
                 AQLInterpreter interpreter = this.interpreterProvider.createInterpreter(optionalView.get(), editingContext);
                 OperationInterpreter operationInterpreter = new OperationInterpreter(interpreter, this.editService);
                 OperationInterpreterViewSwitch operationInterpreterViewSwitch = new OperationInterpreterViewSwitch(variableManager, interpreter, this.editService, operationInterpreter);
                 Optional<VariableManager> optionalVariableManager = operationInterpreterViewSwitch.doSwitch(createOperation.getBody().get(0));
                 if (optionalVariableManager.isPresent()) {
-                    Optional<Object> res = optionalVariableManager.get().get(VariableManager.SELF, Object.class);
-                    return res;
+                    return optionalVariableManager.get().get(VariableManager.SELF, Object.class);
                 }
             }
         }

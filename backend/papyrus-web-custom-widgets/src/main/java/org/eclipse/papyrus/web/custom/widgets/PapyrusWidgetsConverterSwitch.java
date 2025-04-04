@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -50,7 +50,6 @@ import org.eclipse.papyrus.web.custom.widgets.primitivelist.PrimitiveListWidgetC
 import org.eclipse.papyrus.web.custom.widgets.primitivelist.PrimitiveListWidgetDescription;
 import org.eclipse.papyrus.web.custom.widgets.primitiveradio.PrimitiveRadioDescription;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
-import org.eclipse.sirius.components.core.api.IEditService;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IFeedbackMessageService;
 import org.eclipse.sirius.components.core.api.IObjectService;
@@ -70,10 +69,11 @@ import org.eclipse.sirius.components.representations.MessageLevel;
 import org.eclipse.sirius.components.representations.Success;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.Operation;
-import org.eclipse.sirius.components.view.emf.OperationInterpreter;
 import org.eclipse.sirius.components.view.emf.form.IFormIdProvider;
 import org.eclipse.sirius.components.view.emf.form.ListStyleProvider;
 import org.eclipse.sirius.components.view.emf.form.ViewFormDescriptionConverter;
+import org.eclipse.sirius.components.view.emf.operations.api.IOperationExecutor;
+import org.eclipse.sirius.components.view.emf.operations.api.OperationExecutionStatus;
 import org.eclipse.sirius.components.view.emf.widget.reference.ReferenceWidgetStyleProvider;
 import org.eclipse.sirius.components.view.form.ListDescriptionStyle;
 import org.eclipse.sirius.components.view.widget.reference.ConditionalReferenceWidgetDescriptionStyle;
@@ -98,25 +98,24 @@ public class PapyrusWidgetsConverterSwitch extends PapyrusWidgetsSwitch<Optional
 
     private final AQLInterpreter interpreter;
 
-    private IFeedbackMessageService feedbackMessageService;
-
-    private IEditService editService;
+    private final IFeedbackMessageService feedbackMessageService;
 
     private final Function<VariableManager, String> semanticTargetIdProvider;
 
-    private IObjectService objectService;
+    private final IObjectService objectService;
+
+    private final IOperationExecutor operationExecutor;
 
     private final IFormIdProvider widgetIdProvider;
 
     private final IEMFKindService emfKindService;
 
-    public PapyrusWidgetsConverterSwitch(AQLInterpreter interpreter, IEditService editService, IObjectService objectService, IFeedbackMessageService feedbackMessageService,
-            IFormIdProvider widgetIdProvider, IEMFKindService emfKindService) {
+    public PapyrusWidgetsConverterSwitch(AQLInterpreter interpreter, IObjectService objectService, IOperationExecutor operationExecutor, IFeedbackMessageService feedbackMessageService, IFormIdProvider widgetIdProvider, IEMFKindService emfKindService) {
         this.interpreter = Objects.requireNonNull(interpreter);
-        this.editService = Objects.requireNonNull(editService);
-        this.feedbackMessageService = Objects.requireNonNull(feedbackMessageService);
-        this.objectService = Objects.requireNonNull(objectService);
         this.semanticTargetIdProvider = variableManager -> variableManager.get(VariableManager.SELF, Object.class).map(objectService::getId).orElse(null);
+        this.objectService =  Objects.requireNonNull(objectService);
+        this.operationExecutor =  Objects.requireNonNull(operationExecutor);
+        this.feedbackMessageService = Objects.requireNonNull(feedbackMessageService);
         this.widgetIdProvider = Objects.requireNonNull(widgetIdProvider);
         this.emfKindService = Objects.requireNonNull(emfKindService);
 
@@ -291,9 +290,9 @@ public class PapyrusWidgetsConverterSwitch extends PapyrusWidgetsSwitch<Optional
         return (variableManager, newValue) -> {
             VariableManager childVariableManager = variableManager.createChild();
             childVariableManager.put(ViewFormDescriptionConverter.NEW_VALUE, newValue);
-            OperationInterpreter operationInterpreter = new OperationInterpreter(this.interpreter, this.editService);
-            Optional<VariableManager> optionalVariableManager = operationInterpreter.executeOperations(addOperation.getBody(), childVariableManager);
-            if (optionalVariableManager.isEmpty()) {
+
+            var result = this.operationExecutor.execute(this.interpreter, childVariableManager, addOperation.getBody());
+            if (result.status() == OperationExecutionStatus.FAILURE) {
                 return this.buildFailureWithFeedbackMessages("Something went wrong while handling the widget new value.");
             } else {
                 return this.buildSuccessWithSemanticChangeAndFeedbackMessages();
@@ -315,9 +314,8 @@ public class PapyrusWidgetsConverterSwitch extends PapyrusWidgetsSwitch<Optional
     private Function<VariableManager, IStatus> handleOperation(List<Operation> operations, String errorMessage) {
         return (variableManager) -> {
             VariableManager childVariableManager = variableManager.createChild();
-            OperationInterpreter operationInterpreter = new OperationInterpreter(this.interpreter, this.editService);
-            Optional<VariableManager> optionalVariableManager = operationInterpreter.executeOperations(operations, childVariableManager);
-            if (optionalVariableManager.isEmpty()) {
+            var result = this.operationExecutor.execute(this.interpreter, childVariableManager, operations);
+            if (result.status() == OperationExecutionStatus.FAILURE) {
                 return this.buildFailureWithFeedbackMessages(errorMessage);
             } else {
                 return this.buildSuccessWithSemanticChangeAndFeedbackMessages();
@@ -363,9 +361,8 @@ public class PapyrusWidgetsConverterSwitch extends PapyrusWidgetsSwitch<Optional
 
     private Function<VariableManager, IStatus> getOperationsHandler(List<Operation> operations) {
         return variableManager -> {
-            OperationInterpreter operationInterpreter = new OperationInterpreter(this.interpreter, this.editService);
-            Optional<VariableManager> optionalVariableManager = operationInterpreter.executeOperations(operations, variableManager);
-            if (optionalVariableManager.isEmpty()) {
+            var result = this.operationExecutor.execute(this.interpreter, variableManager, operations);
+            if (result.status() == OperationExecutionStatus.FAILURE) {
                 List<Message> errorMessages = new ArrayList<>();
                 errorMessages.add(new Message("Something went wrong while handling the widget operations execution.", MessageLevel.ERROR));
                 errorMessages.addAll(this.feedbackMessageService.getFeedbackMessages());

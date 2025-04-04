@@ -33,9 +33,8 @@ public class CreateElementHandlerTests {
     @Test
     public void testCreateElementInReference() {
         String descriptionId = "siriusComponents://formElementDescription?kind=ContainmentReferenceWidgetDescription&sourceKind=view&sourceId=2a52b45a-ba2e-36b2-8b65-1784bc54e5c0&sourceElementId=40a866b8-aa89-4460-9193-04cc19216ff3";
-        ContainmentReferenceCreateElementHandler handler = new ContainmentReferenceCreateElementHandler(new IEMFKindService.NoOp(), new IObjectService.NoOp(),
-                new IViewFormDescriptionSearchService.NoOp(),
-                new IAQLInterpreterProvider.NoOp(), new IEditService.NoOp());
+        ContainmentReferenceCreateElementHandler handler = new ContainmentReferenceCreateElementHandler(new IEMFKindService.NoOp(), new IEditService.NoOp(), new IObjectService.NoOp(),
+                new IViewFormDescriptionSearchService.NoOp(), new IAQLInterpreterProvider.NoOp());
 
         assertTrue(handler.canHandle(descriptionId));
     }
@@ -46,9 +45,8 @@ public class CreateElementHandlerTests {
     @Test
     public void testCreateElementInReferenceInvalidSourceKind() {
         String descriptionId = "siriusComponents://formElementDescription?kind=ContainmentReferenceWidgetDescription&sourceKind=NOT_VIEW_MODEL&sourceId=2a52b45a-ba2e-36b2-8b65-1784bc54e5c0&sourceElementId=40a866b8-aa89-4460-9193-04cc19216ff3";
-        ContainmentReferenceCreateElementHandler handler = new ContainmentReferenceCreateElementHandler(new IEMFKindService.NoOp(), new IObjectService.NoOp(),
-                new IViewFormDescriptionSearchService.NoOp(),
-                new IAQLInterpreterProvider.NoOp(), new IEditService.NoOp());
+        ContainmentReferenceCreateElementHandler handler = new ContainmentReferenceCreateElementHandler(new IEMFKindService.NoOp(), new IEditService.NoOp(), new IObjectService.NoOp(),
+                new IViewFormDescriptionSearchService.NoOp(), new IAQLInterpreterProvider.NoOp());
 
         assertFalse(handler.canHandle(descriptionId));
     }
@@ -59,9 +57,8 @@ public class CreateElementHandlerTests {
     @Test
     public void testCreateElementInReferenceInvalidKind() {
         String descriptionId = "siriusComponents://formElementDescription?kind=UnknownWidgetDescription&sourceKind=view&sourceId=2a52b45a-ba2e-36b2-8b65-1784bc54e5c0&sourceElementId=40a866b8-aa89-4460-9193-04cc19216ff3";
-        ContainmentReferenceCreateElementHandler handler = new ContainmentReferenceCreateElementHandler(new IEMFKindService.NoOp(), new IObjectService.NoOp(),
-                new IViewFormDescriptionSearchService.NoOp(),
-                new IAQLInterpreterProvider.NoOp(), new IEditService.NoOp());
+        ContainmentReferenceCreateElementHandler handler = new ContainmentReferenceCreateElementHandler(new IEMFKindService.NoOp(), new IEditService.NoOp(), new IObjectService.NoOp(),
+                new IViewFormDescriptionSearchService.NoOp(), new IAQLInterpreterProvider.NoOp());
 
         assertFalse(handler.canHandle(descriptionId));
     }

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -43,8 +43,6 @@ import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IRepresentationDescriptionIdProvider;
-import org.eclipse.sirius.components.view.emf.OperationInterpreter;
-import org.eclipse.sirius.components.view.emf.OperationInterpreterViewSwitch;
 import org.eclipse.sirius.components.view.emf.form.IFormIdProvider;
 import org.eclipse.sirius.components.view.emf.form.api.IViewFormDescriptionSearchService;
 import org.springframework.core.Ordered;
@@ -68,21 +66,21 @@ public class PapyrusReferenceCreateElementHandler implements IReferenceWidgetCre
 
     private final IEMFKindService emfKindService;
 
+    private final IEditService editService;
+
     private final IObjectService objectService;
 
     private final IViewFormDescriptionSearchService viewFormSearchService;
 
     private final IAQLInterpreterProvider interpreterProvider;
 
-    private final IEditService editService;
-
-    public PapyrusReferenceCreateElementHandler(IEMFKindService emfKindService, IObjectService objectService, IViewFormDescriptionSearchService viewFormSearchService,
-            IAQLInterpreterProvider interpreterProvider, IEditService editService) {
+    public PapyrusReferenceCreateElementHandler(IEMFKindService emfKindService, IEditService editService, IObjectService objectService, IViewFormDescriptionSearchService viewFormSearchService,
+            IAQLInterpreterProvider interpreterProvider) {
         this.emfKindService = Objects.requireNonNull(emfKindService);
+        this.editService = Objects.requireNonNull(editService);
         this.objectService = Objects.requireNonNull(objectService);
         this.viewFormSearchService = Objects.requireNonNull(viewFormSearchService);
         this.interpreterProvider = Objects.requireNonNull(interpreterProvider);
-        this.editService = Objects.requireNonNull(editService);
     }
 
     @Override
@@ -113,7 +111,7 @@ public class PapyrusReferenceCreateElementHandler implements IReferenceWidgetCre
 
     private List<ChildCreationDescription> createChildCreationDescription(EClass eClass, List<EClass> childrenTypes) {
         return eClass.getEAllReferences().stream()//
-                .filter(ref -> ref.isContainment()).flatMap(ref -> this.createChildCreationDescription(ref, childrenTypes).stream()).sorted(Comparator.comparing(ChildCreationDescription::getLabel))
+                .filter(EReference::isContainment).flatMap(ref -> this.createChildCreationDescription(ref, childrenTypes).stream()).sorted(Comparator.comparing(ChildCreationDescription::getLabel))
                 .toList();
     }
 
@@ -199,14 +197,12 @@ public class PapyrusReferenceCreateElementHandler implements IReferenceWidgetCre
             if (optionalView.isPresent() && reference.getName() != null) {
                 var createOperation = reference.getCreateElementOperation();
                 VariableManager variableManager = this.createVariableManagerForElementCreation(editingContext, parent, childCreationDescriptionId, reference.getName());
-                VariableManager childVariableManager = variableManager.createChild();
                 AQLInterpreter interpreter = this.interpreterProvider.createInterpreter(optionalView.get(), editingContext);
                 OperationInterpreter operationInterpreter = new OperationInterpreter(interpreter, this.editService);
                 OperationInterpreterViewSwitch operationInterpreterViewSwitch = new OperationInterpreterViewSwitch(variableManager, interpreter, this.editService, operationInterpreter);
                 Optional<VariableManager> optionalVariableManager = operationInterpreterViewSwitch.doSwitch(createOperation.getBody().get(0));
                 if (optionalVariableManager.isPresent()) {
-                    Optional<Object> res = optionalVariableManager.get().get(VariableManager.SELF, Object.class);
-                    return res;
+                    return optionalVariableManager.get().get(VariableManager.SELF, Object.class);
                 }
             }
         }
@@ -222,15 +218,12 @@ public class PapyrusReferenceCreateElementHandler implements IReferenceWidgetCre
             if (optionalView.isPresent() && reference.getName() != null) {
                 var createOperation = reference.getCreateElementOperation();
                 VariableManager variableManager = this.createVariableManagerForElementCreation(editingContext, parent, childCreationDescriptionId, reference.getName());
-                VariableManager childVariableManager = variableManager.createChild();
-
                 AQLInterpreter interpreter = this.interpreterProvider.createInterpreter(optionalView.get(), editingContext);
                 OperationInterpreter operationInterpreter = new OperationInterpreter(interpreter, this.editService);
                 OperationInterpreterViewSwitch operationInterpreterViewSwitch = new OperationInterpreterViewSwitch(variableManager, interpreter, this.editService, operationInterpreter);
                 Optional<VariableManager> optionalVariableManager = operationInterpreterViewSwitch.doSwitch(createOperation.getBody().get(0));
                 if (optionalVariableManager.isPresent()) {
-                    Optional<Object> res = optionalVariableManager.get().get(VariableManager.SELF, Object.class);
-                    return res;
+                    return optionalVariableManager.get().get(VariableManager.SELF, Object.class);
                 }
             }
         }
