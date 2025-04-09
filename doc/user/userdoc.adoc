@@ -39,7 +39,7 @@ Once the project (new or existing) is chosen, the workbench page is presented.
 The Workbench page is the main page where Projects are edited.
 It is basically composed of one main central area and two side panels. +
 The <<project-explorer-panel,`left panel`>> is mainly used to see the structure of the Project as a tree of all its parts.
-The <<diagram-panel,`central area`>> is the place where diagrams live and the <<right-side-panel,`right panel`>> can display the Properties of the current project explorer selection.
+The <<diagram-panel,`central area`>> is the place where diagrams and others representations live and the <<right-side-panel,`right panel`>> can display the Properties of the current project explorer selection.
 
 [[project-explorer-panel]]
 === Project Explorer panel
@@ -197,7 +197,7 @@ The _Validation_ panel shares the left area of the workbench page with the _Expl
 The validation view shows diagnostics of the whole project. Diagnostics are sorted by kind (for example ERROR, WARNING or INFO) and can be either hidden or displayed thanks to an accordeon widget.
 
 [[diagram-panel]]
-=== Diagram panel
+=== Diagrams
 
 ==== Generalities
 
@@ -411,6 +411,27 @@ image::diagUseCase.png[UseCase Diagram Overview,800, align="center"]
 
 ===== Specific Features on Direct Edit
 - The direct edit tool doesn't perform any modification on _Generalization_, _PackageImport_, _PackageMerge_ and _Link_ (from _Constraint_ or _Comment_).
+
+
+[[tables]]
+=== Tables
+
+==== UML Comment table
+
+The user have the ability to create a Table on any `uml::Element`.
+This table displays the comments owned by the element.
+
+* A first column displays the comment itself
+* A second column displays the annotated elements of the comment
+
+The user can: 
+
+* edit the body comment directly in the table cell.
+* select the comment clicking on the corresponding line.
+* delete the comment using the contextual actions in Actions column
+
+image::table-comment.png[UML Comment Table, 600, align="center"]
+
 
 [[right-side-panel]]
 === Right side panel
