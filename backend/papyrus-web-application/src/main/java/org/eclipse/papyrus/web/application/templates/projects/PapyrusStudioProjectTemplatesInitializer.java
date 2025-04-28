@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2024 CEA LIST, Obeo.
+ * Copyright (c) 2024, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -35,6 +35,7 @@ import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.components.events.ICause;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.View;
+import org.eclipse.sirius.components.view.table.TableDescription;
 import org.eclipse.sirius.emfjson.resource.JsonResource;
 import org.eclipse.sirius.web.application.UUIDParser;
 import org.eclipse.sirius.web.application.project.services.api.IProjectTemplateInitializer;
@@ -99,8 +100,11 @@ public class PapyrusStudioProjectTemplatesInitializer implements IProjectTemplat
                     View treeDescription = new UMLDefaultTreeDescriptionBuilder().createView();
                     this.addToResouce(resourceSet, treeDescription, treeDescription.getDescriptions().get(0).getName() + STUDIO_PREFIX);
 
-                    View commentTable = new UMLCommentTableRepresentationDescriptionBuilder().createView();
-                    this.addToResouce(resourceSet, commentTable, commentTable.getDescriptions().get(0).getName() + STUDIO_PREFIX);
+                    View commentTableView = new UMLCommentTableRepresentationDescriptionBuilder().createView();
+                    if (commentTableView.getDescriptions().get(0) instanceof TableDescription tableDescription) {
+                        tableDescription.setName(tableDescription.getName() + STUDIO_PREFIX);
+                        this.addToResouce(resourceSet, commentTableView, tableDescription.getName());
+                    }
 
                     return Optional.empty();
                 }));
