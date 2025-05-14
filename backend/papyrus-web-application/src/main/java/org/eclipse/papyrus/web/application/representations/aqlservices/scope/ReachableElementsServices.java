@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,8 @@
  *  Obeo - Initial API and implementation
  *****************************************************************************/
 package org.eclipse.papyrus.web.application.representations.aqlservices.scope;
+
+import static org.eclipse.papyrus.web.application.pathmap.services.api.IStaticPathmapResourceRegistry.PROTOCOL_PATHMAP;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -35,13 +37,12 @@ import org.eclipse.uml2.uml.Package;
 public class ReachableElementsServices {
 
     /**
-     * Retrieve all elements present reachable from the given self element compatible with the type of the reference
-     * given by name.
+     * Retrieve all elements present reachable from the given self element compatible with the type of the reference given by name.
      *
      * @param self
-     *            the current selected element owning the reference
+     *         the current selected element owning the reference
      * @param referenceName
-     *            the name of the reference
+     *         the name of the reference
      * @return the list of reachable elements.
      */
     public <T extends EObject> List<T> getAllReachableElements(EObject self, String referenceName) {
@@ -53,9 +54,9 @@ public class ReachableElementsServices {
      * Retrieve all reachable elements from a given self which are compatible with the give type.
      *
      * @param self
-     *            the current selected element owning the reference
+     *         the current selected element owning the reference
      * @param typeClass
-     *            the type of the referenced element
+     *         the type of the referenced element
      * @return the list of reachable elements.
      */
     public <T extends EObject> List<T> getAllReachableElements(EObject self, EClass typeClass) {
@@ -66,11 +67,10 @@ public class ReachableElementsServices {
     }
 
     /**
-     * Return all root elements from a given element. This service is used in UI when setting a reference value (mono or
-     * multi-valued).
+     * Return all root elements from a given element. This service is used in UI when setting a reference value (mono or multi-valued).
      *
      * @param self
-     *            the current selected element owning the reference
+     *         the current selected element owning the reference
      * @return the list of root elements
      */
     public List<Notifier> getAllReachableRootElements(EObject self) {
@@ -81,9 +81,9 @@ public class ReachableElementsServices {
      * Gets all {@link Element}s on which a stereotype is applied that is compliant with the given reference.
      *
      * @param self
-     *            a source EObject
+     *         a source EObject
      * @param referenceName
-     *            the name of EReference of this object that targets a Stereotype Application
+     *         the name of EReference of this object that targets a Stereotype Application
      * @return a list of elements
      */
     public List<Element> getAllReachableStereotypeApplicationsBaseElements(EObject self, String referenceName) {
@@ -115,11 +115,23 @@ public class ReachableElementsServices {
      * Return all root {@link Package} elements found in the resource set of the given element.
      *
      * @param self
-     *            the current selected element owning the reference
+     *         the current selected element owning the reference
      * @return the list of root {@link Package} elements.
      */
     public List<Package> getAllRootPackages(EObject self) {
-        return self.eResource().getResourceSet().getResources().stream()//
+        return self.eResource().getResourceSet().getResources().stream()
+                // always have the PATHMAP resource at the end in order to have a stable order
+                .sorted((p1, p2) -> {
+                    Integer value = 0;
+                    String scheme1 = p1.getURI().scheme();
+                    String scheme2 = p2.getURI().scheme();
+                    if (PROTOCOL_PATHMAP.equals(scheme1) && !PROTOCOL_PATHMAP.equals(scheme2)) {
+                        value = 1;
+                    } else if (PROTOCOL_PATHMAP.equals(scheme2) && !PROTOCOL_PATHMAP.equals(scheme1)) {
+                        value = -1;
+                    }
+                    return value;
+                })
                 .flatMap(r -> r.getContents().stream())//
                 .filter(Package.class::isInstance)//
                 .map(Package.class::cast)//
@@ -130,12 +142,11 @@ public class ReachableElementsServices {
      * Return all {@link Package} elements reachable by the given element.
      *
      * @param self
-     *            the current selected element owning the reference
+     *         the current selected element owning the reference
      * @return the list of {@link Package} elements.
      */
     public List<Package> getAllUMLPackages(EObject self) {
         var roots = this.getAllRootPackages(self);
         return roots.stream().flatMap(e -> EMFUtils.allContainedObjectOfType(e, Package.class)).toList();
     }
-
 }

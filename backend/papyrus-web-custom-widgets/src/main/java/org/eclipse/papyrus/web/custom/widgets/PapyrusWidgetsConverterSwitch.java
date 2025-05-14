@@ -69,9 +69,9 @@ import org.eclipse.sirius.components.representations.MessageLevel;
 import org.eclipse.sirius.components.representations.Success;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.Operation;
-import org.eclipse.sirius.components.view.emf.form.IFormIdProvider;
 import org.eclipse.sirius.components.view.emf.form.ListStyleProvider;
 import org.eclipse.sirius.components.view.emf.form.ViewFormDescriptionConverter;
+import org.eclipse.sirius.components.view.emf.form.api.IFormIdProvider;
 import org.eclipse.sirius.components.view.emf.operations.api.IOperationExecutor;
 import org.eclipse.sirius.components.view.emf.operations.api.OperationExecutionStatus;
 import org.eclipse.sirius.components.view.emf.widget.reference.ReferenceWidgetStyleProvider;
@@ -83,8 +83,7 @@ import org.eclipse.sirius.components.widget.reference.ReferenceWidgetDescription
 import org.eclipse.sirius.components.widget.reference.ReferenceWidgetStyle;
 
 /**
- * Converts all view-based Papyrus widget description into its API equivalent.<br>
- * Each custom widget has it own method caseXXX
+ * Converts all view-based Papyrus widget description into its API equivalent.<br> Each custom widget has it own method caseXXX
  *
  * @author Jerome Gout
  */
@@ -110,11 +109,12 @@ public class PapyrusWidgetsConverterSwitch extends PapyrusWidgetsSwitch<Optional
 
     private final IEMFKindService emfKindService;
 
-    public PapyrusWidgetsConverterSwitch(AQLInterpreter interpreter, IObjectService objectService, IOperationExecutor operationExecutor, IFeedbackMessageService feedbackMessageService, IFormIdProvider widgetIdProvider, IEMFKindService emfKindService) {
+    public PapyrusWidgetsConverterSwitch(AQLInterpreter interpreter, IObjectService objectService, IOperationExecutor operationExecutor, IFeedbackMessageService feedbackMessageService,
+            IFormIdProvider widgetIdProvider, IEMFKindService emfKindService) {
         this.interpreter = Objects.requireNonNull(interpreter);
         this.semanticTargetIdProvider = variableManager -> variableManager.get(VariableManager.SELF, Object.class).map(objectService::getId).orElse(null);
-        this.objectService =  Objects.requireNonNull(objectService);
-        this.operationExecutor =  Objects.requireNonNull(operationExecutor);
+        this.objectService = Objects.requireNonNull(objectService);
+        this.operationExecutor = Objects.requireNonNull(operationExecutor);
         this.feedbackMessageService = Objects.requireNonNull(feedbackMessageService);
         this.widgetIdProvider = Objects.requireNonNull(widgetIdProvider);
         this.emfKindService = Objects.requireNonNull(emfKindService);

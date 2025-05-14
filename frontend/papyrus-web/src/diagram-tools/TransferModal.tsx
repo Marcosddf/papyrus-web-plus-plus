@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,8 @@
  *     Obeo - initial API and implementation
  *     CEA LIST - Copied from TranserModal.tsx at b975254b422a849f96b6fd56d7e9316d52b750e0. Adapted to show a FilterableSortableList on the left and right.
  *******************************************************************************/
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -18,10 +20,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
-import { makeStyles } from 'tss-react/mui';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import React, { useState } from 'react';
+import { makeStyles } from 'tss-react/mui';
 import { FilterableSortableList } from './FilterableSortableList';
 import { ItemWithIcon, TransferModalProps, TransferModalState } from './TransferModal.types';
 
@@ -149,7 +149,7 @@ export const TransferModal = ({ items, onClose }: TransferModalProps) => {
       <DialogTitle id="dialog-title">Select Metaclass</DialogTitle>
       <DialogContent className={classes.dialogContent}>
         <Grid container spacing={2} justifyContent="center" alignItems="center" className={classes.root}>
-          <Grid item>
+          <Grid>
             <div className={classes.paper}>
               <FilterableSortableList
                 items={state.left}
@@ -168,7 +168,7 @@ export const TransferModal = ({ items, onClose }: TransferModalProps) => {
               />
             </div>
           </Grid>
-          <Grid item>
+          <Grid>
             <Grid container direction="column" alignItems="center">
               <IconButton
                 className={classes.button}
@@ -196,7 +196,7 @@ export const TransferModal = ({ items, onClose }: TransferModalProps) => {
               </IconButton>
             </Grid>
           </Grid>
-          <Grid item>
+          <Grid>
             <div className={classes.paper}>
               <FilterableSortableList
                 items={state.right}

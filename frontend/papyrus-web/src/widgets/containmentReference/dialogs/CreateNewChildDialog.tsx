@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,12 +17,12 @@ import { Dialog, DialogContent, DialogContentText, DialogTitle } from '@mui/mate
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { useContext, useState } from 'react';
-import { CreateNewChildDialogProps } from './CreateNewChildDialog.types';
 import { makeStyles } from 'tss-react/mui';
+import { CreateNewChildDialogProps } from './CreateNewChildDialog.types';
 
 const useStyles = makeStyles()((theme) => ({
   dialogContent: {
@@ -65,8 +65,7 @@ const CreateNewChildDialog = ({ childTypes, onClose }: CreateNewChildDialogProps
         <div className={classes.paper}>
           <List data-testid="containment-reference-new-child-dialog-types-list">
             {childTypes.map((creationDescription) => (
-              <ListItem
-                button
+              <ListItemButton
                 key={creationDescription.id}
                 data-testid={creationDescription.label}
                 selected={creationDescription.id === selectedChildTypeId}
@@ -83,7 +82,7 @@ const CreateNewChildDialog = ({ childTypes, onClose }: CreateNewChildDialogProps
                   </ListItemIcon>
                 )}
                 <ListItemText primary={creationDescription.label} />
-              </ListItem>
+              </ListItemButton>
             ))}
           </List>
         </div>

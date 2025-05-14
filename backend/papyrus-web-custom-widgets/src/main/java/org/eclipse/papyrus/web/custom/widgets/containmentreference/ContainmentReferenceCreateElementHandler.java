@@ -27,7 +27,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.papyrus.uml.domain.services.EMFUtils;
 import org.eclipse.papyrus.web.custom.widgets.IAQLInterpreterProvider;
-import org.eclipse.papyrus.web.custom.widgets.OperationInterpreter;
 import org.eclipse.papyrus.web.custom.widgets.OperationInterpreterViewSwitch;
 import org.eclipse.papyrus.web.custom.widgets.papyruswidgets.ContainmentReferenceWidgetDescription;
 import org.eclipse.papyrus.web.custom.widgets.papyruswidgets.PapyrusWidgetsPackage;
@@ -44,8 +43,10 @@ import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IRepresentationDescriptionIdProvider;
-import org.eclipse.sirius.components.view.emf.form.IFormIdProvider;
+import org.eclipse.sirius.components.view.emf.form.api.IFormIdProvider;
 import org.eclipse.sirius.components.view.emf.form.api.IViewFormDescriptionSearchService;
+import org.eclipse.sirius.components.view.emf.operations.api.IAddExecutor;
+import org.eclipse.sirius.components.view.emf.operations.api.IClearExecutor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -69,13 +70,19 @@ public class ContainmentReferenceCreateElementHandler implements IReferenceWidge
 
     private final IAQLInterpreterProvider interpreterProvider;
 
+    private final IAddExecutor addExecutor;
+
+    private final IClearExecutor clearExecutor;
+
     public ContainmentReferenceCreateElementHandler(IEMFKindService emfKindService, IEditService editService, IObjectService objectService, IViewFormDescriptionSearchService viewFormSearchService,
-            IAQLInterpreterProvider interpreterProvider) {
+            IAQLInterpreterProvider interpreterProvider, IAddExecutor addExecutor, IClearExecutor clearExecutor) {
         this.emfKindService = Objects.requireNonNull(emfKindService);
         this.editService = Objects.requireNonNull(editService);
         this.objectService = Objects.requireNonNull(objectService);
         this.viewFormSearchService = Objects.requireNonNull(viewFormSearchService);
         this.interpreterProvider = Objects.requireNonNull(interpreterProvider);
+        this.addExecutor = addExecutor;
+        this.clearExecutor = clearExecutor;
     }
 
     @Override
@@ -166,8 +173,8 @@ public class ContainmentReferenceCreateElementHandler implements IReferenceWidge
                 var createOperation = reference.getCreateElementOperation();
                 VariableManager variableManager = this.createVariableManagerForElementCreation(parent, childCreationDescriptionId, reference.getName());
                 AQLInterpreter interpreter = this.interpreterProvider.createInterpreter(optionalView.get(), editingContext);
-                OperationInterpreter operationInterpreter = new OperationInterpreter(interpreter, this.editService);
-                OperationInterpreterViewSwitch operationInterpreterViewSwitch = new OperationInterpreterViewSwitch(variableManager, interpreter, this.editService, operationInterpreter);
+                OperationInterpreterViewSwitch operationInterpreterViewSwitch = new OperationInterpreterViewSwitch(variableManager, interpreter, this.editService, this.addExecutor,
+                        this.clearExecutor);
                 Optional<VariableManager> optionalVariableManager = operationInterpreterViewSwitch.doSwitch(createOperation.getBody().get(0));
                 if (optionalVariableManager.isPresent()) {
                     return optionalVariableManager.get().get(VariableManager.SELF, Object.class);

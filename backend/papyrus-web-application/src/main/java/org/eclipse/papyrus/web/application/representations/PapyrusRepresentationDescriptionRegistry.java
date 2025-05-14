@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -103,7 +103,7 @@ public class PapyrusRepresentationDescriptionRegistry {
      * </p>
      *
      * @param diagramBuilder
-     *            a diagram builder.
+     *         a diagram builder.
      */
     public void registerDiagram(AbstractRepresentationDescriptionBuilder diagramBuilder) {
         List<EPackage> staticEPackages = this.ePackagesRegistry.values().stream()
@@ -141,9 +141,9 @@ public class PapyrusRepresentationDescriptionRegistry {
      * </p>
      *
      * @param viewFormDescription
-     *            the view form
+     *         the view form
      * @param formDescription
-     *            the converted form
+     *         the converted form
      */
     // This can be improved by relocated the conversion from View to API inside this class
     public void registerForm(FormDescription viewFormDescription, org.eclipse.sirius.components.forms.description.FormDescription formDescription) {
@@ -157,7 +157,8 @@ public class PapyrusRepresentationDescriptionRegistry {
         JSONResourceFactory jsonResourceFactory = new JSONResourceFactory();
         var uri = jsonResourceFactory.createResourceURI(UUID.nameUUIDFromBytes(representatioName.getBytes()).toString());
 
-        JsonResource impl = jsonResourceFactory.createResource(uri);
+        Map<String, Object> customOptions = Map.of(JsonResource.OPTION_FORCE_DEFAULT_REFERENCE_SERIALIZATION, Boolean.TRUE);
+        JsonResource impl = jsonResourceFactory.createResource(uri, customOptions);
 
         impl.getContents().add(view);
         this.viewResourceSet.getResources().add(impl);

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2024 CEA LIST, Obeo.
+ * Copyright (c) 2024, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -104,7 +104,7 @@ public class UMLStereotypeHandler implements IStereotypeHandler {
         var resourceMetadataAdapter = new ResourceMetadataAdapter(name);
         var migrationService = new MigrationService(this.migrationParticipants);
 
-        resourceMetadataAdapter.setMigrationData(migrationService.getMostRecentParticipantMigrationData());
+        resourceMetadataAdapter.addMigrationData(migrationService.getMostRecentParticipantMigrationData());
 
         resource.eAdapters().add(resourceMetadataAdapter);
         emfEditingContext.getDomain().getResourceSet().getResources().add(resource);

@@ -39,9 +39,9 @@ import org.eclipse.sirius.components.view.Let;
 import org.eclipse.sirius.components.view.Operation;
 import org.eclipse.sirius.components.view.SetValue;
 import org.eclipse.sirius.components.view.UnsetValue;
-import org.eclipse.sirius.components.view.emf.IOperationInterpreter;
+import org.eclipse.sirius.components.view.emf.operations.api.IAddExecutor;
+import org.eclipse.sirius.components.view.emf.operations.api.IClearExecutor;
 import org.eclipse.sirius.components.view.util.ViewSwitch;
-import org.eclipse.sirius.ecore.extender.business.internal.accessor.ecore.EcoreIntrinsicExtender;
 
 /**
  * This switch allows to handle common {@link Operation}s without dependencies to a specific representation.
@@ -50,8 +50,7 @@ import org.eclipse.sirius.ecore.extender.business.internal.accessor.ecore.EcoreI
  */
 public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<VariableManager>> {
     /**
-     * The name of the top-level Map<String, Object> used to collect all newly created instances during the execution of
-     * a tool.
+     * The name of the top-level Map<String, Object> used to collect all newly created instances during the execution of a tool.
      */
     public static final String NEW_INSTANCES_COLLECTOR = "__NEW_INSTANCES_COLLECTOR__";
 
@@ -61,30 +60,27 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
 
     private final IEditService editService;
 
-    private final IOperationInterpreter operationInterpreter;
+    private final IAddExecutor addExecutor;
 
-    private final EcoreIntrinsicExtender ecore;
+    private final IClearExecutor clearExecutor;
 
     /**
      * Default constructor.
      *
      * @param variableManager
-     *            the current {@link VariableManager}.
+     *         the current {@link VariableManager}.
      * @param interpreter
-     *            the {@link AQLInterpreter}.
+     *         the {@link AQLInterpreter}.
      * @param editService
-     *            the {@link IEditService}.
-     * @param operationInterpreter
-     *            the {@link IOperationInterpreter} used for delegating sub operations executions. It is the
-     *            responsibility of the {@link IOperationInterpreter} to delegate each operation execution to the
-     *            appropriate switch according to the concrete representation.
+     *         the {@link IEditService}.
      */
-    public OperationInterpreterViewSwitch(VariableManager variableManager, AQLInterpreter interpreter, IEditService editService, IOperationInterpreter operationInterpreter) {
+    public OperationInterpreterViewSwitch(VariableManager variableManager, AQLInterpreter interpreter, IEditService editService, IAddExecutor addExecutor,
+            IClearExecutor clearExecutor) {
         this.variableManager = Objects.requireNonNull(variableManager);
         this.interpreter = Objects.requireNonNull(interpreter);
         this.editService = Objects.requireNonNull(editService);
-        this.operationInterpreter = Objects.requireNonNull(operationInterpreter);
-        this.ecore = new EcoreIntrinsicExtender();
+        this.addExecutor = addExecutor;
+        this.clearExecutor = clearExecutor;
     }
 
     @Override
@@ -93,7 +89,7 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
         if (newContext.isPresent()) {
             VariableManager childVariableManager = this.variableManager.createChild();
             childVariableManager.put(VariableManager.SELF, newContext.get());
-            return this.operationInterpreter.executeOperations(changeContextOperation.getChildren(), childVariableManager);
+            return this.executeOperations(changeContextOperation.getChildren(), childVariableManager);
         } else {
             return Optional.empty();
         }
@@ -103,7 +99,7 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
     public Optional<VariableManager> caseIf(If ifOperation) {
         Optional<Boolean> testResult = this.interpreter.evaluateExpression(this.variableManager.getVariables(), ifOperation.getConditionExpression()).asBoolean();
         if (testResult.isPresent() && Boolean.TRUE.equals(testResult.get())) {
-            return this.operationInterpreter.executeOperations(ifOperation.getChildren(), this.variableManager);
+            return this.executeOperations(ifOperation.getChildren(), this.variableManager);
         }
         return Optional.of(this.variableManager);
     }
@@ -115,7 +111,7 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
             for (Object object : optionalList.get()) {
                 VariableManager childVariableManager = this.variableManager.createChild();
                 childVariableManager.put(forOperation.getIteratorName(), object);
-                this.operationInterpreter.executeOperations(forOperation.getChildren(), childVariableManager);
+                this.executeOperations(forOperation.getChildren(), childVariableManager);
             }
             return Optional.of(this.variableManager);
         } else {
@@ -129,7 +125,7 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
         Optional<Object> variableValue = this.interpreter.evaluateExpression(this.variableManager.getVariables(), object.getValueExpression()).asObject();
         if (variableValue.isPresent()) {
             childVariableManager.put(object.getVariableName(), variableValue.get());
-            return this.operationInterpreter.executeOperations(object.getChildren(), childVariableManager);
+            return this.executeOperations(object.getChildren(), childVariableManager);
         } else {
             return Optional.empty();
         }
@@ -143,11 +139,11 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
             var optionalNewInstance = this.createSemanticInstance(editingDomain.get(), creatInstanceOperation.getTypeName());
             if (optionalNewInstance.isPresent()) {
                 EObject newInstance = optionalNewInstance.get();
-                Object container = this.ecore.eAdd(optionalSelf.get(), creatInstanceOperation.getReferenceName(), newInstance);
+                Object container = this.addExecutor.eAdd(optionalSelf.get(), creatInstanceOperation.getReferenceName(), newInstance);
                 if (container != null) {
                     VariableManager childVariableManager = this.variableManager.createChild();
                     childVariableManager.put(creatInstanceOperation.getVariableName(), newInstance);
-                    Optional<VariableManager> childrenResult = this.operationInterpreter.executeOperations(creatInstanceOperation.getChildren(), childVariableManager);
+                    Optional<VariableManager> childrenResult = this.executeOperations(creatInstanceOperation.getChildren(), childVariableManager);
                     childrenResult.ifPresent(result -> {
                         // Record the newly created instance if NEW_INSTANCES_COLLECTOR is supplied by the execution context
                         result.get(NEW_INSTANCES_COLLECTOR, Map.class).ifPresent(collector -> {
@@ -169,12 +165,12 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
             Object instance = null;
             var newValueObject = newValue.asObject();
             if (newValueObject.isPresent()) {
-                instance = this.ecore.eAdd(optionalSelf.get(), setValueOperation.getFeatureName(), newValueObject.get());
+                instance = this.addExecutor.eAdd(optionalSelf.get(), setValueOperation.getFeatureName(), newValueObject.get());
             } else {
-                instance = this.ecore.eClear(optionalSelf.get(), setValueOperation.getFeatureName());
+                instance = this.clearExecutor.eClear(optionalSelf.get(), setValueOperation.getFeatureName());
             }
             if (instance != null) {
-                return this.operationInterpreter.executeOperations(setValueOperation.getChildren(), this.variableManager);
+                return this.executeOperations(setValueOperation.getChildren(), this.variableManager);
             }
         }
         return Optional.empty();
@@ -189,7 +185,7 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
             if (feature != null) {
                 List<EObject> elementsToUnset = this.computeElementsToUnset(this.variableManager.getVariables(), unsetValueOperation.getElementExpression());
                 this.unset(self, feature, elementsToUnset);
-                return this.operationInterpreter.executeOperations(unsetValueOperation.getChildren(), this.variableManager);
+                return this.executeOperations(unsetValueOperation.getChildren(), this.variableManager);
             }
         }
         return Optional.empty();
@@ -200,7 +196,7 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
         var optionalSelf = this.variableManager.get(VariableManager.SELF, EObject.class);
         if (optionalSelf.isPresent()) {
             this.editService.delete(optionalSelf.get());
-            return this.operationInterpreter.executeOperations(deleteElementOperation.getChildren(), this.variableManager);
+            return this.executeOperations(deleteElementOperation.getChildren(), this.variableManager);
         }
         return Optional.empty();
     }
@@ -211,9 +207,9 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
             Optional<List<Object>> optionalObjectsToUnset = this.interpreter.evaluateExpression(variables, elementExpression).asObjects();
             if (optionalObjectsToUnset.isPresent()) {
                 elementsToUnset = optionalObjectsToUnset.get().stream()
-                                      .filter(EObject.class::isInstance)
-                                      .map(EObject.class::cast)
-                                      .toList();
+                        .filter(EObject.class::isInstance)
+                        .map(EObject.class::cast)
+                        .toList();
             }
         }
         return elementsToUnset;
@@ -245,15 +241,30 @@ public class OperationInterpreterViewSwitch extends ViewSwitch<Optional<Variable
         String[] parts = domainType.split("(::?|\\.)");
         if (parts.length == 2) {
             return editingDomain.getResourceSet().getPackageRegistry().values().stream()
-                         .filter(EPackage.class::isInstance)
-                         .map(EPackage.class::cast)
-                         .filter(ePackage -> Objects.equals(ePackage.getName(), parts[0]))
-                         .map(ePackage -> ePackage.getEClassifier(parts[1]))
-                         .filter(EClass.class::isInstance)
-                         .map(EClass.class::cast)
-                         .findFirst();
+                    .filter(EPackage.class::isInstance)
+                    .map(EPackage.class::cast)
+                    .filter(ePackage -> Objects.equals(ePackage.getName(), parts[0]))
+                    .map(ePackage -> ePackage.getEClassifier(parts[1]))
+                    .filter(EClass.class::isInstance)
+                    .map(EClass.class::cast)
+                    .findFirst();
         } else {
             return Optional.empty();
         }
+    }
+
+    public Optional<VariableManager> executeOperations(List<Operation> operations, VariableManager vm) {
+        for (Operation operation : operations) {
+            Optional<VariableManager> newContext = this.executeOperation(operation, vm);
+            if (newContext.isEmpty()) {
+                return Optional.empty();
+            }
+        }
+        return Optional.of(vm);
+    }
+
+    private Optional<VariableManager> executeOperation(Operation operation, VariableManager vm) {
+        ViewSwitch<Optional<VariableManager>> dispatcher = new OperationInterpreterViewSwitch(vm, this.interpreter, this.editService, this.addExecutor, this.clearExecutor);
+        return dispatcher.doSwitch(operation);
     }
 }

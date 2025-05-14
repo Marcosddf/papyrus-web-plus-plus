@@ -29,7 +29,7 @@ import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IRepresentationDescriptionIdProvider;
-import org.eclipse.sirius.components.view.emf.form.IFormIdProvider;
+import org.eclipse.sirius.components.view.emf.form.api.IFormIdProvider;
 import org.eclipse.sirius.components.view.emf.form.api.IViewFormDescriptionSearchService;
 import org.eclipse.sirius.components.view.form.FormElementDescription;
 import org.springframework.core.Ordered;
@@ -37,8 +37,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of {@link IModelBrowserRootCandidateSearchProvider} for {@link MonoReferenceWidgetDescription} and
- * {@link MultiReferenceWidgetDescription}.
+ * Implementation of {@link IModelBrowserRootCandidateSearchProvider} for {@link MonoReferenceWidgetDescription} and {@link MultiReferenceWidgetDescription}.
  *
  * @author Jerome Gout
  */
