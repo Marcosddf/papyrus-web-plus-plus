@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *  Obeo - Initial API and implementation
+ *  Aurelien DIDIER (Artal Technologies) - Issue 229
  *****************************************************************************/
 
 //inspired by: packages/diagrams/frontend/sirius-components-diagrams/src/renderer/layout/ListNodeLayoutHandler.ts
@@ -155,10 +156,12 @@ export class PackageNodeListLayoutHandler implements INodeLayoutHandler<PackageN
           (withHeader ? labelElement?.getBoundingClientRect().height ?? 0 : 0);
       }
       const fixedWidth: number = Math.max(
-        directNodesChildren.reduce<number>(
-          (widerWidth, child) => Math.max(child.width ?? 0, widerWidth),
-          getInsideLabelWidthConstraint(node.data.insideLabel, labelElement)
-        ),
+        directNodesChildren
+          .filter((child) => child.type !== 'customImageNode')
+          .reduce<number>(
+            (widerWidth, child) => Math.max(child.width ?? 0, widerWidth),
+            getInsideLabelWidthConstraint(node.data.insideLabel, labelElement)
+          ),
         northBorderNodeFootprintWidth,
         southBorderNodeFootprintWidth,
         previousChildrenContentBoxWidthToConsider
