@@ -519,6 +519,7 @@ export const PrimitiveListSection = ({
         openOnFocus
         fullWidth
         disableClearable
+        disabled={readOnly || widget.readOnly}
         value={newValue}
         onChange={handleAutocompleteChange}
         renderInput={(params) => (
