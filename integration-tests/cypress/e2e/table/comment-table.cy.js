@@ -116,15 +116,15 @@ describe('Comment table tests', () => {
     checkNumberOfRows(7);
 
     // apply a global filter => only 2 rows are visible now
-    cy.getByTestId('table-representation').findByTestId('SearchIcon').parent().find('input').type('COMMENT{enter}');
+    cy.getByTestId('table-representation').find('input[placeholder="Search"]').type('COMMENT{enter}');
     checkNumberOfRows(2);
 
     // clear global filter => all rows are visible
-    cy.getByTestId('table-representation').findByTestId('CloseIcon').parent().click();
+    cy.getByTestId('table-representation').find('button[aria-label="Clear search"]').click();
     checkNumberOfRows(7);
 
     // apply a column filter on Annotated elements column => only 2 rows should be visible
-    cy.getByTestId('table-representation').findByTestId('FilterListIcon').parent().click();
+    cy.getByTestId('table-representation').find('button[aria-label="Show/Hide filters"]').click();
     getColumnHeader('Annotated Elements')
       .find('input')
       .should('have.attr', 'title', 'Filter by Annotated Elements')
@@ -132,7 +132,7 @@ describe('Comment table tests', () => {
     checkNumberOfRows(2);
 
     // clear column filter
-    getColumnHeader('Annotated Elements').findByTestId('CloseIcon').parent().click();
+    getColumnHeader('Annotated Elements').find('button[aria-label="Clear filter"]').parent().click();
     checkNumberOfRows(7);
 
     // select the comment with body containing 4

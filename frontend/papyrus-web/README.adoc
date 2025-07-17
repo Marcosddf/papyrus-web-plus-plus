@@ -1,5 +1,14 @@
 = Papyrus Web Frontend
 
+This project provide the _Papyrus Web_ final application.
+It aims to contain plumbing between all necessary components to create the application.
+
+[WARNING]
+====
+This project does *not* aims to provide any customization code such as Widgets, Nodes, Item Contribution...
+All custom code should be stored in _papyrus-web-components_ in order to be reusable for any downstream application other that _papyrus-web_ that would need it.
+====
+
 This project was bootstrapped with https://github.com/facebook/create-react-app[Create React App].
 
 == Available Scripts

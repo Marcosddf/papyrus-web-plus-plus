@@ -1,7 +1,7 @@
 {
-  "name": "@eclipse-papyrus/papyrus-web",
-  "author": "Eclipse Sirius",
+  "name": "@eclipse-papyrus/papyrus-web-components",
   "version": "2025.4.0",
+  "author": "Eclipse Papyrus",
   "license": "EPL-2.0",
   "repository": {
     "type": "git",
@@ -10,8 +10,26 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
-  "private": true,
-  "dependencies": {
+  "main": "./dist/papyrus-web-components.umd.js",
+  "module": "./dist/papyrus-web-components.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/papyrus-web-components.umd.js",
+      "import": "./dist/papyrus-web-components.es.js"
+    }
+  },
+  "scripts": {
+    "build-dev": "vite build --mode 'development' && tsc",
+    "build": "vite build && tsc",
+    "format": "prettier --write \"src/**/*.{js,ts,tsx,css}\"",
+    "format-lint": "prettier --list-different \"src/**/*.{js,ts,tsx,css}\"",
+    "publish:local": "yalc push"
+  },
+  "peerDependencies": {
     "@ObeoNetwork/gantt-task-react": "0.6.2",
     "@ObeoNetwork/react-trello": "2.4.11",
     "@apollo/client": "3.10.4",
@@ -31,9 +49,8 @@
     "@eclipse-sirius/sirius-components-validation": "2025.4.5",
     "@eclipse-sirius/sirius-components-widget-reference": "2025.4.5",
     "@eclipse-sirius/sirius-components-widget-table": "2025.4.5",
+    "@eclipse-sirius/sirius-components-tsconfig": "2025.4.5",
     "@eclipse-sirius/sirius-web-application": "2025.4.5",
-    "@eclipse-sirius/sirius-web-view-fork": "2025.4.5",
-    "@eclipse-papyrus/papyrus-web-components": "2025.4.0",
     "@lexical/react": "0.8.1",
     "@mui/icons-material": "7.0.2",
     "@mui/material": "7.0.2",
@@ -72,6 +89,7 @@
     "@types/jest": "27.0.0",
     "@types/node": "20.12.12",
     "@types/react-dom": "18.3.0",
+    "rollup-plugin-peer-deps-external": "2.2.4",
     "@vitejs/plugin-react": "4.3.0",
     "jest-junit-reporter": "1.1.0",
     "prettier": "2.7.1",
@@ -81,23 +99,5 @@
     "typescript": "5.4.5",
     "vite": "5.2.11",
     "vitest": "1.6.0"
-  },
-  "overrides": {
-    "@types/react-router-dom": {
-      "@types/history": "4.7.11"
-    }
-  },
-  "scripts": {
-    "start": "tsc && vite --host",
-    "build": "vite build && tsc",
-    "test": "vitest --run --config vite.config.js",
-    "format": "prettier --write \"src/**/*.{js,ts,tsx,css}\"",
-    "format-lint": "prettier --list-different \"src/**/*.{js,ts,tsx,css}\""
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  }
 }

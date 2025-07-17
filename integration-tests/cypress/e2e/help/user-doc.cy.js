@@ -13,7 +13,8 @@
 describe('User doc test', () => {
   it('Check that the documentation is accessible from the ? button', () => {
     cy.visit('/projects');
-    cy.getByTestId('help-link').invoke('removeAttr', 'target').click();
+    cy.get('header').find('button').last().click();
+    cy.get('[role="menu"]').find('[role="menuitem"]').last().invoke('removeAttr', 'target').click();
     cy.get('h1').should('have.text', 'Papyrus Web Documentation');
   });
 

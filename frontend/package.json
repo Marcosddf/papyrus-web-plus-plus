@@ -1,5 +1,5 @@
 {
-  "name": "@papyrus-web/papyrus-web-parent",
+  "name": "@eclipse-papyrus/papyrus-web-parent",
   "version": "2025.4.0",
   "author": "Eclipse Sirius",
   "license": "EPL-2.0",
@@ -15,6 +15,7 @@
     "npm": "8.15.0"
   },
   "workspaces": [
+    "papyrus-web-components",
     "papyrus-web"
   ],
   "scripts": {

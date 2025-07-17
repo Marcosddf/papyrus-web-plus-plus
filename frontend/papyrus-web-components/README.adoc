@@ -1,0 +1,13 @@
+= Papyrus Web Component
+
+This libary aims to provide all custom code used to build a _Papyrus Web_ like application.
+
+It provides:
+
+* Custom Node
+* Custom Tool
+* Custom Item Contribution
+* Custom Widget
+* Etc
+
+It aims to be reusable by anyone wanting to create a _Papyrus Web_ custom application.

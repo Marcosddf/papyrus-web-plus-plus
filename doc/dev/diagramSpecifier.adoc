@@ -219,7 +219,7 @@ The rules below cover the use cases where a shared element should be used to avo
 ==== Custom nodes
 Custom nodes are project-specific node styles used to extend Sirius Web's default styles. In Papyrus Web, they are typically used to define nodes with specific shapes, such as the _Package_ node or the _Note_ node.
 
-Custom nodes are defined both in the backend (to make them usable in the View DSL) and the frontend (the actual graphical implementation of the node). 
+Custom nodes are defined both in the backend (to make them usable in the View DSL) and the frontend in _papyrus-web-components_ (the actual graphical implementation of the node). 
 
 ===== Backend
 There are two backend modules related to custom nodes:
@@ -267,7 +267,7 @@ public NoteNodeStyleDescription createNoteNodeStyle() {
 ----
 
 ===== Frontend
-Custom nodes are located in the `sirius-web-application/src/nodes` directory in the frontend. Each node is defined in a dedicated directory that contains 4 files:
+Custom nodes are located in the `papyrus-web-components/src/nodes` directory in the frontend. Each node is defined in a dedicated directory that contains 4 files:
 
 - `MyCustomNode.tsx`: the actual implementation of the graphical node. This is where you create the React component that will be rendered to represent your node.
 - `MyCustomNode.types.ts`: the types used by your custom node. This file contains both the properties required by `MyCustomNode.tsx` as well as the definition of the GraphQL type associated to your node.
@@ -275,7 +275,7 @@ Custom nodes are located in the `sirius-web-application/src/nodes` directory in 
 - `MyCustomNodeLayoutHandler.ts`: the layout of your node. This file defines high-level layout such as how child elements are handled.
 
 [TIP]
-The `papyrus-web/src/nodes` directory contains various examples of custom nodes used in Papyrus Web.
+The `papyrus-web-components/src/nodes` directory contains various examples of custom nodes used in Papyrus Web.
 
 In addition to the files defining the custom node themselves, you need to edit the file `papyrus-web/src/index.tsx` and update the `nodeTypeRegistryValue` variable to make your custom node usable:
 ```typescript
@@ -315,7 +315,7 @@ const nodeApolloClientOptionsConfigurer: ApolloClientOptionsConfigurer = (curren
 };
 ```
 
-An example of transformation can be found in _papyrus-web/src/nodes/NodesDocumentTransform.ts_.
+An example of transformation can be found in _papyrus-web-components/src/nodes/NodesDocumentTransform.ts_.
 
 Do not forget to register your configurer into the _apolloClientOptionsConfigurersExtensionPoint_ 
 
@@ -510,7 +510,7 @@ Our handler implements `IDiagramEventHandler` because it performs both semantic 
 
 ===== Frontend
 
-On the frontend side, a custom tool is a React component that is added in the palette. This component takes a `DiagramPaletteToolContributionComponentProps` as parameter, and sends the GraphQL mutation to the backend. The file `PapyrusPopupToolContribution` shows such component for our _Import Metaclass_ example:
+On the frontend side, a custom tool is a React component that is added in the palette in project _papyrus-web-components. This component takes a `DiagramPaletteToolContributionComponentProps` as parameter, and sends the GraphQL mutation to the backend. The file `PapyrusPopupToolContribution` shows such component for our _Import Metaclass_ example:
 ```typescript
 const createMetaclassImportMutation = gql`
   mutation createMetaclassImport($input: CreateMetaclassImportInput!) {
