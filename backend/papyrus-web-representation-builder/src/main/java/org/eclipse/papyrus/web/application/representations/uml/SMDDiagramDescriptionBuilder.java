@@ -152,6 +152,7 @@ public class SMDDiagramDescriptionBuilder extends AbstractRepresentationDescript
                 .insideLabelDescription(this.getQueryBuilder().queryRenderLabel(), createDefaultInsideLabelStyle)
                 .build();
         diagramDescription.getNodeDescriptions().add(smdStateMachineNodeDesc);
+        this.createDefaultToolSectionsInNodeDescription(smdStateMachineNodeDesc);
 
         // workaround to overcome missing enhancement https://github.com/PapyrusSirius/papyrus-web/issues/121
         // It is not possible to define that there is no delete tool.
