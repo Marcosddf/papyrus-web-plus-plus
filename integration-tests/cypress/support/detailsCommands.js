@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *  Obeo - Initial API and implementation
+ *  Vincent LORENZO (CEA LIST) - vincent.lorenzo@cea.fr - Issue GL-275
  *****************************************************************************/
 
 /**
@@ -59,6 +60,7 @@ Cypress.Commands.add('addItemInPrimitiveListStrictMode', (primitiveListName, ite
     .should('be.visible')
     .find(`ul > li`)
     .contains(itemValue)
+    .scrollIntoView() //issue GL-275
     .should('be.visible')
     .click();
   cy.getByTestId(`primitive-list-add-${primitiveListName}`).should('not.have.class', 'Mui-disabled').click();
