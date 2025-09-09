@@ -11,6 +11,7 @@
  * Contributors:
  *  Obeo - Initial API and implementation
  *  Aurelien Didier (Artal Technologies) - Issue 229
+ *  Vincent LORENZO (CEA LIST) - vincent.lorenzo@cea.fr Issue 276
  *****************************************************************************/
 package org.eclipse.papyrus.web.application.representations.uml;
 
@@ -41,16 +42,21 @@ import org.eclipse.sirius.components.view.diagram.LineStyle;
 import org.eclipse.sirius.components.view.diagram.ListLayoutStrategyDescription;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
+import org.eclipse.sirius.components.view.diagram.OutsideLabelDescription;
 import org.eclipse.sirius.components.view.diagram.RectangularNodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.uml2.uml.Abstraction;
+import org.eclipse.uml2.uml.Component;
 import org.eclipse.uml2.uml.ComponentRealization;
 import org.eclipse.uml2.uml.Dependency;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.InterfaceRealization;
 import org.eclipse.uml2.uml.Manifestation;
+import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
+import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Substitution;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Usage;
 
@@ -507,6 +513,9 @@ public final class CPDDiagramDescriptionBuilder extends AbstractRepresentationDe
                 CallQuery.queryServiceOnSelf(ComponentDiagramServices.GET_PORT_NODE_CANDIDATES));
 
         this.cpdSharedDescription.getBorderNodesDescriptions().add(cpdPortSharedNodeDescription);
+        cpdPortSharedNodeDescription.setInsideLabel(null);
+        OutsideLabelDescription old = this.getViewBuilder().createDefaultOutsideLabelDescription(true);
+        cpdPortSharedNodeDescription.getOutsideLabels().add(old);
 
         this.createDefaultToolSectionsInNodeDescription(cpdPortSharedNodeDescription);
 
