@@ -17,6 +17,7 @@ package org.eclipse.papyrus.web.application.representations.nodes;
 import java.util.Optional;
 
 import org.eclipse.papyrus.web.customnodes.papyruscustomnodes.CustomImageNodeStyleDescription;
+import org.eclipse.sirius.components.diagrams.ILayoutStrategy;
 import org.eclipse.sirius.components.diagrams.INodeStyle;
 import org.eclipse.sirius.components.diagrams.LineStyle;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
@@ -46,7 +47,7 @@ public class CustomImageNodeStyleProvider implements INodeStyleProvider {
     }
 
     @Override
-    public Optional<INodeStyle> createNodeStyle(NodeStyleDescription nodeStyle, Optional<String> optionalEditingContextId) {
+    public Optional<INodeStyle> createNodeStyle(NodeStyleDescription nodeStyle, Optional<String> optionalEditingContextId, ILayoutStrategy childrenLayoutStrategy) {
         Optional<INodeStyle> iNodeStyle = Optional.empty();
         Optional<String> nodeType = this.getNodeType(nodeStyle);
         if (nodeType.isPresent() && nodeStyle instanceof CustomImageNodeStyleDescription) {
@@ -65,13 +66,14 @@ public class CustomImageNodeStyleProvider implements INodeStyleProvider {
                             .orElse("black"))
                     .borderSize(nodeStyle.getBorderSize())
                     .borderStyle(LineStyle.valueOf(nodeStyle.getBorderLineStyle().getLiteral()))
+                    .childrenLayoutStrategy(childrenLayoutStrategy)
                     .build());
         }
 
         return iNodeStyle;
     }
 
-    public Optional<INodeStyle> createNodeStyle(NodeStyleDescription nodeStyle, Optional<String> optionalEditingContextId, VariableManager variableManager, AQLInterpreter interpreter) {
+    public Optional<INodeStyle> createNodeStyle(NodeStyleDescription nodeStyle, Optional<String> optionalEditingContextId, VariableManager variableManager, AQLInterpreter interpreter, ILayoutStrategy childrenLayoutStrategy) {
         Optional<INodeStyle> iNodeStyle = Optional.empty();
         Optional<String> nodeType = this.getNodeType(nodeStyle);
         StringValueProvider svp = new StringValueProvider(interpreter, ((CustomImageNodeStyleDescription) nodeStyle).getShape());
@@ -90,6 +92,7 @@ public class CustomImageNodeStyleProvider implements INodeStyleProvider {
                             .orElse("black"))
                     .borderSize(nodeStyle.getBorderSize())
                     .borderStyle(LineStyle.valueOf(nodeStyle.getBorderLineStyle().getLiteral()))
+                    .childrenLayoutStrategy(childrenLayoutStrategy)
                     .build());
         }
         return iNodeStyle;

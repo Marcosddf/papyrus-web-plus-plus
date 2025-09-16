@@ -149,7 +149,7 @@ public class PADDiagramDescriptionBuilder extends AbstractRepresentationDescript
                 padModelSharedNodeCreationTool, NODES, owners, List.of());
 
         llsd.getGrowableNodes().add(padModelContentSharedNodeDescription);
-        padModelHolderSharedNodeDescription.setChildrenLayoutStrategy(llsd);
+        padModelHolderSharedNodeDescription.getStyle().setChildrenLayoutStrategy(llsd);
 
         // Add dropped tool on Shared Package container
         DropNodeTool padModelGraphicalDropTool = this.getViewBuilder().createGraphicalDropTool(this.getIdBuilder().getNodeGraphicalDropToolName(padModelContentSharedNodeDescription));
@@ -190,7 +190,7 @@ public class PADDiagramDescriptionBuilder extends AbstractRepresentationDescript
                 padPackageSharedNodeCreationTool, NODES, owners, List.of());
 
         llsd.getGrowableNodes().add(padPackageContentSharedNodeDescription);
-        padPackageHolderSharedNodeDescription.setChildrenLayoutStrategy(llsd);
+        padPackageHolderSharedNodeDescription.getStyle().setChildrenLayoutStrategy(llsd);
 
         // Add dropped tool on Shared Package container
         DropNodeTool padPackageGraphicalDropTool = this.getViewBuilder().createGraphicalDropTool(this.getIdBuilder().getNodeGraphicalDropToolName(padPackageContentSharedNodeDescription));

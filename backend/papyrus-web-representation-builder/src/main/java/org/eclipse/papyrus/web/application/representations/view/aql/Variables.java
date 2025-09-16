@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2022, 2023 CEA LIST, Obeo.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,7 +14,6 @@
 package org.eclipse.papyrus.web.application.representations.view.aql;
 
 import org.eclipse.sirius.components.collaborative.diagrams.api.IDiagramContext;
-import org.eclipse.sirius.components.collaborative.diagrams.handlers.DeleteFromDiagramEventHandler;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.diagrams.Edge;
 import org.eclipse.sirius.components.diagrams.Node;
@@ -45,8 +44,6 @@ public class Variables {
     public static final String SELECTED_EDGE = Edge.SELECTED_EDGE;
 
     public static final String EDITING_CONTEXT = IEditingContext.EDITING_CONTEXT;
-
-    public static final String DELETION_POLICY = DeleteFromDiagramEventHandler.DELETION_POLICY;
 
     public static final String SELF = VariableManager.SELF;
 

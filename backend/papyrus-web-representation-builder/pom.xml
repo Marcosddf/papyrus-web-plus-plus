@@ -80,6 +80,10 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sirius</groupId>
+            <artifactId>sirius-components-view-emf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.sirius</groupId>
             <artifactId>sirius-components-view-diagram-customnodes</artifactId>
         </dependency>
         <dependency>

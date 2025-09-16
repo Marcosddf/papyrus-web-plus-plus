@@ -17,6 +17,7 @@ package org.eclipse.papyrus.web.application.representations.nodes;
 import java.text.MessageFormat;
 import java.util.Objects;
 
+import org.eclipse.sirius.components.diagrams.ILayoutStrategy;
 import org.eclipse.sirius.components.diagrams.INodeStyle;
 import org.eclipse.sirius.components.diagrams.LineStyle;
 
@@ -36,6 +37,9 @@ public final class CustomImageNodeStyle implements INodeStyle {
     private int borderSize;
 
     private LineStyle borderStyle;
+
+    private ILayoutStrategy childrenLayoutStrategy;
+
 
     private CustomImageNodeStyle() {
         // Prevent instantiation
@@ -66,6 +70,11 @@ public final class CustomImageNodeStyle implements INodeStyle {
     }
 
     @Override
+    public ILayoutStrategy getChildrenLayoutStrategy() {
+        return this.childrenLayoutStrategy;
+    }
+
+    @Override
     public String toString() {
         String pattern = "{0} '{'shape: {1}, background: {2}, border: '{' background: {3}, size: {4}, style: {5}'}''}'";
         return MessageFormat.format(pattern, this.getClass().getSimpleName(), this.getShape(), this.background, this.borderColor, this.borderSize, this.borderStyle);
@@ -88,6 +97,8 @@ public final class CustomImageNodeStyle implements INodeStyle {
         private int borderSize;
 
         private LineStyle borderStyle;
+
+        private ILayoutStrategy childrenLayoutStrategy;
 
         private Builder() {
             // Prevent instantiation
@@ -118,6 +129,11 @@ public final class CustomImageNodeStyle implements INodeStyle {
             return this;
         }
 
+        public Builder childrenLayoutStrategy(ILayoutStrategy childrenLayoutStrategy) {
+            this.childrenLayoutStrategy = Objects.requireNonNull(childrenLayoutStrategy);
+            return this;
+        }
+
         public CustomImageNodeStyle build() {
             CustomImageNodeStyle nodeStyleDescription = new CustomImageNodeStyle();
             nodeStyleDescription.shape = Objects.requireNonNull(this.shape);
@@ -125,6 +141,7 @@ public final class CustomImageNodeStyle implements INodeStyle {
             nodeStyleDescription.borderColor = Objects.requireNonNull(this.borderColor);
             nodeStyleDescription.borderSize = this.borderSize;
             nodeStyleDescription.borderStyle = Objects.requireNonNull(this.borderStyle);
+            nodeStyleDescription.childrenLayoutStrategy = Objects.requireNonNull(this.childrenLayoutStrategy);
             return nodeStyleDescription;
         }
     }

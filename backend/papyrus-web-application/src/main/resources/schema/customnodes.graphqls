@@ -20,6 +20,7 @@ type PackageNodeStyle {
   borderSize: Int!
   borderStyle: LineStyle!
   background: String!
+  childrenLayoutStrategy: ILayoutStrategy!
 }
 
 extend union INodeStyle = RectangleWithExternalLabelNodeStyle
@@ -29,6 +30,7 @@ type RectangleWithExternalLabelNodeStyle {
   borderSize: Int!
   borderStyle: LineStyle!
   background: String!
+  childrenLayoutStrategy: ILayoutStrategy!
 }
 
 extend union INodeStyle = ImageWithTopLabelNodeStyle
@@ -38,6 +40,7 @@ type ImageWithTopLabelNodeStyle {
   borderSize: Int!
   borderStyle: LineStyle!
   imageURL: String!
+  childrenLayoutStrategy: ILayoutStrategy!
 }
 
 extend union INodeStyle = NoteNodeStyle
@@ -47,15 +50,17 @@ type NoteNodeStyle {
   borderColor: String!
   borderSize: Int!
   borderStyle: LineStyle!
+  childrenLayoutStrategy: ILayoutStrategy!
 }
 
 extend union INodeStyle = InnerFlagNodeStyle
 
 type InnerFlagNodeStyle {
   background: String!
-	borderColor: String!
-	borderSize: Int!
-	borderStyle: LineStyle!
+  borderColor: String!
+  borderSize: Int!
+  borderStyle: LineStyle!
+  childrenLayoutStrategy: ILayoutStrategy!
 }
 
 extend union INodeStyle = OuterFlagNodeStyle
@@ -65,15 +70,17 @@ type OuterFlagNodeStyle {
 	borderColor: String!
 	borderSize: Int!
 	borderStyle: LineStyle!
+	childrenLayoutStrategy: ILayoutStrategy!
 }
 
 extend union INodeStyle = CuboidNodeStyle
 
 type CuboidNodeStyle {
   background: String!
-	borderColor: String!
-	borderSize: Int!
-	borderStyle: LineStyle!
+  borderColor: String!
+  borderSize: Int!
+  borderStyle: LineStyle!
+  childrenLayoutStrategy: ILayoutStrategy!
 }
 
 extend union INodeStyle = CustomImageNodeStyle
@@ -84,4 +91,5 @@ type CustomImageNodeStyle {
 	borderColor: String!
 	borderSize: Int!
 	borderStyle: LineStyle!
+	childrenLayoutStrategy: ILayoutStrategy!
 }

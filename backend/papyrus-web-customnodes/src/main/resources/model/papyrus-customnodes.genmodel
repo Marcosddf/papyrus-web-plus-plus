@@ -30,5 +30,9 @@
     <genClasses ecoreClass="papyrus-customnodes.ecore#//CuboidNodeStyleDescription">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference papyrus-customnodes.ecore#//CuboidNodeStyleDescription/background"/>
     </genClasses>
+    <genClasses ecoreClass="papyrus-customnodes.ecore#//CustomImageNodeStyleDescription">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference papyrus-customnodes.ecore#//CustomImageNodeStyleDescription/background"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute papyrus-customnodes.ecore#//CustomImageNodeStyleDescription/shape"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

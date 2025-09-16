@@ -94,19 +94,27 @@ const toCuboidListNode = (
     defaultWidth: gqlNode.defaultWidth,
     defaultHeight: gqlNode.defaultHeight,
     isNew,
-    areChildNodesDraggable: isListLayoutStrategy(gqlNode.childrenLayoutStrategy)
-      ? gqlNode.childrenLayoutStrategy.areChildNodesDraggable
+    areChildNodesDraggable: isListLayoutStrategy(gqlNode.style.childrenLayoutStrategy)
+      ? gqlNode.style.childrenLayoutStrategy.areChildNodesDraggable
       : true,
-    topGap: isListLayoutStrategy(gqlNode.childrenLayoutStrategy) ? gqlNode.childrenLayoutStrategy.topGap : 0,
-    bottomGap: isListLayoutStrategy(gqlNode.childrenLayoutStrategy) ? gqlNode.childrenLayoutStrategy.bottomGap : 0,
-    isListChild: isListLayoutStrategy(gqlParentNode?.childrenLayoutStrategy),
+    topGap: isListLayoutStrategy(gqlNode.style.childrenLayoutStrategy)
+      ? gqlNode.style.childrenLayoutStrategy.topGap
+      : 0,
+    bottomGap: isListLayoutStrategy(gqlNode.style.childrenLayoutStrategy)
+      ? gqlNode.style.childrenLayoutStrategy.bottomGap
+      : 0,
+    isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
     resizedByUser,
-    growableNodeIds: isListLayoutStrategy(gqlNode.childrenLayoutStrategy)
-      ? gqlNode.childrenLayoutStrategy.growableNodeIds
+    growableNodeIds: isListLayoutStrategy(gqlNode.style.childrenLayoutStrategy)
+      ? gqlNode.style.childrenLayoutStrategy.growableNodeIds
       : [],
     isDropNodeTarget: false,
     isDropNodeCandidate: false,
     isHovered: false,
+    nodeAppearanceData: {
+      gqlStyle: style,
+      customizedStyleProperties: [],
+    },
   };
 
   data.insideLabel = convertInsideLabel(
@@ -172,7 +180,7 @@ const adaptChildrenBorderNodes = (nodes: Node[], gqlChildrenNodes: GQLNode<GQLNo
 
 export class CuboidNodeListConverter implements INodeConverter {
   canHandle(gqlNode: GQLNode<GQLNodeStyle>) {
-    return gqlNode.style.__typename === 'CuboidNodeStyle' && gqlNode.childrenLayoutStrategy?.kind === 'List';
+    return gqlNode.style.__typename === 'CuboidNodeStyle' && gqlNode.style.childrenLayoutStrategy?.kind === 'List';
   }
 
   handle(

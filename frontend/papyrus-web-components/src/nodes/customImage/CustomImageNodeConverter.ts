@@ -99,11 +99,15 @@ const toCustomImageNode = (
     borderLeftWidth: 5,
     borderRightWidth: 5,
     borderBottomWidth: 5,
-    isListChild: isListLayoutStrategy(gqlParentNode?.childrenLayoutStrategy),
+    isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
     isDropNodeTarget: false,
     isDropNodeCandidate: false,
     isHovered: false,
     shape: style.shape,
+    nodeAppearanceData: {
+      gqlStyle: style,
+      customizedStyleProperties: [],
+    },
   };
 
   data.insideLabel = convertInsideLabel(

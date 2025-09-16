@@ -94,10 +94,14 @@ const toCuboidNode = (
     labelEditable,
     isNew,
     resizedByUser,
-    isListChild: isListLayoutStrategy(gqlParentNode?.childrenLayoutStrategy),
+    isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
     isDropNodeTarget: false,
     isDropNodeCandidate: false,
     isHovered: false,
+    nodeAppearanceData: {
+      gqlStyle: style,
+      customizedStyleProperties: [],
+    },
   };
 
   data.insideLabel = convertInsideLabel(
@@ -139,7 +143,7 @@ const toCuboidNode = (
 
 export class CuboidNodeConverter implements INodeConverter {
   canHandle(gqlNode: GQLNode<GQLNodeStyle>) {
-    return gqlNode.style.__typename === 'CuboidNodeStyle' && gqlNode.childrenLayoutStrategy?.kind !== 'List';
+    return gqlNode.style.__typename === 'CuboidNodeStyle' && gqlNode.style.childrenLayoutStrategy?.kind !== 'List';
   }
 
   handle(

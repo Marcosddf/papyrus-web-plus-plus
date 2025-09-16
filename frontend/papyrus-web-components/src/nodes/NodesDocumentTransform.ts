@@ -77,6 +77,26 @@ const shapeField: SelectionNode = {
   },
 };
 
+const childrenLayoutStrategyFragment: SelectionNode = {
+  kind: Kind.FRAGMENT_SPREAD,
+  name: {
+    kind: Kind.NAME,
+    value: 'childrenLayoutStrategyFragment',
+  },
+};
+
+const childrenLayoutStrategy: SelectionNode = {
+  kind: Kind.FIELD,
+  name: {
+    kind: Kind.NAME,
+    value: 'childrenLayoutStrategy',
+  },
+  selectionSet: {
+    kind: Kind.SELECTION_SET,
+    selections: [childrenLayoutStrategyFragment],
+  },
+};
+
 export const nodesStyleDocumentTransform = new DocumentTransform((document) => {
   if (shouldTransform(document)) {
     return visit(document, {
@@ -91,7 +111,7 @@ export const nodesStyleDocumentTransform = new DocumentTransform((document) => {
           kind: Kind.INLINE_FRAGMENT,
           selectionSet: {
             kind: Kind.SELECTION_SET,
-            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField],
+            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField, childrenLayoutStrategy],
           },
           typeCondition: {
             kind: Kind.NAMED_TYPE,
@@ -106,7 +126,7 @@ export const nodesStyleDocumentTransform = new DocumentTransform((document) => {
           kind: Kind.INLINE_FRAGMENT,
           selectionSet: {
             kind: Kind.SELECTION_SET,
-            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField],
+            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField, childrenLayoutStrategy],
           },
           typeCondition: {
             kind: Kind.NAMED_TYPE,
@@ -121,7 +141,7 @@ export const nodesStyleDocumentTransform = new DocumentTransform((document) => {
           kind: Kind.INLINE_FRAGMENT,
           selectionSet: {
             kind: Kind.SELECTION_SET,
-            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField],
+            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField, childrenLayoutStrategy],
           },
           typeCondition: {
             kind: Kind.NAMED_TYPE,
@@ -136,7 +156,7 @@ export const nodesStyleDocumentTransform = new DocumentTransform((document) => {
           kind: Kind.INLINE_FRAGMENT,
           selectionSet: {
             kind: Kind.SELECTION_SET,
-            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField],
+            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField, childrenLayoutStrategy],
           },
           typeCondition: {
             kind: Kind.NAMED_TYPE,
@@ -151,7 +171,7 @@ export const nodesStyleDocumentTransform = new DocumentTransform((document) => {
           kind: Kind.INLINE_FRAGMENT,
           selectionSet: {
             kind: Kind.SELECTION_SET,
-            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField],
+            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField, childrenLayoutStrategy],
           },
           typeCondition: {
             kind: Kind.NAMED_TYPE,
@@ -166,7 +186,7 @@ export const nodesStyleDocumentTransform = new DocumentTransform((document) => {
           kind: Kind.INLINE_FRAGMENT,
           selectionSet: {
             kind: Kind.SELECTION_SET,
-            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField],
+            selections: [borderColorField, borderSizeField, borderStyleField, backgroundField, childrenLayoutStrategy],
           },
           typeCondition: {
             kind: Kind.NAMED_TYPE,
@@ -181,7 +201,14 @@ export const nodesStyleDocumentTransform = new DocumentTransform((document) => {
           kind: Kind.INLINE_FRAGMENT,
           selectionSet: {
             kind: Kind.SELECTION_SET,
-            selections: [shapeField, borderColorField, borderSizeField, borderStyleField, backgroundField],
+            selections: [
+              shapeField,
+              borderColorField,
+              borderSizeField,
+              borderStyleField,
+              backgroundField,
+              childrenLayoutStrategy,
+            ],
           },
           typeCondition: {
             kind: Kind.NAMED_TYPE,

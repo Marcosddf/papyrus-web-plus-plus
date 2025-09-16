@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2022, 2024 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -121,7 +121,7 @@ public class ViewHelper implements IViewHelper {
      * @param diagramContext
      *            the {@link IDiagramContext}
      * @param capturedNodeDescriptions
-     *            a map that contains all mapping between {@link org.eclipse.sirius.components.view.NodeDescription} and
+     *            a map that contains all mapping between {@link org.eclipse.sirius.components.view.diagram.NodeDescription} and
      *            {@link NodeDescription} for the current diagram
      * @return a new instance
      */
@@ -403,12 +403,14 @@ public class ViewHelper implements IViewHelper {
                         .isHeader(false)
                         .textAlign(LabelTextAlign.CENTER)
                         .overflowStrategy(LabelOverflowStrategy.ELLIPSIS)
+                        .customizedStyleProperties(Set.of())
                         .build();
 
                 var nodeStyle = RectangularNodeStyle.newRectangularNodeStyle()
                         .background("")
                         .borderColor("")
                         .borderStyle(LineStyle.Solid)
+                        .childrenLayoutStrategy(new FreeFormLayoutStrategy())
                         .build();
 
                 Node node = Node.newNode(nodeId)//
@@ -423,9 +425,9 @@ public class ViewHelper implements IViewHelper {
                         .collapsingState(CollapsingState.EXPANDED)//
                         .insideLabel(insideLabel)//
                         .style(nodeStyle)//
-                        .childrenLayoutStrategy(new FreeFormLayoutStrategy())//
                         .borderNodes(List.of())//
                         .childNodes(List.of())//
+                        .customizedStyleProperties(Set.of())
                         .build();
 
                 fakeNodes.add(node);

@@ -715,7 +715,7 @@ public final class CDDiagramDescriptionBuilder extends AbstractRepresentationDes
                 cdPackageSharedNodeCreationTool, NODES, owners, List.of());
 
         llsd.getGrowableNodes().add(cdPackageContentSharedNodeDescription);
-        cdPackageHolderSharedNodeDescription.setChildrenLayoutStrategy(llsd);
+        cdPackageHolderSharedNodeDescription.getStyle().setChildrenLayoutStrategy(llsd);
 
         // Add dropped tool on Shared Package container
         DropNodeTool cdPackageGraphicalDropTool = this.getViewBuilder().createGraphicalDropTool(this.getIdBuilder().getNodeGraphicalDropToolName(cdPackageContentSharedNodeDescription));

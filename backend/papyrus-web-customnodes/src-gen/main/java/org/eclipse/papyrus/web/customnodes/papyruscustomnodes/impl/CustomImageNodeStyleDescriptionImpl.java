@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, 2024 CEA LIST, Obeo
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,6 +14,7 @@
 package org.eclipse.papyrus.web.customnodes.papyruscustomnodes.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -21,6 +22,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.papyrus.web.customnodes.papyruscustomnodes.CustomImageNodeStyleDescription;
 import org.eclipse.papyrus.web.customnodes.papyruscustomnodes.PapyrusCustomNodesPackage;
 import org.eclipse.sirius.components.view.UserColor;
+import org.eclipse.sirius.components.view.diagram.LayoutStrategyDescription;
 import org.eclipse.sirius.components.view.diagram.LineStyle;
 
 /**
@@ -38,6 +40,8 @@ import org.eclipse.sirius.components.view.diagram.LineStyle;
  * <em>Border Size</em>}</li>
  * <li>{@link org.eclipse.papyrus.web.customnodes.papyruscustomnodes.impl.CustomImageNodeStyleDescriptionImpl#getBorderLineStyle
  * <em>Border Line Style</em>}</li>
+ * <li>{@link org.eclipse.papyrus.web.customnodes.papyruscustomnodes.impl.CustomImageNodeStyleDescriptionImpl#getChildrenLayoutStrategy
+ * <em>Children Layout Strategy</em>}</li>
  * <li>{@link org.eclipse.papyrus.web.customnodes.papyruscustomnodes.impl.CustomImageNodeStyleDescriptionImpl#getBackground
  * <em>Background</em>}</li>
  * <li>{@link org.eclipse.papyrus.web.customnodes.papyruscustomnodes.impl.CustomImageNodeStyleDescriptionImpl#getShape
@@ -116,6 +120,16 @@ public class CustomImageNodeStyleDescriptionImpl extends MinimalEObjectImpl.Cont
      * @ordered
      */
     protected LineStyle borderLineStyle = BORDER_LINE_STYLE_EDEFAULT;
+
+    /**
+     * The cached value of the '{@link #getChildrenLayoutStrategy() <em>Children Layout Strategy</em>}' containment
+     * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @see #getChildrenLayoutStrategy()
+     * @generated
+     * @ordered
+     */
+    protected LayoutStrategyDescription childrenLayoutStrategy;
 
     /**
      * The cached value of the '{@link #getBackground() <em>Background</em>}' reference. <!-- begin-user-doc --> <!--
@@ -281,6 +295,59 @@ public class CustomImageNodeStyleDescriptionImpl extends MinimalEObjectImpl.Cont
      * @generated
      */
     @Override
+    public LayoutStrategyDescription getChildrenLayoutStrategy() {
+        return this.childrenLayoutStrategy;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    public NotificationChain basicSetChildrenLayoutStrategy(LayoutStrategyDescription newChildrenLayoutStrategy, NotificationChain msgs) {
+        LayoutStrategyDescription oldChildrenLayoutStrategy = this.childrenLayoutStrategy;
+        this.childrenLayoutStrategy = newChildrenLayoutStrategy;
+        if (this.eNotificationRequired()) {
+            ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__CHILDREN_LAYOUT_STRATEGY,
+                    oldChildrenLayoutStrategy, newChildrenLayoutStrategy);
+            if (msgs == null)
+                msgs = notification;
+            else
+                msgs.add(notification);
+        }
+        return msgs;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    @Override
+    public void setChildrenLayoutStrategy(LayoutStrategyDescription newChildrenLayoutStrategy) {
+        if (newChildrenLayoutStrategy != this.childrenLayoutStrategy) {
+            NotificationChain msgs = null;
+            if (this.childrenLayoutStrategy != null)
+                msgs = ((InternalEObject) this.childrenLayoutStrategy).eInverseRemove(this,
+                        EOPPOSITE_FEATURE_BASE - PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__CHILDREN_LAYOUT_STRATEGY,
+                        null, msgs);
+            if (newChildrenLayoutStrategy != null)
+                msgs = ((InternalEObject) newChildrenLayoutStrategy).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__CHILDREN_LAYOUT_STRATEGY,
+                        null, msgs);
+            msgs = this.basicSetChildrenLayoutStrategy(newChildrenLayoutStrategy, msgs);
+            if (msgs != null)
+                msgs.dispatch();
+        } else if (this.eNotificationRequired())
+            this.eNotify(new ENotificationImpl(this, Notification.SET, PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__CHILDREN_LAYOUT_STRATEGY, newChildrenLayoutStrategy,
+                    newChildrenLayoutStrategy));
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    @Override
     public UserColor getBackground() {
         if (this.background != null && this.background.eIsProxy()) {
             InternalEObject oldBackground = (InternalEObject) this.background;
@@ -344,6 +411,21 @@ public class CustomImageNodeStyleDescriptionImpl extends MinimalEObjectImpl.Cont
      * @generated
      */
     @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+        switch (featureID) {
+            case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__CHILDREN_LAYOUT_STRATEGY:
+                return this.basicSetChildrenLayoutStrategy(null, msgs);
+            default:
+                return super.eInverseRemove(otherEnd, featureID, msgs);
+        }
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__BORDER_COLOR:
@@ -356,6 +438,8 @@ public class CustomImageNodeStyleDescriptionImpl extends MinimalEObjectImpl.Cont
                 return this.getBorderSize();
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__BORDER_LINE_STYLE:
                 return this.getBorderLineStyle();
+            case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__CHILDREN_LAYOUT_STRATEGY:
+                return this.getChildrenLayoutStrategy();
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__BACKGROUND:
                 if (resolve)
                     return this.getBackground();
@@ -386,6 +470,9 @@ public class CustomImageNodeStyleDescriptionImpl extends MinimalEObjectImpl.Cont
                 return;
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__BORDER_LINE_STYLE:
                 this.setBorderLineStyle((LineStyle) newValue);
+                return;
+            case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__CHILDREN_LAYOUT_STRATEGY:
+                this.setChildrenLayoutStrategy((LayoutStrategyDescription) newValue);
                 return;
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__BACKGROUND:
                 this.setBackground((UserColor) newValue);
@@ -419,6 +506,9 @@ public class CustomImageNodeStyleDescriptionImpl extends MinimalEObjectImpl.Cont
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__BORDER_LINE_STYLE:
                 this.setBorderLineStyle(BORDER_LINE_STYLE_EDEFAULT);
                 return;
+            case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__CHILDREN_LAYOUT_STRATEGY:
+                this.setChildrenLayoutStrategy((LayoutStrategyDescription) null);
+                return;
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__BACKGROUND:
                 this.setBackground((UserColor) null);
                 return;
@@ -447,6 +537,8 @@ public class CustomImageNodeStyleDescriptionImpl extends MinimalEObjectImpl.Cont
                 return this.borderSize != BORDER_SIZE_EDEFAULT;
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__BORDER_LINE_STYLE:
                 return this.borderLineStyle != BORDER_LINE_STYLE_EDEFAULT;
+            case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__CHILDREN_LAYOUT_STRATEGY:
+                return this.childrenLayoutStrategy != null;
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__BACKGROUND:
                 return this.background != null;
             case PapyrusCustomNodesPackage.CUSTOM_IMAGE_NODE_STYLE_DESCRIPTION__SHAPE:

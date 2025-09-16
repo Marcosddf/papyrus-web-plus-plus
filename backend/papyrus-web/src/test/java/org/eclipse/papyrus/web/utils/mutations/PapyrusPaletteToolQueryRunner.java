@@ -99,4 +99,39 @@ public class PapyrusPaletteToolQueryRunner {
         }
         return result;
     }
+
+    /**
+     * Returns the identifier of the quick Access tool named {@code toolName} on the {@code diagramElementId} element's palette.
+     * <p>
+     * This method produces a test failure if the underlying GraphQL query returns an error.
+     * </p>
+     *
+     * @param editingContextId
+     *         the project containing the element to retrieve the palette tool from
+     * @param representationId
+     *         the representation containing the element
+     * @param diagramElementId
+     *         the graphical identifier of the element to retrieve the palette tool from
+     * @param toolName
+     *         the name of the tool
+     * @return the identifier of the tool if it exists, or an {@code empty} {@link Optional}
+     */
+    public Optional<String> getQuickAccessTool(String editingContextId, String representationId, String diagramElementId , String toolName) {
+        String rawPalette = this.getPalette(editingContextId, representationId, diagramElementId);
+        Object palette = JsonPath.read(rawPalette,
+                "$.data.viewer.editingContext.representation.description.palette.quickAccessTools[?(@.label=='" + toolName + "')]");
+        assertThat(palette).isInstanceOf(JSONArray.class);
+        Optional<String> result = Optional.empty();
+        JSONArray array = (JSONArray) palette;
+        if (!array.isEmpty()) {
+            assertThat(array).hasSize(1);
+            Object toolObject = array.get(0);
+            assertThat(toolObject).isInstanceOf(Map.class);
+            Map<String, Object> toolMap = (Map<String, Object>) toolObject;
+            Object toolIdObject = toolMap.get("id");
+            assertThat(toolIdObject).isInstanceOf(String.class);
+            result = Optional.of((String) toolIdObject);
+        }
+        return result;
+    }
 }

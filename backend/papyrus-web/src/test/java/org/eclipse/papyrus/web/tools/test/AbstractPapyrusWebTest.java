@@ -377,11 +377,13 @@ public abstract class AbstractPapyrusWebTest extends AbstractWebUMLTest {
      *
      * @param diagramElementToDeleteId
      *            the graphical identifier of the element to delete
-     * @see GraphicalDeleteNodeFromDiagramMutationRunner
      */
     protected void applyNodeGraphicalDeletionTool(String diagramElementToDeleteId) {
-        this.deleteFromDiagramMutationRunner.graphicalDeleteNodeFromDiagram(this.editingContextId, this.representationId, diagramElementToDeleteId);
+        Optional<String> toolId = getPaletteQueryRunner.getQuickAccessTool(editingContextId, representationId, diagramElementToDeleteId, "Delete from diagram");
+        this.invokeToolOnOneElementRunner.invokeTool(this.editingContextId, this.representationId, diagramElementToDeleteId, toolId.get());
     }
+
+
 
     /**
      * Delete semantically a node matching with {@code diagramElementToDeleteId} identifier.

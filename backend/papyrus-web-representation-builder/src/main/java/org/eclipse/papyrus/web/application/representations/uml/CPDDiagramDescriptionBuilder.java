@@ -448,7 +448,7 @@ public final class CPDDiagramDescriptionBuilder extends AbstractRepresentationDe
                 cpdModelSharedNodeCreationTool, NODES, owners, List.of());
 
         llsd.getGrowableNodes().add(cpdModelContentSharedNodeDescription);
-        cpdModelHolderSharedNodeDescription.setChildrenLayoutStrategy(llsd);
+        cpdModelHolderSharedNodeDescription.getStyle().setChildrenLayoutStrategy(llsd);
 
         // Add dropped tool on Shared Package container
         DropNodeTool cpdModelGraphicalDropTool = this.getViewBuilder().createGraphicalDropTool(this.getIdBuilder().getNodeGraphicalDropToolName(cpdModelHolderSharedNodeDescription));

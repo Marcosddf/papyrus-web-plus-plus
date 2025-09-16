@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2022, 2024 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,7 +16,6 @@ package org.eclipse.papyrus.web.application.representations.view.aql;
 
 import static org.eclipse.papyrus.web.application.representations.view.aql.CallQuery.queryServiceOnSelf;
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.CONVERTED_NODES;
-import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.DELETION_POLICY;
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.DIAGRAM;
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.DIAGRAM_CONTEXT;
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.DROPPED_ELEMENT;
@@ -27,7 +26,6 @@ import static org.eclipse.papyrus.web.application.representations.view.aql.Varia
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.EDITING_CONTEXT;
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.RECONNECTION_SOURCE_VIEW;
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.RECONNECTION_TARGET_VIEW;
-import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.SELECTED_EDGE;
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.SELECTED_NODE;
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.SELF;
 import static org.eclipse.papyrus.web.application.representations.view.aql.Variables.SEMANTIC_EDGE_SOURCE;
@@ -217,7 +215,7 @@ public class QueryHelper {
      * @return a query
      */
     public String queryDestroyNode() {
-        return queryServiceOnSelf(Services.DESTROY_SERVICE, DIAGRAM_CONTEXT, SELECTED_NODE, DELETION_POLICY);
+        return queryServiceOnSelf(Services.DESTROY_SERVICE);
     }
 
     /**
@@ -226,7 +224,7 @@ public class QueryHelper {
      * @return a query
      */
     public String queryDestroyEdge() {
-        return queryServiceOnSelf(Services.DESTROY_SERVICE, DIAGRAM_CONTEXT, SELECTED_EDGE, DELETION_POLICY);
+        return queryServiceOnSelf(Services.DESTROY_SERVICE);
     }
 
     public String emptyString() {

@@ -792,7 +792,7 @@ public abstract class AbstractRepresentationDescriptionBuilder {
         for (NodeDescription owner : resizableParents) {
             if (owner != nodeDescription.eContainer()) {
                 if (nodeDescription.eContainingFeature() == DiagramPackage.eINSTANCE.getNodeDescription_ChildrenDescriptions()) {
-                    if (owner.getChildrenLayoutStrategy() instanceof ListLayoutStrategyDescription listLayoutDescription) {
+                    if (owner.getStyle().getChildrenLayoutStrategy() instanceof ListLayoutStrategyDescription listLayoutDescription) {
                         listLayoutDescription.getGrowableNodes().add(nodeDescription);
                     }
                 }
@@ -890,6 +890,8 @@ public abstract class AbstractRepresentationDescriptionBuilder {
             this.reusedNodeDescriptionInOwners(nodeDescription, ownerNodeDescriptions.get());
         });
     }
+
+
 
     /**
      * Reuses the provided {@code nodeDescription} as a child of the {@link NodeDescription} representing
@@ -1489,7 +1491,7 @@ public abstract class AbstractRepresentationDescriptionBuilder {
         holderNodeDescription.setName(this.getIdBuilder().getSpecializedDomainNodeName(eClass, suffix));
         this.copyDimension(holderNodeDescription, contentNodeDescription);
         ListLayoutStrategyDescription llsd = this.createListLayoutStrategy();
-        holderNodeDescription.setChildrenLayoutStrategy(llsd);
+        holderNodeDescription.getStyle().setChildrenLayoutStrategy(llsd);
         llsd.setAreChildNodesDraggableExpression(CHILD_NOT_DRAGGABLE_EXPRESSION);
         llsd.getGrowableNodes().add(contentNodeDescription);
         llsd.getGrowableNodes().add(symbolNodeDescription);
@@ -1544,7 +1546,7 @@ public abstract class AbstractRepresentationDescriptionBuilder {
             symbolOwnerDescription.setInsideLabel(this.getViewBuilder().createDefaultInsideLabelDescription(true, true));
         }
         symbolOwnerDescription.getInsideLabel().getStyle().setHeaderSeparatorDisplayMode(HeaderSeparatorDisplayMode.IF_CHILDREN);
-        symbolOwnerDescription.setChildrenLayoutStrategy(DiagramFactory.eINSTANCE.createListLayoutStrategyDescription());
+        symbolOwnerDescription.getStyle().setChildrenLayoutStrategy(DiagramFactory.eINSTANCE.createListLayoutStrategyDescription());
     }
 
 }

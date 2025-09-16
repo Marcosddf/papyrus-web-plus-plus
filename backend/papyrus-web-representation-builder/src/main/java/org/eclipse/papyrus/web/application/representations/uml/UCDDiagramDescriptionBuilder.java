@@ -282,7 +282,7 @@ public final class UCDDiagramDescriptionBuilder extends AbstractRepresentationDe
                 this.getQueryBuilder().queryAllReachableExactType(packageEClass));
         cpdPackageHolderTopNodeDescription.setName(this.getIdBuilder().getSpecializedDomainNodeName(packageEClass, HOLDER_SUFFIX));
         cpdPackageHolderTopNodeDescription.setInsideLabel(this.getViewBuilder().createDefaultInsideLabelDescription(true, true));
-        cpdPackageHolderTopNodeDescription.setChildrenLayoutStrategy(llsd);
+        cpdPackageHolderTopNodeDescription.getStyle().setChildrenLayoutStrategy(llsd);
         cpdPackageHolderTopNodeDescription.setStyle(this.getViewBuilder().createPackageNodeStyle());
 
         NodeDescription cpdPackageContentTopNodeDescription = this.createContentNodeDescription(packageEClass, false);
@@ -388,7 +388,7 @@ public final class UCDDiagramDescriptionBuilder extends AbstractRepresentationDe
                 cpdPackageSharedNodeCreationTool, NODES, owners, List.of());
 
         llsd.getGrowableNodes().add(cpdPackageContentSharedNodeDescription);
-        cpdPackageHolderSharedNodeDescription.setChildrenLayoutStrategy(llsd);
+        cpdPackageHolderSharedNodeDescription.getStyle().setChildrenLayoutStrategy(llsd);
 
         // Add dropped tool on Shared Package container
         DropNodeTool cpdPackageGraphicalDropTool = this.getViewBuilder().createGraphicalDropTool(this.getIdBuilder().getNodeGraphicalDropToolName(cpdPackageContentSharedNodeDescription));

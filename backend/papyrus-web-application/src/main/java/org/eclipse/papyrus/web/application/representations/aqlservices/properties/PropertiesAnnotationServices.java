@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -174,7 +174,7 @@ public class PropertiesAnnotationServices {
         List<Node> result = new ArrayList<>();
 
         for (Node node : nodes) {
-            if (node.getChildrenLayoutStrategy() instanceof ListLayoutStrategy) {
+            if (node.getStyle().getChildrenLayoutStrategy() instanceof ListLayoutStrategy) {
                 for (Node child : node.getChildNodes()) {
                     Optional<NodeDescription> optionalChildNodeDesc = this.viewDiagramDescriptionSearchService.findViewNodeDescriptionById(editionContext, child.getDescriptionId());
                     if (optionalChildNodeDesc.isPresent()) {

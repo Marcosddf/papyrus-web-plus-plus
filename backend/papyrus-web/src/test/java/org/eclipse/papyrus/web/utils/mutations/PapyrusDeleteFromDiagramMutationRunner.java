@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.sirius.components.collaborative.diagrams.dto.DeleteFromDiagramInput;
-import org.eclipse.sirius.components.collaborative.diagrams.dto.DeletionPolicy;
 import org.springframework.stereotype.Service;
 
 import graphql.ExecutionInput;
@@ -88,10 +87,9 @@ public class PapyrusDeleteFromDiagramMutationRunner {
      *         the representation containing the element
      * @param diagramElementId
      *         the graphical identifier of the element to delete
-     * @param deletionPolicy
      */
     public void semanticDeleteNodeFromDiagram(String editingContextId, String representationId, String diagramElementId) {
-        this.deleteFromDiagram(editingContextId, representationId, diagramElementId, DeletionPolicy.SEMANTIC, List.of(diagramElementId), List.of());
+        this.deleteFromDiagram(editingContextId, representationId, diagramElementId, List.of(diagramElementId), List.of());
     }
 
     /**
@@ -106,32 +104,14 @@ public class PapyrusDeleteFromDiagramMutationRunner {
      *         the representation containing the element
      * @param diagramElementId
      *         the graphical identifier of the element to delete
-     * @param deletionPolicy
      */
     public void semanticDeleteEdgeFromDiagram(String editingContextId, String representationId, String diagramElementId) {
-        this.deleteFromDiagram(editingContextId, representationId, diagramElementId, DeletionPolicy.SEMANTIC, List.of(), List.of(diagramElementId));
+        this.deleteFromDiagram(editingContextId, representationId, diagramElementId, List.of(), List.of(diagramElementId));
     }
 
-    /**
-     * Invokes the graphical deletion tool on the {@code diagramElementId} node.
-     * <p>
-     * This method produces a test failure if the underlying GraphQL query returns an error.
-     * </p>
-     *
-     * @param editingContextId
-     *         the project containing the element on which the tool is invoked
-     * @param representationId
-     *         the representation containing the element
-     * @param diagramElementId
-     *         the graphical identifier of the element to delete
-     * @param deletionPolicy
-     */
-    public void graphicalDeleteNodeFromDiagram(String editingContextId, String representationId, String diagramElementId) {
-        this.deleteFromDiagram(editingContextId, representationId, diagramElementId, DeletionPolicy.GRAPHICAL, List.of(diagramElementId), List.of());
-    }
 
-    private void deleteFromDiagram(String editingContextId, String representationId, String diagramElementId, DeletionPolicy deletionPolicy, List<String> nodeIds, List<String> edgeIds) {
-        DeleteFromDiagramInput deleteFromDiagramInput = new DeleteFromDiagramInput(UUID.randomUUID(), editingContextId, representationId, nodeIds, edgeIds, deletionPolicy);
+    private void deleteFromDiagram(String editingContextId, String representationId, String diagramElementId, List<String> nodeIds, List<String> edgeIds) {
+        DeleteFromDiagramInput deleteFromDiagramInput = new DeleteFromDiagramInput(UUID.randomUUID(), editingContextId, representationId, nodeIds, edgeIds);
         ExecutionInput executionInput = ExecutionInput.newExecutionInput(DELETE_FROM_DIAGRAM_QUERY) //
                 .variables(Map.of("input", this.objectMapper.convertValue(deleteFromDiagramInput, new TypeReference<Map<String, Object>>() {
                     /**/

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -43,15 +43,15 @@ import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
  */
 @SuppressWarnings("checkstyle:HiddenField")
 public final class NodeDescriptionBuilder {
-    private IdBuilder idBuilder;
+    private final IdBuilder idBuilder;
 
     private QueryHelper queryHelper;
 
-    private EClass domainEntity;
+    private final EClass domainEntity;
 
     private String semanticCandidateExpression;
 
-    private NodeStyleDescription style;
+    private final NodeStyleDescription style;
 
     private SynchronizationPolicy synchronizationPolicy;
 
@@ -69,15 +69,15 @@ public final class NodeDescriptionBuilder {
 
     private InsideLabelDescription insideLabelDescription;
 
-    private List<OutsideLabelDescription> outsideLabelDescriptions = new ArrayList<>();
+    private final List<OutsideLabelDescription> outsideLabelDescriptions = new ArrayList<>();
 
     private String domainType;
 
     private boolean collapsible;
 
-    private IDomainHelper metamodelHelper;
+    private final IDomainHelper metamodelHelper;
 
-    private NodePalette nodePalette;
+    private final NodePalette nodePalette;
 
     public NodeDescriptionBuilder(IdBuilder idBuilder, QueryHelper queryHelper, EClass domainEntity, NodeStyleDescription style, IDomainHelper metamodelHelper) {
         this.idBuilder = idBuilder;
@@ -173,12 +173,24 @@ public final class NodeDescriptionBuilder {
             node.setDomainType(this.domainType);
         }
         node.setSynchronizationPolicy(this.synchronizationPolicy);
+
         node.setStyle(this.style);
-        node.setChildrenLayoutStrategy(this.layoutStrategyDescription);
+        if (this.style != null) {
+            this.style.setChildrenLayoutStrategy(this.layoutStrategyDescription);
+        }
         node.getConditionalStyles().addAll(this.conditionalNodeStyles);
         node.getReusedChildNodeDescriptions().addAll(this.reusedNodeDescriptions);
         this.nodePalette.setDeleteTool(this.deleteTool);
         this.nodePalette.setLabelEditTool(this.labelEditTool);
+
+        if (synchronizationPolicy == SynchronizationPolicy.UNSYNCHRONIZED) {
+            var quickAccessDeleteFromDiagramTool = DiagramFactory.eINSTANCE.createNodeTool();
+            quickAccessDeleteFromDiagramTool.setName("Delete from diagram");
+            quickAccessDeleteFromDiagramTool.setIconURLsExpression("/diagram-images/graphicalDelete.svg");
+            quickAccessDeleteFromDiagramTool.getBody().add(DiagramFactory.eINSTANCE.createDeleteView());
+            nodePalette.getQuickAccessTools().add(quickAccessDeleteFromDiagramTool);
+        }
+
         node.setPalette(this.nodePalette);
         node.setCollapsible(this.collapsible);
 

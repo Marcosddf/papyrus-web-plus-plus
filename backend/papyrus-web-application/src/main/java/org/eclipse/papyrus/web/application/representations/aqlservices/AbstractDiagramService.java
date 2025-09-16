@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2022, 2024 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -95,7 +95,6 @@ import org.eclipse.papyrus.web.sirius.contributions.IDiagramOperationsService;
 import org.eclipse.papyrus.web.sirius.contributions.IViewDiagramDescriptionService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.collaborative.diagrams.api.IDiagramContext;
-import org.eclipse.sirius.components.collaborative.diagrams.dto.DeletionPolicy;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectService;
 import org.eclipse.sirius.components.diagrams.Diagram;
@@ -277,38 +276,21 @@ public abstract class AbstractDiagramService {
      *
      * @param semanticElement
      *            a semantic element
-     * @param diagramContext
-     *            the {@link IDiagramContext}
-     * @param targetView
-     *            the representation of the semantic object to delete
-     * @param deletionPolicy
-     *            check if it is a visual or semantic deletion
      *
      * @return a useless EObject see https://github.com/eclipse-sirius/sirius-components/issues/1343
      */
-    public EObject destroy(EObject semanticElement, IDiagramContext diagramContext, Node targetView, DeletionPolicy deletionPolicy) {
-        switch (deletionPolicy) {
-            case GRAPHICAL:
-                if (targetView != null) {
-                    this.diagramOperationsService.deleteView(diagramContext, targetView);
-                }
-                break;
-            case SEMANTIC:
-                if (semanticElement != null) {
-                    ECrossReferenceAdapter adapter = this.getECrossReferenceAdapter(semanticElement);
-                    DestroyerStatus destroyerStatus = this.buildDestroyer(adapter).destroy(semanticElement);
+    public EObject destroy(EObject semanticElement) {
+        if (semanticElement != null) {
+            ECrossReferenceAdapter adapter = this.getECrossReferenceAdapter(semanticElement);
+            DestroyerStatus destroyerStatus = this.buildDestroyer(adapter).destroy(semanticElement);
 
-                    if (State.FAILED.equals(destroyerStatus.getState())) {
-                        String elements = destroyerStatus.getElements().stream()//
-                                .map(Object::toString)//
-                                .collect(Collectors.joining(ITEM_SEP));
-                        String errorMessage = destroyerStatus.getMessage() + ": " + elements;
-                        this.logWarnMessage(errorMessage);
-                    }
-                }
-                break;
-            default:
-                break;
+            if (State.FAILED.equals(destroyerStatus.getState())) {
+                String elements = destroyerStatus.getElements().stream()//
+                        .map(Object::toString)//
+                        .collect(Collectors.joining(ITEM_SEP));
+                String errorMessage = destroyerStatus.getMessage() + ": " + elements;
+                this.logWarnMessage(errorMessage);
+            }
         }
         // Workaround for https://github.com/eclipse-sirius/sirius-components/issues/1343
         EObject result = FAILURE_OBJECT;
@@ -333,29 +315,7 @@ public abstract class AbstractDiagramService {
      *
      * @return a useless EObject see https://github.com/eclipse-sirius/sirius-components/issues/1343
      */
-    public EObject destroy(EObject semanticElement, IDiagramContext diagramContext, Edge targetView, DeletionPolicy deletionPolicy) {
-        switch (deletionPolicy) {
-            case GRAPHICAL:
-                // Do nothing for now since all edge are synchronized
-                // Needs to be implements once the unsynchronized edges are implemented
-                break;
-            case SEMANTIC:
-                if (semanticElement != null) {
-                    ECrossReferenceAdapter adapter = this.getECrossReferenceAdapter(semanticElement);
-                    DestroyerStatus destroyerStatus = this.buildDestroyer(adapter).destroy(semanticElement);
-
-                    if (State.FAILED.equals(destroyerStatus.getState())) {
-                        String elements = destroyerStatus.getElements().stream()//
-                                .map(Object::toString)//
-                                .collect(Collectors.joining(ITEM_SEP));
-                        String errorMessage = destroyerStatus.getMessage() + ": " + elements;
-                        this.logWarnMessage(errorMessage);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
+    public EObject destroy(EObject semanticElement, IDiagramContext diagramContext, Edge targetView, Object deletionPolicy) {
         // Workaround for https://github.com/eclipse-sirius/sirius-components/issues/1343
         EObject result = FAILURE_OBJECT;
         return result;

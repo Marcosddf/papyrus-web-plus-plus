@@ -95,15 +95,19 @@ const toPackageNode = (
     labelEditable,
     isNew,
     resizedByUser,
-    isListChild: isListLayoutStrategy(gqlParentNode?.childrenLayoutStrategy),
-    areChildNodesDraggable: isListLayoutStrategy(gqlNode.childrenLayoutStrategy)
-      ? gqlNode.childrenLayoutStrategy.areChildNodesDraggable
+    isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
+    areChildNodesDraggable: isListLayoutStrategy(gqlNode.style.childrenLayoutStrategy)
+      ? gqlNode.style.childrenLayoutStrategy.areChildNodesDraggable
       : true,
     isDropNodeTarget: false,
     isDropNodeCandidate: false,
     isHovered: false,
-    growableNodeIds: isListLayoutStrategy(gqlNode.childrenLayoutStrategy)
-      ? gqlNode.childrenLayoutStrategy.growableNodeIds
+    nodeAppearanceData: {
+      gqlStyle: style,
+      customizedStyleProperties: [],
+    },
+    growableNodeIds: isListLayoutStrategy(gqlNode?.style.childrenLayoutStrategy)
+      ? gqlNode?.style.childrenLayoutStrategy.growableNodeIds
       : [],
   };
 
@@ -179,7 +183,7 @@ const adaptChildrenBorderNodes = (nodes: Node<NodeData>[], gqlChildrenNodes: GQL
 
 export class PackageNodeConverter implements INodeConverter {
   canHandle(gqlNode: GQLNode<GQLNodeStyle>) {
-    return gqlNode.style.__typename === 'PackageNodeStyle' && gqlNode.childrenLayoutStrategy?.kind !== 'List';
+    return gqlNode.style.__typename === 'PackageNodeStyle' && gqlNode.style.childrenLayoutStrategy?.kind !== 'List';
   }
 
   handle(
