@@ -1,0 +1,38 @@
+#############################################################################
+#  Copyright (c) 2025 CEA LIST.
+#  
+#  This program and the accompanying materials
+#  are made available under the terms of the Eclipse Public License 2.0
+#  which accompanies this distribution, and is available at
+#  https://www.eclipse.org/legal/epl-2.0/
+# 
+#  SPDX-License-Identifier: EPL-2.0
+#  
+#  Contributors:
+#   Marcos Didonet Del Fabro (CEA LIST) - Initial implementation
+#
+#############################################################################
+
+# To build and run, execute from the root folder 
+# Set up the GIT_AUTH_TOKEN environment variable in a .env file or as a system environment variable. The env.template is a starting point.
+# docker compose  up
+
+services:
+  database:
+    image: postgres:12
+    env_file:
+      - .env    
+  papyrus-web:
+    image: papyrus-web:latest
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile
+      args:
+        USERNAME: ${GITHUB_USERNAME}
+        PASSWORD: ${GITHUB_AUTH_TOKEN}      
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env    
+    depends_on:
+      - database

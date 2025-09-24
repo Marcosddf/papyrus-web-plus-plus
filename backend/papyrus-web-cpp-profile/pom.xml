@@ -16,7 +16,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>papyrus-web</groupId>
+		<groupId>org.eclipse.papyrus.papyrus-web</groupId>
 		<artifactId>papyrus-web-parent</artifactId>
 		<version>2025.4.0</version>
 		<relativePath>../papyrus-web-parent</relativePath>
@@ -29,12 +29,12 @@
 	<dependencies>
 		<!-- Internal dependencies -->
 		<dependency>
-			<groupId>papyrus-web</groupId>
+			<groupId>org.eclipse.papyrus.papyrus-web</groupId>
 			<artifactId>papyrus-web-application</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>papyrus-web</groupId>
+			<groupId>org.eclipse.papyrus.papyrus-web</groupId>
 			<artifactId>papyrus-web-representation-builder</artifactId>
 			<version>${project.version}</version>
 		</dependency>

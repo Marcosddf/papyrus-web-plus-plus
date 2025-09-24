@@ -21,7 +21,7 @@
         <version>3.4.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>papyrus-web</groupId>
+    <groupId>org.eclipse.papyrus.papyrus-web</groupId>
     <artifactId>papyrus-web-parent</artifactId>
     <version>2025.4.0</version>
     <name>papyrus-web-parent</name>

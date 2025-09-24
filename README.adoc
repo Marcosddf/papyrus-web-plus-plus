@@ -15,6 +15,39 @@ To test _Papyrus Web_ you have two possible options:
 [#quick-start]
 == Quick Start
 
+[#docker-compose]
+=== Building and running with docker compose
+
+To build and run the application using docker compose, do the following actions:
+
+* Create a Github User and Access Token at https://github.com/settings/tokens. Use the scope `read:package` when asked. Finally, create two environment variables with the user name and generated token:
+
+[source,sh]
+----
+export GITHUB_USERNAME=<replace by your user name>
+export GITHUB_AUTH_TOKEN=<replace by your access token>
+----
+
+* Create a .env environment file from the env.template. This file contains the enviroment variables for configuring the services. The default values may be changed. 
+
+[source,sh]
+----
+cp env.template .env
+----
+
+* Build the image and run all the services. This command builds the PapyrusWeb image, pulls the database image and instantiates both services. The first execution takes several minutes, since it compiles the application. The remaining executions use the locally compiled image.
+
+[source,sh]
+----
+docker compose up
+----
+
+The application is available at http://localhost:8080
+
+
+[#application-jar]
+=== Running the compiled application 
+
 If you want a quick overview of how Papyrus Web looks and feels like without building the sample application yourself, you will simply need:
 
 * Java 17

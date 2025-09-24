@@ -1,0 +1,195 @@
+#############################################################################
+# Copyright (c) 2025 CEA LIST.
+#
+# This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License 2.0
+# which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+# Marcos Didonet Del Fabro (CEA LIST) - Initial implementation
+#
+#############################################################################
+
+include:
+  - project: 'eclipsefdn/it/releng/gitlab-runner-service/gitlab-ci-templates'
+    file: 
+      - '/jobs/buildkit.gitlab-ci.yml'
+      - '/jobs/repo.eclipse.org.gitlab-ci.yml'
+
+stages:
+  - build
+  - deploy
+  - test
+
+docker-build:
+  before_script:
+    - echo 'print image name'
+    - echo "$CI_REGISTRY_IMAGE${CONTAINER_NAME:+/$CONTAINER_NAME}:$IMAGE_TAG"
+    - echo -e "Building and shipping image to $CI_REGISTRY - $BUILD_IMAGE_NAME"
+  after_script:
+    - echo 'print image name'
+    - echo "$CI_REGISTRY_IMAGE${CONTAINER_NAME:+/$CONTAINER_NAME}:$IMAGE_TAG"
+    - echo -e "Building and shipping image to $CI_REGISTRY - $BUILD_IMAGE_NAME"
+  stage: build
+  extends:
+    - .ef-buildkit
+  variables:
+    CI_REGISTRY_IMAGE: docker.io/eclipsepapyrus/papyrus-web
+    PUSH_TO_REGISTRY: "true"
+    BUILD_ARG: "--opt build-arg:PASSWORD=${GITHUB_COM_TOKEN}"
+    DOCKERFILE_NAME: "dockerfiles/Dockerfile"
+    #IMAGE_TAG: $CI_COMMIT_TAG  # no latest tag
+  secrets:
+    GITHUB_COM_TOKEN:
+      vault: $EF_PROJECT_ID/github.com/registry-token@cbi
+      file: false
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" #|| $CI_COMMIT_TAG
+
+build_and_deploy:
+  stage: build
+  tags:
+    - ctx:medium
+  needs: []
+  image: maven:3.9.9-eclipse-temurin-21
+  extends: .ef-repo-eclipse-org
+  variables:
+    MAVEN_OPTS: "-DskipTests -Dcheckstyle.skip -Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+    # Conditional Maven goals - compile for nightly, deploy for releases
+    MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DskipTests"
+    NODE_VERSION: "18.7.0"
+    NODE_DIR: "$CI_PROJECT_DIR/.node"
+  secrets:
+    GITHUB_COM_TOKEN:
+      vault: $EF_PROJECT_ID/github.com/registry-token@cbi
+      file: false
+    PASSWORD:
+      vault: $EF_PROJECT_ID/github.com/registry-token@cbi
+      file: false
+    REPO_USERNAME:
+      vault: $EF_PROJECT_ID/repo.eclipse.org/username@cbi
+      file: false
+    REPO_PASSWORD:
+      vault: $EF_PROJECT_ID/repo.eclipse.org/password@cbi
+      file: false
+  before_script:
+    - mkdir -p "$NODE_DIR"
+    - curl -o node.tar.gz -fsSL "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz"
+    - tar -xzf node.tar.gz --strip-components=1 -C "$NODE_DIR"
+    - export PATH="$NODE_DIR/bin:$PATH"
+    - node --version
+  script:
+    # Frontend build
+    - pwd
+    - echo '//npm.pkg.github.com/:_authToken=${GITHUB_COM_TOKEN}' >> frontend/.npmrc
+    - cd frontend && npm install && npm ci && NODE_OPTIONS="--max-old-space-size=4096" npm run build
+    - cd ..
+    - mkdir -p backend/papyrus-web-frontend/src/main/resources/static
+    - cp -R frontend/papyrus-web/dist/* backend/papyrus-web-frontend/src/main/resources/static
+
+    # Conditional backend build/deploy
+    - cd backend
+    - |
+      if [ -z "$CI_COMMIT_TAG" ]; then
+        # Nightly build - just compile/verify
+        mvn $MAVEN_CLI_OPTS verify --settings ../settings.xml
+      else
+        # Release build - deploy with repository configuration
+        mvn $MAVEN_CLI_OPTS deploy -DdeployAtEnd=true -DaltDeploymentRepository=repo.eclipse.org::https://repo.eclipse.org/content/repositories/papyrus-releases/ --settings ../settings.xml
+      fi
+  artifacts:
+    name: "papyrus-web.jar"
+    paths:
+      - backend/papyrus-web/target/papyrus-web-*.jar
+      - backend/papyrus-web/target/classes/
+      - backend/papyrus-web/target/test-classes/
+    reports:
+      junit:
+        - backend/papyrus-web/target/surefire-reports/
+    expire_in: 1 week
+  rules:
+    - when: always
+
+test_all:
+  stage: test
+  tags:
+    - ctx:medium  
+  needs:
+    - job: "build_and_deploy"
+      artifacts: true
+  services:
+    - name: quay.io/sclorg/postgresql-15-c9s
+      alias: postgres  
+  image: cypress/included:12.17.4
+  extends: .ef-repo-eclipse-org
+  variables:
+    MAVEN_VERSION: "3.9.9"
+    NODE_VERSION: "18.7.0"
+    NODE_DIR: "$CI_PROJECT_DIR/.node"  
+    ALL_TESTS: "-DallTests"
+    MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+    MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=false -DdeployAtEnd=false $ALL_TESTS -Dpapyrusweb.testcontainers.use=false"
+    SIRIUS_COMPONENTS_CORS_ALLOWEDORIGINPATTERNS: "*"   
+    SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres/papyrus-web-db"
+    PAPYRUSWEB_INTEGRATION_TESTS_DATASOURCE_URL: "jdbc:postgresql://postgres/papyrus-web-db"
+    PAPYRUSWEB_INTEGRATION_TESTS_DATASOURCE_USERNAME: "dbuser"
+    PAPYRUSWEB_INTEGRATION_TESTS_DATASOURCE_PASSWORD: "dbpwd"    
+    POSTGRESQL_DATABASE: papyrus-web-db
+    POSTGRESQL_USER: dbuser
+    POSTGRESQL_PASSWORD: dbpwd    
+  before_script:
+    # Install Node.js
+    #- mkdir -p "$NODE_DIR"
+    # curl -o node.tar.gz -fsSL "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz"
+    #- wget https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz
+    #- tar -xzf node-v$NODE_VERSION-linux-x64.tar.gz --strip-components=1 -C "$NODE_DIR"
+    #- export PATH="$NODE_DIR/bin:$PATH"    
+    # Install Maven
+    - wget https://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz 
+    - tar -xzvf apache-maven-${MAVEN_VERSION}-bin.tar.gz
+    - export PATH=./apache-maven-$MAVEN_VERSION/bin:$PATH    
+    # Install Java 17 
+    - wget https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1+12/OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz
+    - tar -xzvf OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz 
+    - export JAVA_HOME=./jdk-17.0.1+12 
+    - export PATH=$JAVA_HOME/bin:$PATH    
+  script:
+    # Backend tests
+    - mvn $MAVEN_CLI_OPTS test -f backend/pom.xml --settings settings.xml    
+    - export WEBAPP_VERSION=$(grep version frontend/package.json | awk -F \" '{print $4}')
+
+    # Start backend for Cypress tests in background
+    #- java -Dsirius.components.cors.allowedCredentials=true -Dsirius.components.cors.allowedOriginPatterns=* -jar backend/papyrus-web/target/papyrus-web-$WEBAPP_VERSION.jar --spring.datasource.url=$SPRING_DATASOURCE_URL --spring.datasource.username=$SPRING_DATASOURCE_USERNAME --spring.datasource.password=$SPRING_DATASOURCE_PASSWORD --spring.liquibase.change-log=classpath:db/changelog/papyrus-web.db.changelog.xml &
+    #- BACKEND_PID=$!
+
+    # Wait for the backend to start
+    #- sleep 200 
+
+    # Cypress tests
+    #- cd integration-tests 
+    #- npm install
+    #- npx cypress run
+
+    # Stop the backend server
+    #- kill $BACKEND_PID    
+  artifacts:
+    paths:
+      - backend/papyrus-web/target/site/jacoco/ 
+      - backend/papyrus-web/target/surefire-reports/ 
+      #- integration-tests/cypress/screenshots/
+      #- integration-tests/cypress/videos/
+      #- integration-tests/cypress/results/
+      #- integration-tests/cypress/reports/
+    expire_in: 1 week
+
+
+  secrets:
+    GITHUB_COM_TOKEN:
+      vault: $EF_PROJECT_ID/github.com/registry-token@cbi
+      file: false    
+    PASSWORD:
+      vault: $EF_PROJECT_ID/github.com/registry-token@cbi
+      file: false

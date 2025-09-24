@@ -52,5 +52,10 @@
       <username>${env.USERNAME}</username>
       <password>${env.PASSWORD}</password>
     </server>
+    <server>
+      <id>repo.eclipse.org</id>
+      <username>${env.REPO_USERNAME}</username>
+      <password>${env.REPO_PASSWORD}</password>
+    </server>      
   </servers>
 </settings>

@@ -16,7 +16,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>papyrus-web</groupId>
+	<groupId>org.eclipse.papyrus.papyrus-web</groupId>
 	<artifactId>papyrus-web-container</artifactId>
 	<version>2025.4.0</version>
 
@@ -44,7 +44,6 @@
 		<module>papyrus-web-customnodes</module>
 		<module>papyrus-web-customnodes-edit</module>
 		<module>papyrus-web-infra</module>
-		
 
 		<!--Profiles -->
 
@@ -63,6 +62,22 @@
 		<module>papyrus-web-test-coverage</module>
 
 	</modules>
+
+	
+	<distributionManagement>
+		<repository>
+			<id>repo.eclipse.org</id>
+			<name>Papyrus Repository - Releases</name>
+			<url>https://repo.eclipse.org/content/repositories/papyrus-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>repo.eclipse.org</id>
+			<name>Papyrus Repository - Snapshots</name>
+			<url>https://repo.eclipse.org/content/repositories/papyrus-snapshots/</url>
+			<uniqueVersion>true</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+		
 
 	<build>
 		<pluginManagement>
