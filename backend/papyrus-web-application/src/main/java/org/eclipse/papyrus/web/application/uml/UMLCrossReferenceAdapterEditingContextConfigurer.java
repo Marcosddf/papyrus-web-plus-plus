@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2024 CEA LIST, Obeo.
+ * Copyright (c) 2024, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,19 +20,25 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.papyrus.uml.domain.services.EMFUtils;
 import org.eclipse.papyrus.web.application.templates.service.api.IUMLProjectCheckerService;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IEditingContextProcessor;
-import org.eclipse.sirius.components.emf.services.EditingContextCrossReferenceAdapter;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.springframework.stereotype.Service;
 
 /**
- * Process in charge of unpluging the default {@link EditingContextCrossReferenceAdapter} used in Sirius Web and use
- * custom one specially designed for Papyrus. In Papyrus web we want to completely handle the deletion of an element. We
- * dot not want the method
- * org.eclipse.sirius.components.emf.services.EditingContextCrossReferenceAdapter.clearReferencesTo(EObject)
+ * Process in charge of unplugging the default {@link ECrossReferenceAdapter} used in Sirius Web
+ * and using a custom one specially designed for Papyrus.
+ *
+ * <p>In Papyrus Web, we aim to customize the cross-reference behavior to fit our specific needs.</p>
+ *
+ * <ul>
+ *   <li>In Papyrus Web, we want to completely handle the deletion of an element.</li>
+ *   <li>UML already provides an implementation of the {@link ECrossReferenceAdapter}:
+ *       {@link org.eclipse.uml2.common.util.CacheAdapter}</li>
+ * </ul>
  *
  * @author Arthur Daussy
  */
@@ -68,7 +74,7 @@ public class UMLCrossReferenceAdapterEditingContextConfigurer implements IEditin
         Iterator<Adapter> adapterIterator = o.eAdapters().iterator();
         while (adapterIterator.hasNext()) {
             Adapter next = adapterIterator.next();
-            if (next.getClass() == EditingContextCrossReferenceAdapter.class) {
+            if (next.getClass() == ECrossReferenceAdapter.class) {
                 adapterIterator.remove();
             }
         }

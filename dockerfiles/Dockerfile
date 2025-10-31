@@ -20,7 +20,7 @@
 
 # Image for full compilation
 
-FROM node:18.7 AS papyrusweb-build
+FROM node:22.16 AS papyrusweb-build
 
 ADD . /build
 WORKDIR /build/

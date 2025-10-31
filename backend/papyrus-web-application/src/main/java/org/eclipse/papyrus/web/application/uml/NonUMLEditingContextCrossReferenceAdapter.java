@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2024, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,16 +14,16 @@
 package org.eclipse.papyrus.web.application.uml;
 
 import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.sirius.components.emf.services.EditingContextCrossReferenceAdapter;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
 /**
- * EditingContextCrossReferenceAdapter that do not self add itself to UML Element.
+ * ECrossReferenceAdapter that do not self add itself to UML Element.
  *
  * @author Arhtur Daussy
  */
-public class NonUMLEditingContextCrossReferenceAdapter extends EditingContextCrossReferenceAdapter {
+public class NonUMLEditingContextCrossReferenceAdapter extends ECrossReferenceAdapter {
 
     @Override
     protected void addAdapter(Notifier notifier) {
