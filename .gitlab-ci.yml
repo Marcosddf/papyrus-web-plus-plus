@@ -110,7 +110,8 @@ build_and_deploy:
     # Conditional backend build/deploy
     - cd backend
     - |
-      if [ -z "$CI_COMMIT_TAG" ]; then
+      if [ -z "${CI_COMMIT_TAG+x}" ]; then
+        # commit tag is unset (null)
         # Nightly build - just compile/verify
         mvn $MAVEN_CLI_OPTS verify --settings ../settings.xml
       else
