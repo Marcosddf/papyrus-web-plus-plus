@@ -113,9 +113,11 @@ build_and_deploy:
       if [ -z "${CI_COMMIT_TAG+x}" ]; then
         # commit tag is unset (null)
         # Nightly build - just compile/verify
+        echo "tag is unset - build without deploying"
         mvn $MAVEN_CLI_OPTS verify --settings ../settings.xml
       else
         # Release build - deploy with repository configuration
+        echo "tag is set - build with deploy"
         mvn $MAVEN_CLI_OPTS deploy -DdeployAtEnd=true -DaltDeploymentRepository=repo.eclipse.org::https://repo.eclipse.org/content/repositories/papyrus-releases/ --settings ../settings.xml
       fi
   artifacts:
