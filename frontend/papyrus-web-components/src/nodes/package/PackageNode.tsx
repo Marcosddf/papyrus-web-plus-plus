@@ -19,7 +19,6 @@ import {
   ConnectionTargetHandle,
   DiagramContext,
   DiagramContextValue,
-  DiagramElementPalette,
   Label,
   useDrop,
   useDropNodeStyle,
@@ -170,13 +169,6 @@ export const PackageNode = memo(({ data, id, selected, dragging }: NodeProps<Nod
         onDragOver={onDragOver}
         onDrop={handleOnDrop}
         data-testid={`Package - ${data?.insideLabel?.text}`}>
-        {!!selected ? (
-          <DiagramElementPalette
-            diagramElementId={id}
-            targetObjectId={data.targetObjectId}
-            labelId={data.insideLabel ? data.insideLabel.id : null}
-          />
-        ) : null}
         {!!selected ? <ConnectionCreationHandles nodeId={id} /> : null}
         <ConnectionTargetHandle nodeId={id} nodeDescription={data.nodeDescription} isHovered={data.isHovered} />
         <ConnectionHandles connectionHandles={data.connectionHandles} />

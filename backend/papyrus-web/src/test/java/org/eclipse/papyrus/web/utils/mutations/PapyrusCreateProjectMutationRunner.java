@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -41,7 +41,7 @@ public class PapyrusCreateProjectMutationRunner {
 
     public String createProject(String projectName, List<String> natures) {
 
-        var input = new CreateProjectInput(UUID.randomUUID(), projectName, natures);
+        var input = new CreateProjectInput(UUID.randomUUID(), projectName, natures, List.of());
 
         String editingContextId = null;
         var jsonResult = this.runner.run(input);

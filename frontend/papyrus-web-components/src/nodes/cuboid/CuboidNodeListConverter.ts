@@ -69,6 +69,7 @@ const toCuboidListNode = (
   );
   const isNew = gqlNodeLayoutData === undefined;
   const resizedByUser = gqlNodeLayoutData?.resizedByUser ?? false;
+  const movedByUser = gqlNodeLayoutData?.movedByUser ?? false;
 
   const data: CuboidNodeListData = {
     targetObjectId,
@@ -106,6 +107,7 @@ const toCuboidListNode = (
     isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
     isDraggedNode: false,
     resizedByUser,
+    movedByUser,
     growableNodeIds: isListLayoutStrategy(gqlNode.style.childrenLayoutStrategy)
       ? gqlNode.style.childrenLayoutStrategy.growableNodeIds
       : [],

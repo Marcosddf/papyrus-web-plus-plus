@@ -52,6 +52,7 @@ import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.emf.IViewConverter;
+import org.eclipse.sirius.components.view.emf.ViewConverterResult;
 import org.eclipse.sirius.components.view.emf.diagram.IDiagramIdProvider;
 import org.eclipse.sirius.components.view.form.FormDescription;
 import org.eclipse.sirius.emfjson.resource.JsonResource;
@@ -119,12 +120,13 @@ public class PapyrusRepresentationDescriptionRegistry {
 
         this.generateStaticIds(diagramDescription, eResource);
 
-        List<IRepresentationDescription> representationDescriptions = this.viewConverter.convert(Collections.singletonList(view), staticEPackages);
+        // SHOULD BE REMOVED
+        List<ViewConverterResult> converterResult = this.viewConverter.convert(null, Collections.singletonList(view));
 
         // Workaround https://github.com/eclipse-sirius/sirius-components/issues/1345
-        for (var description : representationDescriptions) {
-            if (description instanceof org.eclipse.sirius.components.diagrams.description.DiagramDescription) {
-                this.add(diagramDescription, (org.eclipse.sirius.components.diagrams.description.DiagramDescription) description);
+        for (var result : converterResult) {
+            if (result.representationDescription() instanceof org.eclipse.sirius.components.diagrams.description.DiagramDescription description) {
+                this.add(diagramDescription, description);
                 LOGGER.info(MessageFormat.format("Contributing representation {0} with id {1}", description.getLabel(), description.getId()));
             }
         }

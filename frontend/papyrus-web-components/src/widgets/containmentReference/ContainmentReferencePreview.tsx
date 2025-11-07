@@ -94,7 +94,7 @@ export const ContainmentReferencePreview = ({ widget }: PropertySectionComponent
             data-testid={`${label}`}
             icon={
               <div>
-                <IconOverlay iconURL={['/api/images/icons-override/full/obj16/Class.svg']} alt={label} />
+                <IconOverlay iconURLs={['/api/images/icons-override/full/obj16/Class.svg']} alt={label} />
               </div>
             }
             onDelete={() => console.log('deleted')}

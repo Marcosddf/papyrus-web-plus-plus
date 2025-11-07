@@ -30,8 +30,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.papyrus.uml.domain.services.profile.StereotypeUtil;
-import org.eclipse.sirius.components.collaborative.browser.ModelBrowserDefaultCandidateSearchProvider;
-import org.eclipse.sirius.components.collaborative.browser.ModelBrowserDescriptionProvider;
+import org.eclipse.sirius.web.application.browser.ModelBrowserDefaultCandidateSearchProvider;
 import org.eclipse.sirius.components.collaborative.browser.api.IModelBrowserRootCandidateSearchProvider;
 import org.eclipse.sirius.components.core.CoreImageConstants;
 import org.eclipse.sirius.components.core.URLParser;
@@ -54,12 +53,13 @@ import org.eclipse.sirius.components.representations.IStatus;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.trees.description.TreeDescription;
 import org.eclipse.sirius.components.trees.renderer.TreeRenderer;
+import org.eclipse.sirius.web.application.browser.DefaultModelBrowsersTreeDescriptionProvider;
 import org.eclipse.uml2.uml.Element;
 import org.springframework.stereotype.Service;
 
 /**
  * Override default representation
- * {@link org.eclipse.sirius.components.collaborative.widget.reference.browser.ModelBrowsersDescriptionProvider#REFERENCE_DESCRIPTION_ID}.
+ * {@link org.eclipse.sirius.web.application.browser.DefaultModelBrowsersTreeDescriptionProvider#REFERENCE_DESCRIPTION_ID}.
  *
  * <p>
  * This interface has been created for bug
@@ -86,8 +86,11 @@ public class ReferenceModelBrowerDescriptionOverrider implements IRepresentation
     private static final String TARGET_TYPE = "targetType";
 
     private final ILabelService labelService;
+
     private final IIdentityService identityService;
+
     private final IContentService contentService;
+
     private final IObjectSearchService objectSearchService;
 
     private final ModelBrowserDefaultCandidateSearchProvider defaultCandidateProvider;
@@ -96,12 +99,12 @@ public class ReferenceModelBrowerDescriptionOverrider implements IRepresentation
 
     private final List<IModelBrowserRootCandidateSearchProvider> candidateProviders;
 
-    private ModelBrowserDescriptionProvider modelBrowserDescriptionProvider;
+    private DefaultModelBrowsersTreeDescriptionProvider modelBrowserDescriptionProvider;
 
     private IURLParser urlParser = new URLParser();
 
     public ReferenceModelBrowerDescriptionOverrider(ILabelService labelService, IEMFKindService emfKindService, List<IModelBrowserRootCandidateSearchProvider> candidateProviders,
-            ModelBrowserDescriptionProvider modelBrowserDescriptionProvider, IIdentityService identityService, IContentService contentService, IObjectSearchService objectSearchService) {
+                                                    DefaultModelBrowsersTreeDescriptionProvider modelBrowserDescriptionProvider, IIdentityService identityService, IContentService contentService, IObjectSearchService objectSearchService) {
         super();
         this.labelService = Objects.requireNonNull(labelService);
         this.identityService = Objects.requireNonNull(identityService);
@@ -115,7 +118,7 @@ public class ReferenceModelBrowerDescriptionOverrider implements IRepresentation
 
     @Override
     public List<IRepresentationDescription> getOverridedDescriptions() {
-        TreeDescription description = this.getModelBrowserDescription(ModelBrowserDescriptionProvider.REFERENCE_DESCRIPTION_ID, variableManager -> this.canCreateModelBrowser(variableManager),
+        TreeDescription description = this.getModelBrowserDescription(DefaultModelBrowsersTreeDescriptionProvider.REFERENCE_DESCRIPTION_ID, variableManager -> this.canCreateModelBrowser(variableManager),
                 this.browserIsSelectableProvider(), this::getSearchScopeElements, MODEL_BROWSER_REFERENCE_PREFIX);
         return List.of(description);
     }

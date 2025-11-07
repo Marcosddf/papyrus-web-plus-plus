@@ -12,11 +12,13 @@
  *  Obeo - Initial API and implementation
  *****************************************************************************/
 
+const projectName = 'C++ SM';
+
 describe('/projects/:projectId/edit - Diagram Context Menu', () => {
   beforeEach(() => {
-    cy.deleteProjectByName('C++ SM');
+    cy.deleteProjectByName(projectName);
     const templateId = 'UMLCppSMProject';
-    cy.createProjectFromTemplate(templateId).then((res) => {
+    cy.createProjectFromTemplate(projectName, templateId).then((res) => {
       const projectId = res.body.data.createProjectFromTemplate.project.id;
       const repToOpen = res.body.data.createProjectFromTemplate.representationToOpen.id;
       cy.visit(`/projects/${projectId}/edit/${repToOpen}`);
@@ -24,7 +26,7 @@ describe('/projects/:projectId/edit - Diagram Context Menu', () => {
   });
 
   afterEach(() => {
-    cy.deleteProjectByName('C++ SM');
+    cy.deleteProjectByName(projectName);
   });
 
   /**

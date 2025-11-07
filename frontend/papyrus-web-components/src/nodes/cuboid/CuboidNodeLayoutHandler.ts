@@ -52,7 +52,7 @@ export class CuboidNodeLayoutHandler implements INodeLayoutHandler<CuboidNodeDat
     node: Node<CuboidNodeData, 'cuboidNode'>,
     visibleNodes: Node<NodeData, DiagramNodeType>[],
     directChildren: Node<NodeData, DiagramNodeType>[],
-    newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    newlyAddedNode: Node<NodeData, DiagramNodeType>[],
     forceWidth?: ForcedDimensions
   ) {
     const nodeIndex = findNodeIndex(visibleNodes, node.id);
@@ -80,11 +80,11 @@ export class CuboidNodeLayoutHandler implements INodeLayoutHandler<CuboidNodeDat
     node: Node<CuboidNodeData, 'cuboidNode'>,
     visibleNodes: Node<NodeData, DiagramNodeType>[],
     directChildren: Node<NodeData, DiagramNodeType>[],
-    newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    newlyAddedNodes: Node<NodeData, DiagramNodeType>[],
     borderWidth: number,
     _forceWidth?: ForcedDimensions
   ) {
-    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNode);
+    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNodes);
 
     const nodeIndex = findNodeIndex(visibleNodes, node.id);
     const labelElement = document.getElementById(`${node.id}-label-${nodeIndex}`);
@@ -98,7 +98,7 @@ export class CuboidNodeLayoutHandler implements INodeLayoutHandler<CuboidNodeDat
     directNodesChildren.forEach((child, index) => {
       const previousNode = (previousDiagram?.nodes ?? []).find((prevNode) => prevNode.id === child.id);
       const previousPosition = computePreviousPosition(previousNode, child);
-      const createdNode = newlyAddedNode?.id === child.id ? newlyAddedNode : undefined;
+      const createdNode = newlyAddedNodes.find((node) => node?.id === child.id);
 
       if (!!createdNode) {
         child.position = createdNode.position;

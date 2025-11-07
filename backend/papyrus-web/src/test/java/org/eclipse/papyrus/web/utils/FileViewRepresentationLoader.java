@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,11 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -36,6 +34,8 @@ import org.eclipse.sirius.components.representations.IRepresentationDescription;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.ViewPackage;
 import org.eclipse.sirius.components.view.emf.IViewConverter;
+import org.eclipse.sirius.components.view.emf.ViewConverterResult;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.springframework.core.io.ClassPathResource;
 
 /**
@@ -48,16 +48,16 @@ public class FileViewRepresentationLoader {
 
     private final IViewConverter viewConverter;
 
-    private final EPackage.Registry ePackagesRegistry;
+    private final EditingContext siriusEditingContext;
 
     private final String filePath;
 
     private final List<View> views = new ArrayList<>();
 
-    public FileViewRepresentationLoader(String filePath, IViewConverter viewConverter, Registry ePackagesRegistry) {
+    public FileViewRepresentationLoader(String filePath, IViewConverter viewConverter, EditingContext siriusEditingContext) {
         this.filePath = filePath;
         this.viewConverter = viewConverter;
-        this.ePackagesRegistry = ePackagesRegistry;
+        this.siriusEditingContext = siriusEditingContext;
     }
 
     public List<IRepresentationDescription> loadRepresentations() {
@@ -70,10 +70,9 @@ public class FileViewRepresentationLoader {
                 eObject.eAdapters().add(new IDAdapter(UUID.nameUUIDFromBytes(EcoreUtil.getURI(eObject).toString().getBytes())));
             });
 
-            List<EPackage> staticEPackages = this.ePackagesRegistry.values().stream().filter(EPackage.class::isInstance).map(EPackage.class::cast).collect(Collectors.toList());
 
             this.views.add(view);
-            return this.viewConverter.convert(List.of(view), staticEPackages);
+            return this.viewConverter.convert(siriusEditingContext, List.of(view)).stream().map(ViewConverterResult::representationDescription).toList();
         }
         return List.of();
     }

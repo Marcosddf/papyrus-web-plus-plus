@@ -120,7 +120,7 @@ const ReorderItemsDialog = ({ items, onClose, moveElement }: ReorderItemsDialogP
                   <DragHandleIcon />
                 </ListItemIcon>
                 <ListItemIcon className={classes.dragIcon}>
-                  <IconOverlay iconURL={iconURL} alt={label} />
+                  <IconOverlay iconURLs={iconURL} alt={label} />
                 </ListItemIcon>
                 <ListItemText id={`containment-reference-reorder-item-${id}-label`} primary={label} />
               </ListItem>

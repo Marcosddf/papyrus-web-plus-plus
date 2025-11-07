@@ -418,7 +418,7 @@ export const PrimitiveListSection = ({
   const getTableCellContent = (item: GQLActionableListItem): JSX.Element => {
     return (
       <TableCell className={classes.cell}>
-        <IconOverlay iconURL={item.iconURL} alt={item.label} />
+        <IconOverlay iconURLs={item.iconURL} alt={item.label} />
         <Typography
           className={classes.style}
           color="textPrimary"

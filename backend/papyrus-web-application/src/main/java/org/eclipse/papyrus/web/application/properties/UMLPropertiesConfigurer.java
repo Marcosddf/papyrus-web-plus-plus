@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2024, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,9 +27,9 @@ import org.eclipse.sirius.components.collaborative.forms.services.api.IPropertie
 import org.eclipse.sirius.components.emf.services.JSONResourceFactory;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
-import org.eclipse.sirius.components.representations.IRepresentationDescription;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
+import org.eclipse.sirius.components.view.emf.ViewConverterResult;
 import org.eclipse.sirius.components.view.emf.form.ViewFormDescriptionConverter;
 import org.eclipse.sirius.components.view.form.FormDescription;
 import org.slf4j.Logger;
@@ -131,8 +131,8 @@ public class UMLPropertiesConfigurer implements IPropertiesDescriptionRegistryCo
 
     private void register(FormDescription viewFormDescription, AQLInterpreter interpreter) {
 
-        IRepresentationDescription converted = this.converter.convert(viewFormDescription, List.of(), interpreter);
-        if (converted instanceof org.eclipse.sirius.components.forms.description.FormDescription formDescription) {
+        ViewConverterResult converterResult = this.converter.convert(viewFormDescription, List.of(), interpreter);
+        if (converterResult != null && converterResult.representationDescription() instanceof org.eclipse.sirius.components.forms.description.FormDescription formDescription) {
             this.papyrusRegistry.registerForm(viewFormDescription, formDescription);
         }
     }

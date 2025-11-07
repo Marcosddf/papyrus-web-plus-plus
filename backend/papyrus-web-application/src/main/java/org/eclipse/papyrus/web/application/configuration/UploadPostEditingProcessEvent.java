@@ -18,7 +18,6 @@ import org.eclipse.sirius.components.collaborative.api.ChangeDescription;
 import org.eclipse.sirius.components.collaborative.api.IInputPostProcessor;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IInput;
-import org.eclipse.sirius.components.emf.ResourceMetadataAdapter;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.web.application.document.dto.UploadDocumentInput;
 import org.springframework.stereotype.Service;
@@ -36,13 +35,9 @@ public class UploadPostEditingProcessEvent implements IInputPostProcessor {
 
     @Override
     public void postProcess(IEditingContext editingContext, IInput input, Sinks.Many<ChangeDescription> changeDescriptionSink) {
-        if (editingContext instanceof IEMFEditingContext emfEditingContext && input instanceof UploadDocumentInput uploadDocumentInput) {
-            emfEditingContext.getDomain().getResourceSet().getResources().stream()
-                    .filter(resource -> resource.eAdapters().stream()
-                            .filter(ResourceMetadataAdapter.class::isInstance)
-                            .map(ResourceMetadataAdapter.class::cast)
-                            .anyMatch(resourceMetadataAdapter -> resourceMetadataAdapter.getName().equals(uploadDocumentInput.file().getName())))
-                    .forEach(EcoreUtil::resolveAll);
+        if (editingContext instanceof IEMFEditingContext emfEditingContext && input instanceof UploadDocumentInput) {
+            // Uploading new models may require proxy resolution for path-mapped URIs.
+            EcoreUtil.resolveAll(emfEditingContext.getDomain().getResourceSet());
         }
     }
 }

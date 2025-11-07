@@ -36,10 +36,10 @@ export class RectangleWithExternalLabelNodeLayoutHandler implements INodeLayoutH
     node: Node<NodeData>,
     visibleNodes: Node<NodeData, DiagramNodeType>[],
     directChildren: Node<NodeData, DiagramNodeType>[],
-    newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    newlyAddedNodes: Node<NodeData, DiagramNodeType>[],
     _forceWidth?: ForcedDimensions
   ) {
-    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNode);
+    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNodes);
 
     const borderNodes = directChildren.filter((node) => node.data.isBorderNode);
 

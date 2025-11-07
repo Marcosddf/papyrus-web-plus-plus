@@ -72,6 +72,7 @@ const toCustomImageNode = (
   );
   const isNew = gqlNodeLayoutData === undefined;
   const resizedByUser = gqlNodeLayoutData?.resizedByUser ?? false;
+  const movedByUser = gqlNodeLayoutData?.movedByUser ?? false;
 
   const data: CustomImageNodeData = {
     targetObjectId,
@@ -98,6 +99,7 @@ const toCustomImageNode = (
     labelEditable,
     isNew,
     resizedByUser,
+    movedByUser,
     borderLeftWidth: 5,
     borderRightWidth: 5,
     borderBottomWidth: 5,

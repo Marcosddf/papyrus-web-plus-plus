@@ -54,7 +54,7 @@ export class CuboidNodeListLayoutHandler implements INodeLayoutHandler<CuboidNod
     node: Node<CuboidNodeListData, 'cuboidNodeList'>,
     visibleNodes: Node<NodeData, DiagramNodeType>[],
     directChildren: Node<NodeData, DiagramNodeType>[],
-    newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    newlyAddedNodes: Node<NodeData, DiagramNodeType>[],
     forceDimensions?: ForcedDimensions
   ) {
     const nodeIndex = findNodeIndex(visibleNodes, node.id);
@@ -67,7 +67,7 @@ export class CuboidNodeListLayoutHandler implements INodeLayoutHandler<CuboidNod
         node,
         visibleNodes,
         directChildren,
-        newlyAddedNode,
+        newlyAddedNodes,
         borderWidth,
         forceDimensions
       );
@@ -82,11 +82,11 @@ export class CuboidNodeListLayoutHandler implements INodeLayoutHandler<CuboidNod
     node: Node<CuboidNodeListData, 'cuboidNodeList'>,
     visibleNodes: Node<NodeData, DiagramNodeType>[],
     directChildren: Node<NodeData, DiagramNodeType>[],
-    newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    newlyAddedNodes: Node<NodeData, DiagramNodeType>[],
     borderWidth: number,
     forceDimensions?: ForcedDimensions
   ) {
-    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNode, forceDimensions);
+    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNodes, forceDimensions);
 
     const nodeIndex = findNodeIndex(visibleNodes, node.id);
     const labelElement = document.getElementById(`${node.id}-label-${nodeIndex}`);
@@ -140,7 +140,7 @@ export class CuboidNodeListLayoutHandler implements INodeLayoutHandler<CuboidNod
         (child) => !node.data.growableNodeIds.includes(child.data.descriptionId) || child.data.resizedByUser
       );
       nonGrowableChilds.forEach((nonGrowableChild) => {
-        layoutEngine.layoutNodes(previousDiagram, visibleNodes, [nonGrowableChild], newlyAddedNode, {
+        layoutEngine.layoutNodes(previousDiagram, visibleNodes, [nonGrowableChild], newlyAddedNodes, {
           width: fixedWidth,
           height: null,
         });
@@ -155,7 +155,7 @@ export class CuboidNodeListLayoutHandler implements INodeLayoutHandler<CuboidNod
       );
       const childHeight: number = previousChildrenContentBoxHeightToConsider / growableChilds.length;
       growableChilds.forEach((growableChild) => {
-        layoutEngine.layoutNodes(previousDiagram, visibleNodes, [growableChild], newlyAddedNode, {
+        layoutEngine.layoutNodes(previousDiagram, visibleNodes, [growableChild], newlyAddedNodes, {
           width: fixedWidth,
           height: Math.max(growableChild.height ?? 0, childHeight) - labelPadding,
         });

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2024 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2024, 2025 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -122,7 +122,7 @@ export const NoteLabel = memo(({ diagramElementId, label, faded }: NoteLabelProp
         data-id={`${label.id}-content`}
         data-testid={`NoteLabel content - ${label.text}`}
         style={labelContentStyle(theme, label)}>
-        <IconOverlay iconURL={label.iconURL} alt={label.text} customIconStyle={{ marginRight: theme.spacing(1) }} />
+        <IconOverlay iconURLs={label.iconURL} alt={label.text} customIconStyle={{ marginRight: theme.spacing(1) }} />
         <div style={labelOverflowStyle()}>{label.text}</div>
       </div>
     );

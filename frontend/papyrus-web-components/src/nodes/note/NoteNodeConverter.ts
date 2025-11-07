@@ -70,6 +70,7 @@ const toNoteNode = (
   );
   const isNew = gqlNodeLayoutData === undefined;
   const resizedByUser = gqlNodeLayoutData?.resizedByUser ?? false;
+  const movedByUser = gqlNodeLayoutData?.movedByUser ?? false;
 
   const data: NoteNodeData = {
     targetObjectId,
@@ -96,6 +97,7 @@ const toNoteNode = (
     labelEditable,
     isNew,
     resizedByUser,
+    movedByUser,
     isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
     isDraggedNode: false,
     isDropNodeTarget: false,

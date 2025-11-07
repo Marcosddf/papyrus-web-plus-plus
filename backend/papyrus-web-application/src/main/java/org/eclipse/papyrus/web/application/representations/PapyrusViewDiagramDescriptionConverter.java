@@ -83,16 +83,18 @@ import org.eclipse.sirius.components.view.diagram.ListLayoutStrategyDescription;
 import org.eclipse.sirius.components.view.diagram.NodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.OutsideLabelStyle;
 import org.eclipse.sirius.components.view.emf.IRepresentationDescriptionConverter;
+import org.eclipse.sirius.components.view.emf.ViewConverterResult;
 import org.eclipse.sirius.components.view.emf.ViewIconURLsProvider;
+import org.eclipse.sirius.components.view.emf.diagram.StylesFactory;
 import org.eclipse.sirius.components.view.emf.diagram.IDiagramIdProvider;
 import org.eclipse.sirius.components.view.emf.diagram.INodeStyleProvider;
 import org.eclipse.sirius.components.view.emf.diagram.IViewDiagramCreationPredicate;
 import org.eclipse.sirius.components.view.emf.diagram.IViewEdgeLabelEditHandler;
 import org.eclipse.sirius.components.view.emf.diagram.IViewNodeDeleteHandler;
 import org.eclipse.sirius.components.view.emf.diagram.RelationBasedSemanticElementsProvider;
-import org.eclipse.sirius.components.view.emf.diagram.StylesFactory;
 import org.eclipse.sirius.components.view.emf.diagram.TargetProvider;
 import org.eclipse.sirius.components.view.emf.diagram.ToolFinder;
+import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramConversionData;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverterContext;
 import org.eclipse.sirius.components.view.emf.diagram.api.IToolConverter;
@@ -153,7 +155,7 @@ public class PapyrusViewDiagramDescriptionConverter extends ViewDiagramDescripti
     }
 
     @Override
-    public IRepresentationDescription convert(RepresentationDescription viewRepresentationDescription, List<RepresentationDescription> allRepresentationDescriptions, AQLInterpreter interpreter) {
+    public ViewConverterResult convert(RepresentationDescription viewRepresentationDescription, List<RepresentationDescription> allRepresentationDescriptions, AQLInterpreter interpreter) {
         final org.eclipse.sirius.components.view.diagram.DiagramDescription viewDiagramDescription = (org.eclipse.sirius.components.view.diagram.DiagramDescription) viewRepresentationDescription;
         ViewDiagramDescriptionConverterContext converterContext = new ViewDiagramDescriptionConverterContext(interpreter);
         StylesFactory stylesFactory = new StylesFactory(this.nodeStyleProviders, this.labelService, interpreter);
@@ -197,7 +199,7 @@ public class PapyrusViewDiagramDescriptionConverter extends ViewDiagramDescripti
             builder.dropNodeHandler(this.createDropNodeHandler(dropNoteTool, converterContext));
         });
 
-        return builder.build();
+        return new ViewConverterResult(builder.build(), new ViewDiagramConversionData(converterContext.getConvertedNodes(), converterContext.getConvertedEdges()));
     }
 
     /**

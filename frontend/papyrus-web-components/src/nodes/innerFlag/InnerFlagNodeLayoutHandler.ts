@@ -43,10 +43,10 @@ export class InnerFlagNodeLayoutHandler implements INodeLayoutHandler<NodeData> 
     node: Node<InnerFlagNodeData, 'innerFlagNode'>,
     visibleNodes: Node<NodeData, DiagramNodeType>[],
     directChildren: Node<NodeData, DiagramNodeType>[],
-    newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    newlyAddedNodes: Node<NodeData, DiagramNodeType>[],
     forceWidth?: ForcedDimensions
   ) {
-    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNode);
+    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNodes);
 
     const nodeIndex = findNodeIndex(visibleNodes, node.id);
 
@@ -65,7 +65,7 @@ export class InnerFlagNodeLayoutHandler implements INodeLayoutHandler<NodeData> 
     directNodesChildren.forEach((child, index) => {
       const previousNode = (previousDiagram?.nodes ?? []).find((previouseNode) => previouseNode.id === child.id);
 
-      const createdNode = newlyAddedNode?.id === child.id ? newlyAddedNode : undefined;
+      const createdNode = newlyAddedNodes.find((node) => node?.id === child.id);
 
       if (!!createdNode) {
         child.position = createdNode.position;

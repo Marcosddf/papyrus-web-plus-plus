@@ -17,7 +17,7 @@ describe('/projects/:projectId/edit - Diagram Context Menu', () => {
   beforeEach(() => {
     cy.deleteProjectByName(projectName);
     const templateId = 'UMLCppSMProject';
-    cy.createProjectFromTemplate(templateId).then((res) => {
+    cy.createProjectFromTemplate(projectName, templateId).then((res) => {
       const projectId = res.body.data.createProjectFromTemplate.project.id;
       const repToOpen = res.body.data.createProjectFromTemplate.representationToOpen.id;
       cy.visit(`/projects/${projectId}/edit/${repToOpen}`);

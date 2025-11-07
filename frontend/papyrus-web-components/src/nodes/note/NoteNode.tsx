@@ -22,7 +22,6 @@ import {
   defaultWidth,
   DiagramContext,
   DiagramContextValue,
-  DiagramElementPalette,
   useConnectorNodeStyle,
   useDrop,
   useDropNodeStyle,
@@ -160,13 +159,6 @@ export const NoteNode = memo(({ data, id, selected, dragging }: NodeProps<Node<N
           </svg>
         </div>
         {data.insideLabel ? <NoteLabel diagramElementId={id} label={updatedLabel} faded={data.faded} /> : null}
-        {!!selected ? (
-          <DiagramElementPalette
-            diagramElementId={id}
-            targetObjectId={data.targetObjectId}
-            labelId={data.insideLabel ? data.insideLabel.id : null}
-          />
-        ) : null}
         {!!selected ? <ConnectionCreationHandles nodeId={id} /> : null}
         <ConnectionTargetHandle nodeId={id} nodeDescription={data.nodeDescription} isHovered={data.isHovered} />
         <ConnectionHandles connectionHandles={data.connectionHandles} />

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2023 Obeo.
+ * Copyright (c) 2021, 2023, 2025 Obeo.
  * This program and the accompanying materials
  * are made available under the erms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -133,6 +133,7 @@ Cypress.Commands.add('createProject', (name) => {
       id: uuid(),
       name,
       natures: [],
+      libraryIds: [],
     },
   };
 
@@ -320,7 +321,7 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('createProjectFromTemplate', (templateId) => {
+Cypress.Commands.add('createProjectFromTemplate', (name, templateId, natures = ['papyrusweb://nature?kind=uml']) => {
   const query = `
   mutation createProjectFromTemplate($input: CreateProjectFromTemplateInput!) {
     createProjectFromTemplate(input: $input) {
@@ -342,7 +343,9 @@ Cypress.Commands.add('createProjectFromTemplate', (templateId) => {
   const variables = {
     input: {
       id: uuid(),
+      name,
       templateId,
+      natures,
     },
   };
 

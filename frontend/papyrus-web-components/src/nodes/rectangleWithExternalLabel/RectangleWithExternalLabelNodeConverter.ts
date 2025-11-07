@@ -71,6 +71,7 @@ const toRectangleWithExternalLabelNode = (
   );
   const isNew = gqlNodeLayoutData === undefined;
   const resizedByUser = gqlNodeLayoutData?.resizedByUser ?? false;
+  const movedByUser = gqlNodeLayoutData?.movedByUser ?? false;
 
   const data: RectangleWithExternalLabelNodeData = {
     targetObjectId,
@@ -97,6 +98,7 @@ const toRectangleWithExternalLabelNode = (
     labelEditable,
     isNew,
     resizedByUser,
+    movedByUser,
     isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
     isDraggedNode: false,
     isDropNodeTarget: false,

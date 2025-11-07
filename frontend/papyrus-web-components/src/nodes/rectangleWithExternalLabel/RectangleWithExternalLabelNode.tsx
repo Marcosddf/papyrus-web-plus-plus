@@ -19,7 +19,6 @@ import {
   ConnectionTargetHandle,
   DiagramContext,
   DiagramContextValue,
-  DiagramElementPalette,
   Label,
   useDrop,
   useDropNodeStyle,
@@ -148,15 +147,7 @@ export const RectangleWithExternalLabelNode = memo(
             }}
             onDragOver={onDragOver}
             onDrop={handleOnDrop}
-            data-testid={`RectangleWithExternalLabel - ${data?.insideLabel?.text}`}>
-            {!!selected ? (
-              <DiagramElementPalette
-                diagramElementId={id}
-                targetObjectId={data.targetObjectId}
-                labelId={data.insideLabel ? data.insideLabel.id : null}
-              />
-            ) : null}
-          </div>
+            data-testid={`RectangleWithExternalLabel - ${data?.insideLabel?.text}`}></div>
         </div>
       </>
     );

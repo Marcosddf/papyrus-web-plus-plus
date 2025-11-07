@@ -488,7 +488,7 @@ const ContainmentReferenceSection = ({
               data-testid={`${item.label}`}
               icon={
                 <div>
-                  <IconOverlay iconURL={item.iconURL} alt={item.label} />
+                  <IconOverlay iconURLs={item.iconURL} alt={item.label} />
                 </div>
               }
               clickable={!readOnly && !widget.readOnly}

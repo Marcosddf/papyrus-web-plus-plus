@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2024, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -49,8 +49,8 @@ Cypress.Commands.add('renameProject', (projectId, newProjectName) => {
 /**
  * Creates a project from a template and create a document from a stereotype.
  */
-Cypress.Commands.add('createProjectFromStereotype', (projectName, templateName, stereotypeName, resourceName) => {
-  cy.createProjectFromTemplate(templateName).then((res) => {
+Cypress.Commands.add('createProjectFromStereotype', (projectName, templateName, stereotypeName, resourceName, natures) => {
+  cy.createProjectFromTemplate(projectName, templateName, natures).then((res) => {
     const projectId = res.body.data.createProjectFromTemplate.project.id;
 
     cy.renameProject(projectId, projectName).then((res) => {
@@ -70,8 +70,8 @@ Cypress.Commands.add('createProjectFromStereotype', (projectName, templateName, 
 /*
  * Create a project from a template.
  */
-Cypress.Commands.add('createProjectFromTemplateWithName', (context, projectName, templateName) => {
-  cy.createProjectFromTemplate(templateName).then((res) => {
+Cypress.Commands.add('createProjectFromTemplateWithName', (context, projectName, templateName, natures) => {
+    cy.createProjectFromTemplate(projectName, templateName, natures).then((res) => {
     context.projectId = res.body.data.createProjectFromTemplate.project.id;
     cy.renameProject(context.projectId, projectName).then((res) => {
       return cy.visit(`/projects/${context.projectId}/edit`);

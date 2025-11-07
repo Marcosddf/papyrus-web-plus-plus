@@ -13,17 +13,32 @@
 package org.eclipse.papyrus.web.application.explorer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.papyrus.web.application.readonly.services.api.IPapyrusReadOnlyChecker;
 import org.eclipse.sirius.components.collaborative.trees.api.ITreeItemContextMenuEntryProvider;
 import org.eclipse.sirius.components.collaborative.trees.dto.ITreeItemContextMenuEntry;
 import org.eclipse.sirius.components.collaborative.trees.dto.SingleClickTreeItemContextMenuEntry;
 import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.core.api.IObjectSearchService;
+import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.components.trees.Tree;
 import org.eclipse.sirius.components.trees.TreeItem;
 import org.eclipse.sirius.components.trees.description.TreeDescription;
+import org.eclipse.sirius.web.application.UUIDParser;
+import org.eclipse.sirius.web.application.library.services.LibraryMetadataAdapter;
 import org.eclipse.sirius.web.application.views.explorer.services.ExplorerDescriptionProvider;
+import org.eclipse.sirius.web.application.views.explorer.services.ExplorerTreeItemContextMenuEntryProvider;
+import org.eclipse.sirius.web.domain.boundedcontexts.library.Library;
+import org.eclipse.sirius.web.domain.boundedcontexts.library.services.api.ILibrarySearchService;
+import org.eclipse.sirius.web.domain.boundedcontexts.representationdata.RepresentationMetadata;
+import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.services.api.ISemanticDataSearchService;
+import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
 
 /**
@@ -34,9 +49,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class UMLExplorerItemContextMenuEntryProvider implements ITreeItemContextMenuEntryProvider {
 
+    private final IObjectSearchService objectSearchService;
+
+    private final ILibrarySearchService librarySearchService;
+
+    private final ISemanticDataSearchService semanticDataSearchService;
+
+    private final IPapyrusReadOnlyChecker readOnlyChecker;
+
     private final UMLDefaultTreeExplorerInstaller umlDefaultTreeInstaller;
 
-    public UMLExplorerItemContextMenuEntryProvider(UMLDefaultTreeExplorerInstaller umlDefaultTreeInstaller) {
+    public UMLExplorerItemContextMenuEntryProvider(IObjectSearchService objectSearchService, ILibrarySearchService librarySearchService, ISemanticDataSearchService semanticDataSearchService, IPapyrusReadOnlyChecker readOnlyChecker, UMLDefaultTreeExplorerInstaller umlDefaultTreeInstaller) {
+        this.objectSearchService = Objects.requireNonNull(objectSearchService);
+        this.librarySearchService = Objects.requireNonNull(librarySearchService);
+        this.semanticDataSearchService = Objects.requireNonNull(semanticDataSearchService);
+        this.readOnlyChecker = Objects.requireNonNull(readOnlyChecker);
         this.umlDefaultTreeInstaller = Objects.requireNonNull(umlDefaultTreeInstaller);
     }
 
@@ -51,9 +78,101 @@ public class UMLExplorerItemContextMenuEntryProvider implements ITreeItemContext
     public List<ITreeItemContextMenuEntry> getTreeItemContextMenuEntries(IEditingContext editingContext,
             TreeDescription treeDescription, Tree tree, TreeItem treeItem) {
         List<ITreeItemContextMenuEntry> result = new ArrayList<>();
-        if (treeItem.isHasChildren()) {
-            result.add(new SingleClickTreeItemContextMenuEntry("expandAll", "", List.of(), false));
+        if (editingContext instanceof IEMFEditingContext emfEditingContext) {
+            result.addAll(this.getDocumentContextMenuEntries(emfEditingContext, treeItem));
+            result.addAll(this.getObjectContextMenuEntries(emfEditingContext, treeItem));
+            result.addAll(this.getRepresentationContextMenuEntries(emfEditingContext, treeItem));
+            result.addAll(this.getLibraryRelatedEntries(emfEditingContext, treeItem));
+        }
+
+        result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.EXPAND_ALL, "", List.of(), false));
+
+        return result;
+    }
+
+    private List<ITreeItemContextMenuEntry> getDocumentContextMenuEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
+        var optionalResource = this.objectSearchService.getObject(editingContext, treeItem.getId())
+                .filter(Resource.class::isInstance)
+                .map(Resource.class::cast);
+        if (optionalResource.isPresent()) {
+            var resource = optionalResource.get();
+
+            List<ITreeItemContextMenuEntry> entries = new ArrayList<>();
+            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT, "", List.of(), false));
+            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DOWNLOAD_DOCUMENT, "", List.of(), false));
+            return entries;
+        }
+        return List.of();
+    }
+
+    private List<ITreeItemContextMenuEntry> getObjectContextMenuEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
+        var optionalEObject = this.objectSearchService.getObject(editingContext, treeItem.getId())
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast);
+        if (optionalEObject.isPresent()) {
+            var object = optionalEObject.get();
+
+            return List.of(
+                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT, "", List.of(), false),
+                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_REPRESENTATION, "", List.of(), false));
+
+        }
+        return List.of();
+    }
+
+    private List<ITreeItemContextMenuEntry> getRepresentationContextMenuEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
+        var optionalRepresentationMetadata = this.objectSearchService.getObject(editingContext, treeItem.getId())
+                .filter(RepresentationMetadata.class::isInstance)
+                .map(RepresentationMetadata.class::cast);
+        if (optionalRepresentationMetadata.isPresent()) {
+            return List.of(
+                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DUPLICATE_REPRESENTATION, "", List.of(), false));
+        }
+        return List.of();
+    }
+
+    private List<ITreeItemContextMenuEntry> getLibraryRelatedEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
+        List<ITreeItemContextMenuEntry> result = new ArrayList<>();
+        var optionalNotifier = this.objectSearchService.getObject(editingContext, treeItem.getId())
+                .filter(Notifier.class::isInstance)
+                .map(Notifier.class::cast);
+
+        if (optionalNotifier.isEmpty()) {
+            optionalNotifier = editingContext.getDomain().getResourceSet().getResources().stream()
+                    .filter(resource -> resource.getURI().toString().contains(treeItem.getId()))
+                    .map(Notifier.class::cast)
+                    .findFirst();
+        }
+
+        var optionalLibraryMetadataAdapter = optionalNotifier.stream()
+                .map(Notifier::eAdapters)
+                .flatMap(Collection::stream)
+                .filter(LibraryMetadataAdapter.class::isInstance)
+                .map(LibraryMetadataAdapter.class::cast)
+                .findFirst();
+
+        if (optionalLibraryMetadataAdapter.isPresent()) {
+            var libraryMetadataAdapter = optionalLibraryMetadataAdapter.get();
+            if (this.isDirectDependency(editingContext, libraryMetadataAdapter) && this.readOnlyChecker.isReadOnly(optionalNotifier.get())) {
+                // We do not support the update or removal of a transitive dependency for the moment.
+                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.UPDATE_LIBRARY, "", List.of(), true));
+                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.REMOVE_LIBRARY, "Remove library", List.of("/icons/remove_library.svg"), true));
+            }
         }
         return result;
+    }
+
+    private boolean isDirectDependency(IEMFEditingContext emfEditingContext, LibraryMetadataAdapter libraryMetadataAdapter) {
+        var editingContextDependencies = new UUIDParser().parse(emfEditingContext.getId())
+                .map(this.semanticDataSearchService::findAllDependenciesIdById)
+                .stream()
+                .flatMap(Collection::stream)
+                .map(AggregateReference::getId)
+                .toList();
+        return this.librarySearchService.findByNamespaceAndNameAndVersion(libraryMetadataAdapter.getNamespace(), libraryMetadataAdapter.getName(), libraryMetadataAdapter.getVersion())
+                .map(Library::getSemanticData)
+                .map(AggregateReference::getId)
+                .map(editingContextDependencies::contains)
+                .orElse(false);
     }
 }

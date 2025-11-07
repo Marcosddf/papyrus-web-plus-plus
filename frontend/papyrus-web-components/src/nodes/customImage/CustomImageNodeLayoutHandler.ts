@@ -36,7 +36,7 @@ export class CustomImageNodeLayoutHandler implements INodeLayoutHandler<NodeData
     node: Node<CustomImageNodeData, 'customImageNode'>,
     _visibleNodes: Node<NodeData, DiagramNodeType>[],
     _directChildren: Node<NodeData, DiagramNodeType>[],
-    _newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    _newlyAddedNodes: Node<NodeData, DiagramNodeType>[],
     forceDimensions?: ForcedDimensions
   ) {
     const previousNode = (previousDiagram?.nodes ?? []).find((previouseNode) => previouseNode.id === node.id);

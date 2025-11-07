@@ -71,6 +71,7 @@ const toListNode = (
   );
   const isNew = gqlNodeLayoutData === undefined;
   const resizedByUser = gqlNodeLayoutData?.resizedByUser ?? false;
+  const movedByUser = gqlNodeLayoutData?.movedByUser ?? false;
 
   const data: PackageNodeListData = {
     targetObjectId,
@@ -116,6 +117,7 @@ const toListNode = (
     isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
     isDraggedNode: false,
     resizedByUser,
+    movedByUser,
     growableNodeIds: isListLayoutStrategy(gqlNode.style.childrenLayoutStrategy)
       ? gqlNode.style.childrenLayoutStrategy.growableNodeIds
       : [],

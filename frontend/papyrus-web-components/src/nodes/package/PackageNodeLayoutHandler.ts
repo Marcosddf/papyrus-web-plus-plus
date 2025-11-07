@@ -47,7 +47,7 @@ export class PackageNodeLayoutHandler implements INodeLayoutHandler<PackageNodeD
     node: Node<PackageNodeData, 'packageNode'>,
     visibleNodes: Node<NodeData, DiagramNodeType>[],
     directChildren: Node<NodeData, DiagramNodeType>[],
-    newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    newlyAddedNodes: Node<NodeData, DiagramNodeType>[],
     forceWidth?: ForcedDimensions
   ) {
     const nodeIndex = findNodeIndex(visibleNodes, node.id);
@@ -60,7 +60,7 @@ export class PackageNodeLayoutHandler implements INodeLayoutHandler<PackageNodeD
         node,
         visibleNodes,
         directChildren,
-        newlyAddedNode,
+        newlyAddedNodes,
         borderWidth,
         forceWidth
       );
@@ -75,11 +75,11 @@ export class PackageNodeLayoutHandler implements INodeLayoutHandler<PackageNodeD
     node: Node<PackageNodeData, 'packageNode'>,
     visibleNodes: Node<NodeData, DiagramNodeType>[],
     directChildren: Node<NodeData, DiagramNodeType>[],
-    newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    newlyAddedNodes: Node<NodeData, DiagramNodeType>[],
     borderWidth: number,
     _forceWidth?: ForcedDimensions
   ) {
-    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNode);
+    layoutEngine.layoutNodes(previousDiagram, visibleNodes, directChildren, newlyAddedNodes);
 
     const nodeIndex = findNodeIndex(visibleNodes, node.id);
     const labelElement = document.getElementById(`${node.id}-label-${nodeIndex}`);
@@ -92,7 +92,7 @@ export class PackageNodeLayoutHandler implements INodeLayoutHandler<PackageNodeD
     directNodesChildren.forEach((child, index) => {
       const previousNode = (previousDiagram?.nodes ?? []).find((previouseNode) => previouseNode.id === child.id);
       const previousPosition = computePreviousPosition(previousNode, child);
-      const createdNode = newlyAddedNode?.id === child.id ? newlyAddedNode : undefined;
+      const createdNode = newlyAddedNodes.find((node) => node?.id === child.id);
 
       if (!!createdNode) {
         child.position = createdNode.position;

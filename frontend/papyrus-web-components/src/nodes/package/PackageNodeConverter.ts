@@ -71,6 +71,7 @@ const toPackageNode = (
   );
   const isNew = gqlNodeLayoutData === undefined;
   const resizedByUser = gqlNodeLayoutData?.resizedByUser ?? false;
+  const movedByUser = gqlNodeLayoutData?.movedByUser ?? false;
 
   const data: PackageNodeData = {
     targetObjectId,
@@ -97,6 +98,7 @@ const toPackageNode = (
     labelEditable,
     isNew,
     resizedByUser,
+    movedByUser,
     isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
     isDraggedNode: false,
     areChildNodesDraggable: isListLayoutStrategy(gqlNode.style.childrenLayoutStrategy)

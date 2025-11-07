@@ -19,7 +19,6 @@ import {
   ConnectionTargetHandle,
   DiagramContext,
   DiagramContextValue,
-  DiagramElementPalette,
   Label,
   useDrop,
   useDropNodeStyle,
@@ -137,13 +136,6 @@ export const OuterFlagNode = memo(({ data, id, selected, dragging }: NodeProps<N
         <div style={{ position: 'absolute', inset: '0px' }}>
           {data.insideLabel ? <Label diagramElementId={id} label={updatedLabel} faded={data.faded} /> : null}
         </div>
-        {!!selected ? (
-          <DiagramElementPalette
-            diagramElementId={id}
-            targetObjectId={data.targetObjectId}
-            labelId={data.insideLabel ? data.insideLabel.id : null}
-          />
-        ) : null}
         {!!selected ? <ConnectionCreationHandles nodeId={id} /> : null}
         <ConnectionTargetHandle nodeId={id} nodeDescription={data.nodeDescription} isHovered={data.isHovered} />
         <ConnectionHandles connectionHandles={data.connectionHandles} />

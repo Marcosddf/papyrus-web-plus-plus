@@ -40,7 +40,7 @@ export class NoteNodeLayoutHandler implements INodeLayoutHandler<NodeData> {
     node: Node<NoteNodeData, 'noteNode'>,
     visibleNodes: Node<NodeData, DiagramNodeType>[],
     _directChildren: Node<NodeData, DiagramNodeType>[],
-    _newlyAddedNode: Node<NodeData, DiagramNodeType> | undefined,
+    _newlyAddedNodes: Node<NodeData, DiagramNodeType>[],
     forceWidth?: ForcedDimensions
   ) {
     const nodeIndex = findNodeIndex(visibleNodes, node.id);

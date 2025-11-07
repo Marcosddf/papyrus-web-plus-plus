@@ -15,8 +15,6 @@ package org.eclipse.papyrus.web.properties;
 
 import java.util.List;
 
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.papyrus.web.utils.FileViewRepresentationLoader;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IEditingContextRepresentationDescriptionProvider;
@@ -35,24 +33,22 @@ public class PrimitiveListViewRepresentationDescriptionProvider implements IEdit
 
     private final IViewConverter viewConverter;
 
-    private final EPackage.Registry ePackagesRegistry;
 
-    public PrimitiveListViewRepresentationDescriptionProvider(IViewConverter viewConverter, Registry ePackagesRegistry) {
+    public PrimitiveListViewRepresentationDescriptionProvider(IViewConverter viewConverter) {
         this.viewConverter = viewConverter;
-        this.ePackagesRegistry = ePackagesRegistry;
     }
 
     @Override
     public List<IRepresentationDescription> getRepresentationDescriptions(IEditingContext editingContext) {
         if (editingContext instanceof EditingContext siriusEditingContext) {
 
-            FileViewRepresentationLoader fileViewRepresentationLoader = new FileViewRepresentationLoader("properties/PrimitiveListe.view", this.viewConverter, this.ePackagesRegistry);
+            FileViewRepresentationLoader fileViewRepresentationLoader = new FileViewRepresentationLoader("properties/PrimitiveListe.view", this.viewConverter, siriusEditingContext);
             List<IRepresentationDescription> representations = fileViewRepresentationLoader.loadRepresentations();
             for (IRepresentationDescription rep : representations) {
                 siriusEditingContext.getRepresentationDescriptions().put(rep.getId(), rep);
             }
 
-            ((EditingContext) editingContext).getViews().addAll(fileViewRepresentationLoader.getViews());
+            siriusEditingContext.getViews().addAll(fileViewRepresentationLoader.getViews());
             return representations;
         }
         return List.of();
