@@ -20,13 +20,10 @@ import {
   NodeData,
 } from '@eclipse-sirius/sirius-components-diagrams';
 import { useCurrentProject } from '@eclipse-sirius/sirius-web-application';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import { Node, useNodes } from '@xyflow/react';
 import { Fragment, useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { EditProjectViewParams, GQLGetProjectQueryData, GQLGetProjectQueryVariables } from './EditProjectView.types';
+import { GQLGetProjectQueryData, GQLGetProjectQueryVariables } from './EditProjectView.types';
 import {
   ErrorPayload,
   GQLCreateMetaclassImportData,
@@ -34,6 +31,7 @@ import {
   GQLGetMetaclassesQueryData,
   GQLGetMetaclassesQueryVariables,
 } from './PapyrusPopupToolContribution.types';
+
 import { TransferModal } from './TransferModal';
 
 type Modal = 'dialog';
@@ -91,6 +89,8 @@ export const PapyrusPopupToolContribution = ({
   const [modal, setModal] = useState<Modal | null>(null);
   const { addErrorMessage } = useMultiToast();
   const { httpOrigin } = useContext<ServerContextValue>(ServerContext);
+  const { diagramId, editingContextId } = useContext<DiagramContextValue>(DiagramContext);
+  const { project } = useCurrentProject();
 
   const onClose = (selectedElementIds: string[]) => {
     setModal(null);
@@ -98,7 +98,7 @@ export const PapyrusPopupToolContribution = ({
       input: {
         id: crypto.randomUUID(),
         editingContextId,
-        representationId,
+        representationId: diagramId,
         diagramElementId,
         x,
         y,
@@ -107,10 +107,6 @@ export const PapyrusPopupToolContribution = ({
     };
     createMetaclassImport({ variables });
   };
-
-  const { projectId, representationId } = useParams<EditProjectViewParams>();
-  const { project } = useCurrentProject();
-  const editingContextId = project.currentEditingContext.id;
 
   const [isProfileDiagram, setIsProfileDIagram] = useState(false);
   const [metaclasses, setMetaclasses] = useState([{ id: '0', name: 'Loading...', imagePath: '' }]);
@@ -121,9 +117,9 @@ export const PapyrusPopupToolContribution = ({
     error: errorRepresentationQuery,
   } = useQuery<GQLGetProjectQueryData, GQLGetProjectQueryVariables>(getProjectQuery, {
     variables: {
-      projectId,
-      representationId: representationId ?? '',
-      includeRepresentation: !!representationId,
+      projectId: project.id,
+      representationId: diagramId,
+      includeRepresentation: true,
     },
   });
   useEffect(() => {
@@ -133,7 +129,7 @@ export const PapyrusPopupToolContribution = ({
       }
       if (dataRepresentationQuery) {
         setIsProfileDIagram(
-          dataRepresentationQuery?.viewer?.project?.currentEditingContext?.representation?.isProfileDiagram
+          !!dataRepresentationQuery?.viewer?.project?.currentEditingContext?.representation?.isProfileDiagram
         );
       }
     }
@@ -176,20 +172,10 @@ export const PapyrusPopupToolContribution = ({
 
   let modalElement: JSX.Element | null = null;
   if (modal === 'dialog') {
-    modalElement = (
-      <>
-        <Dialog open={true} onClose={onClose} onClick={(event) => event.stopPropagation()} fullWidth>
-          <DialogContent>
-            <TransferModal editingContextId={editingContextId} items={metaclasses} onClose={onClose} />
-          </DialogContent>
-        </Dialog>
-      </>
-    );
+    modalElement = <TransferModal editingContextId={editingContextId} items={metaclasses} onClose={onClose} />;
   }
 
   const nodes = useNodes<Node<NodeData>>();
-
-  const { diagramId } = useContext<DiagramContextValue>(DiagramContext);
 
   const result = (
     <Fragment key="import-metaclass-modal-contribution">

@@ -293,7 +293,10 @@ export const LanguageExpressionSection = ({
     setExpanded(expanded ? panel : false);
     if (expanded) {
       // language body is now visible
-      setCurrentBody(getLanguage(panel)?.body);
+      const body = getLanguage(panel)?.body;
+      if (body !== undefined) {
+        setCurrentBody(body);
+      }
     }
   };
 
@@ -373,7 +376,7 @@ export const LanguageExpressionSection = ({
   };
 
   const isAlreadyExisting = (language: string): boolean => {
-    return widget.languages.find((l) => l.label === language) !== undefined;
+    return widget.languages ? widget.languages.some((l) => l.label === language) : false;
   };
 
   const handleLanguageBodyChange = (_language: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -381,7 +384,7 @@ export const LanguageExpressionSection = ({
   };
 
   const getLanguage = (label) => {
-    const language = widget.languages.find((l) => l.label === label);
+    const language = widget.languages?.find((l) => l.label === label);
     if (!language) {
       addErrorMessage('Language has changed, please refresh the page');
       return undefined;
@@ -391,7 +394,7 @@ export const LanguageExpressionSection = ({
   const handleLanguageBodyFocusLost =
     (lang: string) => (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const language = getLanguage(lang);
-      if (language?.body !== event.target.value) {
+      if (language && language.body !== event.target.value) {
         const input: GQLEditLanguageBodyInput = {
           id: crypto.randomUUID(),
           editingContextId,
@@ -422,7 +425,7 @@ export const LanguageExpressionSection = ({
           <AddIcon />
         </IconButton>
       </div>
-      {widget.languages.map((lang, index) => {
+      {(widget.languages ?? []).map((lang, index) => {
         return (
           <Accordion
             key={index}
@@ -450,7 +453,9 @@ export const LanguageExpressionSection = ({
                 <IconButton
                   size="small"
                   data-testid={`le-language-${lang.label}-down`}
-                  disabled={index === widget.languages.length - 1 || moveLanguageLoading || readOnly || widget.readOnly}
+                  disabled={
+                    index === (widget.languages?.length ?? 0) - 1 || moveLanguageLoading || readOnly || widget.readOnly
+                  }
                   onClick={(event) => {
                     moveLanguageDown(lang);
                     event.stopPropagation();

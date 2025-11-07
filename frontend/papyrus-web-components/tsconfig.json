@@ -5,8 +5,8 @@
     "emitDeclarationOnly": true,
     "outDir": "./dist",
     "jsx": "react-jsx",
-    "strict": false,
-    "strictNullChecks": false,
+    "strict": true,
+    "strictNullChecks": true,
     "noUncheckedIndexedAccess": false
   },
   "include": ["./src/index.ts"],

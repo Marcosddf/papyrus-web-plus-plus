@@ -26,6 +26,8 @@ import {
   useConnectionLineNodeStyle,
   useRefreshConnectionHandles,
   useConnectorNodeStyle,
+  defaultHeight,
+  defaultWidth,
 } from '@eclipse-sirius/sirius-components-diagrams';
 import { Theme, useTheme } from '@mui/material/styles';
 import React, { memo, useContext } from 'react';
@@ -95,6 +97,8 @@ export const CuboidNode = memo(({ data, id, selected, dragging }: NodeProps<Node
 
   const { getNodes } = useReactFlow<Node<CuboidNodeData>>();
   const node = getNodes().find((node) => node.id === id);
+  const nodeHeight = node?.height ?? defaultHeight;
+  const nodeWidth = node?.width ?? defaultWidth;
 
   const handleOnDrop = (event: React.DragEvent) => {
     onDrop(event, id);
@@ -153,22 +157,22 @@ export const CuboidNode = memo(({ data, id, selected, dragging }: NodeProps<Node
         {!!selected ? <ConnectionCreationHandles nodeId={id} /> : null}
         <ConnectionTargetHandle nodeId={id} nodeDescription={data.nodeDescription} isHovered={data.isHovered} />
         <ConnectionHandles connectionHandles={data.connectionHandles} />
-        <svg viewBox={`0 0 ${node.width} ${node.height}`}>
+        <svg viewBox={`0 0 ${nodeWidth} ${nodeHeight}`}>
           {/* This path represents the external borders of the cuboid */}
           <path
             style={svgPathStyle(theme, data.style, data.faded)}
             d={`M ${borderOffset}, ${borderOffset + cuboidBorder} L ${cuboidBorder + borderOffset}, ${borderOffset} H ${
-              node.width - borderOffset
-            } V ${node.height - (cuboidBorder + borderOffset)} L ${node.width - (cuboidBorder + borderOffset)}, ${
-              node.height - borderOffset
+              nodeWidth - borderOffset
+            } V ${nodeHeight - (cuboidBorder + borderOffset)} L ${nodeWidth - (cuboidBorder + borderOffset)}, ${
+              nodeHeight - borderOffset
             } H ${borderOffset} Z`}
           />
 
           {/* This path represents the top and right borders of the cuboid front face */}
           <path
             style={svgPathStyle(theme, data.style, data.faded)}
-            d={`M ${borderOffset},${borderOffset + cuboidBorder} H ${node.width - (borderOffset + cuboidBorder)} V ${
-              node.height - borderOffset - 0.3
+            d={`M ${borderOffset},${borderOffset + cuboidBorder} H ${nodeWidth - (borderOffset + cuboidBorder)} V ${
+              nodeHeight - borderOffset - 0.3
             }`}
             // Add a 0.3 offset to avoid a glitch at the junction of the lines on the bottom right corner of the cuboid.
           />
@@ -176,8 +180,8 @@ export const CuboidNode = memo(({ data, id, selected, dragging }: NodeProps<Node
           {/* This path represents the diagonal edges on the top-right of the cuboid */}
           <path
             style={svgPathStyle(theme, data.style, data.faded)}
-            d={`M ${node.width - (borderOffset + cuboidBorder)},${borderOffset + cuboidBorder} L ${
-              node.width - borderOffset
+            d={`M ${nodeWidth - (borderOffset + cuboidBorder)},${borderOffset + cuboidBorder} L ${
+              nodeWidth - borderOffset
             }, ${borderOffset}`}
           />
         </svg>

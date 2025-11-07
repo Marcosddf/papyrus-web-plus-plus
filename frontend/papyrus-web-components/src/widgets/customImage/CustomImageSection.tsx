@@ -100,10 +100,10 @@ const defaultErrorMessage = 'An unexpected error has occurred, please refresh th
 const useStylesSection = makeStyles<CustomImageWidgetStyleProps>()(
   (theme, { color, fontSize, italic, bold, underline, strikeThrough }) => ({
     labelItemStyle: {
-      color: color ? getCSSColor(color, theme) : null,
-      fontSize: fontSize ? fontSize : null,
-      fontStyle: italic ? 'italic' : null,
-      fontWeight: bold ? 'bold' : null,
+      color: color ? getCSSColor(color, theme) : undefined,
+      fontSize: fontSize ?? undefined,
+      fontStyle: italic ? 'italic' : undefined,
+      fontWeight: bold ? 'bold' : undefined,
       textDecorationLine: getTextDecorationLineValue(underline, strikeThrough),
     },
     toolbar: {
@@ -120,7 +120,9 @@ export const CustomImageSection = ({
   formId,
 }: PropertySectionComponentProps<GQLCustomImageWidget>) => {
   const { addErrorMessage, addMessages } = useMultiToast();
-  const { projectId } = useParams<CustomImageParams>();
+  const { projectId: projectIdParam } = useParams<CustomImageParams>();
+  const projectId = projectIdParam ?? '';
+
   const { httpOrigin } = useContext<ServerContextValue>(ServerContext);
   const [state, setState] = useState<CustomImageWidgetState>({
     modal: null,
@@ -219,7 +221,7 @@ export const CustomImageSection = ({
     }
   }, [removeUuidLoading, removeUuidError, removeUuidData]);
 
-  let modal = null;
+  let modal: JSX.Element | null = null;
   if (state.modal === 'Upload') {
     modal = (
       <UploadImageModal
@@ -232,18 +234,16 @@ export const CustomImageSection = ({
       />
     );
   } else if (state.modal === 'Select') {
-    let images = [];
     if (!loading && data) {
-      images = data?.viewer.project?.images ?? [];
+      modal = (
+        <SelectImageModal
+          currentUuid={widget.currentUuid}
+          images={data?.viewer.project?.images ?? []}
+          onImageSelected={onImageSelected}
+          onClose={closeModal}
+        />
+      );
     }
-    modal = (
-      <SelectImageModal
-        currentUuid={widget.currentUuid}
-        images={images}
-        onImageSelected={onImageSelected}
-        onClose={closeModal}
-      />
-    );
   }
 
   return (

@@ -25,6 +25,8 @@ import {
   useDropNodeStyle,
   useRefreshConnectionHandles,
   useConnectorNodeStyle,
+  defaultHeight,
+  defaultWidth,
 } from '@eclipse-sirius/sirius-components-diagrams';
 import { Theme, useTheme } from '@mui/material/styles';
 import React, { memo, useContext } from 'react';
@@ -89,6 +91,8 @@ export const OuterFlagNode = memo(({ data, id, selected, dragging }: NodeProps<N
   const { style: dropFeedbackStyle } = useDropNodeStyle(data.isDropNodeTarget, data.isDropNodeCandidate, dragging);
   const { getNodes } = useReactFlow<Node<OuterFlagNodeData>>();
   const node = getNodes().find((node) => node.id === id);
+  const nodeHeight = node?.height ?? defaultHeight;
+  const nodeWidth = node?.width ?? defaultWidth;
 
   const handleOnDrop = (event: React.DragEvent) => {
     onDrop(event, id);
@@ -143,12 +147,12 @@ export const OuterFlagNode = memo(({ data, id, selected, dragging }: NodeProps<N
         {!!selected ? <ConnectionCreationHandles nodeId={id} /> : null}
         <ConnectionTargetHandle nodeId={id} nodeDescription={data.nodeDescription} isHovered={data.isHovered} />
         <ConnectionHandles connectionHandles={data.connectionHandles} />
-        <svg viewBox={`0 0 ${node.width} ${node.height}`}>
+        <svg viewBox={`0 0 ${nodeWidth} ${nodeHeight}`}>
           <path
             style={svgPathStyle(theme, data.style, data.faded)}
-            d={`M ${borderOffset},${borderOffset} H ${node.width - 20 - borderOffset} L ${node.width - borderOffset}, ${
-              node.height / 2
-            } L ${node.width - 20 - borderOffset}, ${node.height - borderOffset} H ${borderOffset} Z`}
+            d={`M ${borderOffset},${borderOffset} H ${nodeWidth - 20 - borderOffset} L ${nodeWidth - borderOffset}, ${
+              nodeHeight / 2
+            } L ${nodeWidth - 20 - borderOffset}, ${nodeHeight - borderOffset} H ${borderOffset} Z`}
           />
         </svg>
       </div>

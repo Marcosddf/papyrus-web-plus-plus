@@ -25,13 +25,13 @@ export const UMLElementTreeItemContextMenuContribution = forwardRef(
     { editingContextId, item, treeId, readOnly, onClose }: TreeItemContextMenuComponentProps,
     ref: React.ForwardedRef<HTMLLIElement>
   ) => {
-    const [modal, setModal] = useState<Modal | undefined>(null);
+    const [modal, setModal] = useState<Modal | null>(null);
 
     const onAppliedStereotype = () => {
       onClose();
     };
 
-    let modalElement = null;
+    let modalElement: JSX.Element | null = null;
     if (modal === 'ApplyStereotype') {
       modalElement = (
         <ApplyStereotypeModal

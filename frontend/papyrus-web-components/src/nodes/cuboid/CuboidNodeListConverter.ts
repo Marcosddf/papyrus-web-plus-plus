@@ -41,7 +41,7 @@ const toCuboidListNode = (
   gqlDiagram: GQLDiagram,
   gqlNode: GQLNode<GQLCuboidNodeStyle>,
   gqlParentNode: GQLNode<GQLNodeStyle> | null,
-  nodeDescription: GQLNodeDescription | undefined,
+  nodeDescription: GQLNodeDescription,
   isBorderNode: boolean,
   gqlEdges: GQLEdge[]
 ): Node<CuboidNodeListData> => {

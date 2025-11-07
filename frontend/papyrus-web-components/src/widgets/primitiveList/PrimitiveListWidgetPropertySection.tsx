@@ -174,10 +174,10 @@ const usePrimitiveListPropertySectionStyles = makeStyles<PrimitiveListStyleProps
       },
     },
     style: {
-      color: color ? color : null,
-      fontSize: fontSize ? fontSize : null,
-      fontStyle: italic ? 'italic' : null,
-      fontWeight: bold ? 'bold' : null,
+      color: color ?? undefined,
+      fontSize: fontSize ?? undefined,
+      fontStyle: italic ? 'italic' : undefined,
+      fontWeight: bold ? 'bold' : undefined,
       textDecorationLine: getTextDecorationLineValue(underline, strikeThrough),
       overflow: 'hidden',
       textOverflow: 'ellipsis',
@@ -225,7 +225,7 @@ export const PrimitiveListSection = ({
     strikeThrough: widget.style?.strikeThrough ?? null,
   };
   const { httpOrigin } = useContext<ServerContextValue>(ServerContext);
-  const [newValue, setNewValue] = useState<GQLPrimitiveListCandidate | null>(null);
+  const [newValue, setNewValue] = useState<GQLPrimitiveListCandidate | undefined>(undefined);
   const [openReorderDialog, setOpenReorderDialog] = useState<boolean>(false);
   const { classes } = usePrimitiveListPropertySectionStyles(props);
   const [autocompleteState, setAutocompleteState] = useState<PrimitiveListAutocompleteState>({
@@ -267,7 +267,7 @@ export const PrimitiveListSection = ({
     useMutation<GQLAddPrimitiveListItemMutationData>(addPrimitiveListItemMutation);
 
   const onAdd = () => {
-    if (newValue?.value.length > 0) {
+    if (newValue && newValue.value.length && newValue?.value.length > 0) {
       const variables = {
         input: {
           id: crypto.randomUUID(),
@@ -315,7 +315,7 @@ export const PrimitiveListSection = ({
       if (addData) {
         const { addPrimitiveListItem } = addData;
         if (isSuccessPayload(addPrimitiveListItem)) {
-          setNewValue(null);
+          setNewValue(undefined);
         }
         if (isErrorPayload(addPrimitiveListItem) || isSuccessPayload(addPrimitiveListItem)) {
           addMessages(addPrimitiveListItem.messages);

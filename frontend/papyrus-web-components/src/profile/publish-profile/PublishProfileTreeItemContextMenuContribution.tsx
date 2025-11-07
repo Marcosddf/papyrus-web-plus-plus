@@ -25,9 +25,9 @@ export const PublishProfileTreeItemContextMenuContribution = forwardRef(
     { editingContextId, item, treeId, readOnly, onClose }: TreeItemContextMenuComponentProps,
     _ref: React.ForwardedRef<HTMLLIElement>
   ) => {
-    const [modal, setModal] = useState<Modal | undefined>(null);
+    const [modal, setModal] = useState<Modal | null>(null);
 
-    let modalElement = null;
+    let modalElement: JSX.Element | null = null;
     if (modal === 'PublishProfile') {
       modalElement = <PublishProfileDialog editingContextId={editingContextId} item={item} onClose={onClose} />;
     }

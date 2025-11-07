@@ -145,6 +145,7 @@ export const TransferModal = ({ items, onClose }: TransferModalProps) => {
       onClose={() => onClose([])}
       aria-labelledby="dialog-title"
       maxWidth={false}
+      onMouseDown={(event) => event.stopPropagation()}
       data-testid="transfer-modal">
       <DialogTitle id="dialog-title">Select Metaclass</DialogTitle>
       <DialogContent className={classes.dialogContent}>

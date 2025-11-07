@@ -26,6 +26,8 @@ import {
   useConnectionLineNodeStyle,
   useRefreshConnectionHandles,
   useConnectorNodeStyle,
+  defaultHeight,
+  defaultWidth,
 } from '@eclipse-sirius/sirius-components-diagrams';
 import { Theme, useTheme } from '@mui/material/styles';
 import React, { memo, useContext } from 'react';
@@ -91,6 +93,8 @@ export const InnerFlagNode = memo(({ data, id, selected, dragging }: NodeProps<N
   const { style: connectionLineActiveNodeStyle } = useConnectionLineNodeStyle(data.connectionLinePositionOnNode);
   const { getNodes } = useReactFlow<Node<InnerFlagNodeData>>();
   const node = getNodes().find((node) => node.id === id);
+  const nodeHeight = node?.height ?? defaultHeight;
+  const nodeWidth = node?.width ?? defaultWidth;
 
   const handleOnDrop = (event: React.DragEvent) => {
     onDrop(event, id);
@@ -146,12 +150,12 @@ export const InnerFlagNode = memo(({ data, id, selected, dragging }: NodeProps<N
         {!!selected ? <ConnectionCreationHandles nodeId={id} /> : null}
         <ConnectionTargetHandle nodeId={id} nodeDescription={data.nodeDescription} isHovered={data.isHovered} />
         <ConnectionHandles connectionHandles={data.connectionHandles} />
-        <svg viewBox={`0 0 ${node.width} ${node.height}`}>
+        <svg viewBox={`0 0 ${nodeWidth} ${nodeHeight}`}>
           <path
             style={svgPathStyle(theme, data.style, data.faded)}
-            d={`M ${borderOffset},${borderOffset} H ${node.width - borderOffset} V ${
-              node.height - borderOffset
-            } H ${borderOffset} L ${20}, ${node.height / 2} Z`}
+            d={`M ${borderOffset},${borderOffset} H ${nodeWidth - borderOffset} V ${
+              nodeHeight - borderOffset
+            } H ${borderOffset} L ${20}, ${nodeHeight / 2} Z`}
           />
         </svg>
       </div>

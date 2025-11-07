@@ -18,6 +18,8 @@ import {
   ConnectionCreationHandles,
   ConnectionHandles,
   ConnectionTargetHandle,
+  defaultHeight,
+  defaultWidth,
   DiagramContext,
   DiagramContextValue,
   DiagramElementPalette,
@@ -90,6 +92,8 @@ export const NoteNode = memo(({ data, id, selected, dragging }: NodeProps<Node<N
   const { style: dropFeedbackStyle } = useDropNodeStyle(data.isDropNodeTarget, data.isDropNodeCandidate, dragging);
   const { getNodes } = useReactFlow<Node<NoteNodeData>>();
   const node = getNodes().find((node) => node.id === id);
+  const nodeHeight = node?.height ?? defaultHeight;
+  const nodeWidth = node?.width ?? defaultWidth;
 
   const handleOnDrop = (event: React.DragEvent) => {
     onDrop(event, id);
@@ -139,11 +143,11 @@ export const NoteNode = memo(({ data, id, selected, dragging }: NodeProps<Node<N
             left: '0px',
             zIndex: '-1',
           }}>
-          <svg viewBox={`0 0 ${node.width} ${node.height}`}>
+          <svg viewBox={`0 0 ${nodeWidth} ${nodeHeight}`}>
             <path
               style={svgPathStyle(theme, data.style, data.faded)}
-              d={`M ${borderOffset},${borderOffset} H ${node.width - 15} L ${node.width - borderOffset} 15 V ${
-                node.height - borderOffset
+              d={`M ${borderOffset},${borderOffset} H ${nodeWidth - 15} L ${nodeWidth - borderOffset} 15 V ${
+                nodeHeight - borderOffset
               } H ${borderOffset} Z`}
             />
             <path
@@ -151,7 +155,7 @@ export const NoteNode = memo(({ data, id, selected, dragging }: NodeProps<Node<N
                 ...svgPathStyle(theme, data.style, data.faded),
                 fillOpacity: 0,
               }}
-              d={`M ${node.width - 15},${borderOffset} V 15 H ${node.width - borderOffset}`}
+              d={`M ${nodeWidth - 15},${borderOffset} V 15 H ${nodeWidth - borderOffset}`}
             />
           </svg>
         </div>

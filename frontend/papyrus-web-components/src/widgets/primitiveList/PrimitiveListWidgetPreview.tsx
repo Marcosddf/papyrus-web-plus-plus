@@ -32,10 +32,10 @@ import { useEffect, useRef, useState } from 'react';
 const useStyles = makeStyles<ListStyleProps>()(
   (theme, { color, fontSize, italic, bold, underline, strikeThrough }) => ({
     style: {
-      color: color ? color : null,
-      fontSize: fontSize ? fontSize : null,
-      fontStyle: italic ? 'italic' : null,
-      fontWeight: bold ? 'bold' : null,
+      color: color ?? undefined,
+      fontSize: fontSize ?? undefined,
+      fontStyle: italic ? 'italic' : undefined,
+      fontWeight: bold ? 'bold' : undefined,
       textDecorationLine: getTextDecorationLineValue(underline, strikeThrough),
     },
     icon: {

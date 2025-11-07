@@ -14,7 +14,12 @@
  *  Aurelien Didier (Artal Technologies) - Issue 218
  *****************************************************************************/
 import { getCSSColor, ServerContext, ServerContextValue, useMultiToast } from '@eclipse-sirius/sirius-components-core';
-import { DiagramContext, DiagramContextValue } from '@eclipse-sirius/sirius-components-diagrams';
+import {
+  defaultHeight,
+  defaultWidth,
+  DiagramContext,
+  DiagramContextValue,
+} from '@eclipse-sirius/sirius-components-diagrams';
 import { Theme, useTheme } from '@mui/material/styles';
 import { ResizeControlVariant } from '@xyflow/system';
 import Typography from '@mui/material/Typography';
@@ -88,6 +93,8 @@ export const CustomImageNode: NodeComponentsMap['customImageNode'] = memo(
     const storeApi = useStoreApi<Node<NodeData>, Edge<EdgeData>>();
     const getNodeById = (id: string) => storeApi.getState().nodeLookup.get(id);
     const node = getNodeById(id);
+    const nodeHeight = node?.height ?? defaultHeight;
+    const nodeWidth = node?.width ?? defaultWidth;
 
     useEffect(() => {
       setState((prevState) => ({
@@ -124,8 +131,8 @@ export const CustomImageNode: NodeComponentsMap['customImageNode'] = memo(
             <img
               id={id}
               src={state.url}
-              width={node.width - 5}
-              height={node.height - 5}
+              width={nodeWidth - 5}
+              height={nodeHeight - 5}
               draggable={false}
               onError={onErrorLoadingImage}
               style={{

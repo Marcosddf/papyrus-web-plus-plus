@@ -56,10 +56,10 @@ import { ChildCreationDescription } from './dialogs/CreateNewChildDialog.types';
 const useStyles = makeStyles<GQLReferenceWidgetStyle>()(
   (theme, { color, fontSize, italic, bold, underline, strikeThrough }) => ({
     labelItemStyle: {
-      color: color ? getCSSColor(color, theme) : null,
-      fontSize: fontSize ? fontSize : null,
-      fontStyle: italic ? 'italic' : null,
-      fontWeight: bold ? 'bold' : null,
+      color: color ? getCSSColor(color, theme) : undefined,
+      fontSize: fontSize ?? undefined,
+      fontStyle: italic ? 'italic' : undefined,
+      fontWeight: bold ? 'bold' : undefined,
       textDecorationLine: getTextDecorationLineValue(underline, strikeThrough),
     },
     chip: {
@@ -384,7 +384,9 @@ const ContainmentReferenceSection = ({
   const handleCloseCreateNewChildDialog = (newChildDescriptionId: string | null) => {
     setChildTypes([]);
     setOpenDialog(null);
-    callCreateElementInReference(newChildDescriptionId);
+    if (newChildDescriptionId) {
+      callCreateElementInReference(newChildDescriptionId);
+    }
   };
 
   const clickHandler = useClickHandler<GQLContainmentReferenceItem>(
@@ -394,7 +396,7 @@ const ContainmentReferenceSection = ({
 
   const handleDeleteItem = (item: GQLContainmentReferenceItem) => {
     if (item?.id) {
-      if (widget.referenceValues.find((value) => value.id === item.id)) {
+      if (widget.referenceValues && widget.referenceValues.find((value) => value.id === item.id)) {
         const variables: GQLRemoveContainmentReferenceItemMutationVariables = {
           input: {
             id: crypto.randomUUID(),
@@ -420,12 +422,12 @@ const ContainmentReferenceSection = ({
     });
   };
 
-  const getDialog = () => {
+  const getDialog = (): JSX.Element | null => {
     if (!openDialog) return null;
     if (openDialog === 'REORDER') {
       return (
         <ReorderItemsDialog
-          items={widget.referenceValues.map(({ label, id, iconURL }) => ({ label, id, iconURL }))}
+          items={widget.referenceValues?.map(({ label, id, iconURL }) => ({ label, id, iconURL })) ?? []}
           moveElement={callMoveContainmentReferenceItem}
           onClose={() => setOpenDialog(null)}
         />
@@ -433,13 +435,20 @@ const ContainmentReferenceSection = ({
     } else if (openDialog === 'NEW_INSTANCE') {
       return <CreateNewChildDialog childTypes={childTypes} onClose={handleCloseCreateNewChildDialog} />;
     }
-    return undefined;
+    return null;
   };
 
   const dialog: JSX.Element | null = getDialog();
 
   const canReorder =
-    !readOnly && !widget.readOnly && widget.containmentReference.isMany && widget.referenceValues.length > 1;
+    !readOnly &&
+    !widget.readOnly &&
+    widget.containmentReference.isMany &&
+    widget.referenceValues &&
+    widget.referenceValues.length > 1;
+
+  const isDisabled =
+    readOnly || widget.readOnly || (!widget.containmentReference.isMany && (widget.referenceValues?.length ?? 0) > 0);
 
   return (
     <>
@@ -455,11 +464,7 @@ const ContainmentReferenceSection = ({
             <IconButton
               data-testid="containment-reference-create-child"
               onClick={handleOpenCreateNewChildDialog}
-              disabled={
-                readOnly ||
-                widget.readOnly ||
-                (!widget.containmentReference.isMany && widget.referenceValues.length > 0)
-              }
+              disabled={isDisabled}
               size="small">
               <AddIcon />
             </IconButton>
@@ -474,7 +479,7 @@ const ContainmentReferenceSection = ({
             )}
           </div>
         </div>
-        {widget.referenceValues.length > 0 ? (
+        {widget.referenceValues && widget.referenceValues.length > 0 ? (
           widget.referenceValues.map((item, index) => (
             <Chip
               key={index}

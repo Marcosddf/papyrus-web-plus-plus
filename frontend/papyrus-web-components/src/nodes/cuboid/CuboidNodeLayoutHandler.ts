@@ -96,7 +96,7 @@ export class CuboidNodeLayoutHandler implements INodeLayoutHandler<CuboidNodeDat
 
     // Update children position to be under the label and at the right padding.
     directNodesChildren.forEach((child, index) => {
-      const previousNode = (previousDiagram?.nodes ?? []).find((previouseNode) => previouseNode.id === child.id);
+      const previousNode = (previousDiagram?.nodes ?? []).find((prevNode) => prevNode.id === child.id);
       const previousPosition = computePreviousPosition(previousNode, child);
       const createdNode = newlyAddedNode?.id === child.id ? newlyAddedNode : undefined;
 
@@ -111,7 +111,11 @@ export class CuboidNodeLayoutHandler implements INodeLayoutHandler<CuboidNodeDat
             y: borderWidth + headerHeightFootprint + rectangularNodePadding + cuboidBorder + labelPadding,
           };
         }
-        if (child.position.x + child.width > node.width - cuboidBorder - rectangularNodePadding - borderWidth) {
+        if (
+          child.width !== undefined &&
+          node.width !== undefined &&
+          child.position.x + child.width > node.width - cuboidBorder - rectangularNodePadding - borderWidth
+        ) {
           child.position = {
             ...child.position,
             x: node.width - child.width - cuboidBorder - borderWidth - rectangularNodePadding,
@@ -129,7 +133,11 @@ export class CuboidNodeLayoutHandler implements INodeLayoutHandler<CuboidNodeDat
           };
         }
 
-        if (child.position.x + child.width > node.width - cuboidBorder - rectangularNodePadding - borderWidth) {
+        if (
+          child.width !== undefined &&
+          node.width !== undefined &&
+          child.position.x + child.width > node.width - cuboidBorder - rectangularNodePadding - borderWidth
+        ) {
           child.position = {
             ...child.position,
             x: node.width - child.width - cuboidBorder - borderWidth - rectangularNodePadding,
@@ -157,7 +165,11 @@ export class CuboidNodeLayoutHandler implements INodeLayoutHandler<CuboidNodeDat
             y: child.position.y + headerHeightFootprint + cuboidBorder + labelPadding,
           };
         }
-        if (child.position.x + child.width > node.width - cuboidBorder - rectangularNodePadding - borderWidth) {
+        if (
+          child.width !== undefined &&
+          node.width !== undefined &&
+          child.position.x + child.width > node.width - cuboidBorder - rectangularNodePadding - borderWidth
+        ) {
           child.position = {
             ...child.position,
             x: node.width - child.width - cuboidBorder - borderWidth - rectangularNodePadding,

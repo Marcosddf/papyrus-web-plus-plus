@@ -31,6 +31,8 @@ import {
   convertLineStyle,
   convertOutsideLabels,
   isListLayoutStrategy,
+  defaultHeight,
+  defaultWidth,
 } from '@eclipse-sirius/sirius-components-diagrams';
 import { Node, XYPosition } from '@xyflow/react';
 import { GQLPackageNodeStyle, PackageNodeData } from './PackageNode.types';
@@ -41,7 +43,7 @@ const toPackageNode = (
   gqlDiagram: GQLDiagram,
   gqlNode: GQLNode<GQLPackageNodeStyle>,
   gqlParentNode: GQLNode<GQLNodeStyle> | null,
-  nodeDescription: GQLNodeDescription | undefined,
+  nodeDescription: GQLNodeDescription,
   isBorderNode: boolean,
   gqlEdge: GQLEdge[]
 ): Node<PackageNodeData> => {
@@ -151,8 +153,8 @@ const toPackageNode = (
       height: `${node.height}px`,
     };
   } else {
-    node.height = data.defaultHeight;
-    node.width = data.defaultWidth;
+    node.height = data.defaultHeight ?? defaultHeight;
+    node.width = data.defaultWidth ?? defaultWidth;
   }
   return node;
 };
@@ -200,7 +202,9 @@ export class PackageNodeConverter implements INodeConverter {
     nodeDescriptions: GQLNodeDescription[]
   ) {
     const nodeDescription = nodeDescriptions.find((description) => description.id === gqlNode.descriptionId);
-    nodes.push(toPackageNode(gqlDiagram, gqlNode, parentNode, nodeDescription ?? undefined, isBorderNode, gqlEdges));
+    if (nodeDescription) {
+      nodes.push(toPackageNode(gqlDiagram, gqlNode, parentNode, nodeDescription, isBorderNode, gqlEdges));
+    }
 
     const borderNodeDescriptions: GQLNodeDescription[] = (nodeDescription?.borderNodeDescriptionIds ?? []).flatMap(
       (nodeDescriptionId) =>

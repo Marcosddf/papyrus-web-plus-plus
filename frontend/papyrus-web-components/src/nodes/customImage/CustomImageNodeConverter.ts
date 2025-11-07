@@ -32,6 +32,8 @@ import {
   convertLineStyle,
   convertOutsideLabels,
   isListLayoutStrategy,
+  defaultHeight,
+  defaultWidth,
 } from '@eclipse-sirius/sirius-components-diagrams';
 import { Node, XYPosition } from '@xyflow/react';
 import { CustomImageNodeData, GQLCustomImageNodeStyle } from './CustomImageNode.types';
@@ -42,7 +44,7 @@ const toCustomImageNode = (
   gqlDiagram: GQLDiagram,
   gqlNode: GQLNode<GQLCustomImageNodeStyle>,
   gqlParentNode: GQLNode<GQLNodeStyle> | null,
-  nodeDescription: GQLNodeDescription | undefined,
+  nodeDescription: GQLNodeDescription,
   isBorderNode: boolean,
   gqlEdges: GQLEdge[]
 ): Node<CustomImageNodeData> => {
@@ -146,8 +148,8 @@ const toCustomImageNode = (
       height: `${node.height}px`,
     };
   } else {
-    node.height = data.defaultHeight;
-    node.width = data.defaultWidth;
+    node.height = data.defaultHeight ?? defaultHeight;
+    node.width = data.defaultWidth ?? defaultWidth;
   }
 
   return node;
@@ -170,7 +172,9 @@ export class CustomImageNodeConverter implements INodeConverter {
     nodeDescriptions: GQLNodeDescription[]
   ) {
     const nodeDescription = nodeDescriptions.find((description) => description.id === gqlNode.descriptionId);
-    nodes.push(toCustomImageNode(gqlDiagram, gqlNode, parentNode, nodeDescription, isBorderNode, gqlEdges));
+    if (nodeDescription) {
+      nodes.push(toCustomImageNode(gqlDiagram, gqlNode, parentNode, nodeDescription, isBorderNode, gqlEdges));
+    }
 
     const borderNodeDescriptions: GQLNodeDescription[] = (nodeDescription?.borderNodeDescriptionIds ?? []).flatMap(
       (nodeDescriptionId) =>

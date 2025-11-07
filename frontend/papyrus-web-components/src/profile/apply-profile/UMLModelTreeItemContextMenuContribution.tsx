@@ -25,13 +25,13 @@ export const UMLModelTreeItemContextMenuContribution = forwardRef(
     { editingContextId, item, readOnly, treeId, onClose }: TreeItemContextMenuComponentProps,
     ref: React.ForwardedRef<HTMLLIElement>
   ) => {
-    const [modal, setModal] = useState<Modal>(null);
+    const [modal, setModal] = useState<Modal | null>(null);
 
     const onAppliedProfile = () => {
       onClose();
     };
 
-    let modalElement = null;
+    let modalElement: JSX.Element | null = null;
     if (modal === 'ApplyProfile') {
       modalElement = (
         <ApplyProfileModal

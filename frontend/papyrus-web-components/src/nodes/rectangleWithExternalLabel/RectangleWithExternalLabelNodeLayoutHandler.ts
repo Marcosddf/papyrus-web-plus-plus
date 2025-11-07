@@ -20,6 +20,8 @@ import {
   NodeData,
   setBorderNodesPosition,
   ForcedDimensions,
+  defaultWidth,
+  defaultHeight,
 } from '@eclipse-sirius/sirius-components-diagrams';
 import { Node } from '@xyflow/react';
 
@@ -41,10 +43,8 @@ export class RectangleWithExternalLabelNodeLayoutHandler implements INodeLayoutH
 
     const borderNodes = directChildren.filter((node) => node.data.isBorderNode);
 
-    const nodeWidth = node.data.defaultWidth;
-
-    node.width = nodeWidth;
-    node.height = node.data.defaultHeight;
+    node.width = node.data.defaultWidth ?? defaultWidth;
+    node.height = node.data.defaultHeight ?? defaultHeight;
 
     // Update border nodes positions
     borderNodes.forEach((borderNode) => {
