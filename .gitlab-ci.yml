@@ -10,7 +10,7 @@
 #
 # Contributors:
 # Marcos Didonet Del Fabro (CEA LIST) - Initial implementation
-#
+# Vincent Lorenzo (CEA LIST)
 #############################################################################
 workflow:
   rules:
@@ -25,14 +25,21 @@ workflow:
 include:
   - project: 'eclipsefdn/it/releng/gitlab-runner-service/gitlab-ci-templates'
     file: 
+      - '/jobs/eca.gitlab-ci.yml'
       - '/jobs/buildkit.gitlab-ci.yml'
       - '/jobs/repo.eclipse.org.gitlab-ci.yml'
 
 stages:
+  - compliance
   - build
   - deploy
   - test
 
+# Job to check ECA (Eclipse Contribution Agreement) for merge request.
+# Note: this job has compliance stage (cf. parent job '.eca').
+eca:
+  extends: .eca
+  
 docker-build:
   after_script:
     - echo 'print image name'
