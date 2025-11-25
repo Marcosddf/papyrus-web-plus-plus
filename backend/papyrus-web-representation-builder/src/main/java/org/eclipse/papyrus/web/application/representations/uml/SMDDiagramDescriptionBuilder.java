@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2022, 2024 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -45,12 +45,14 @@ import org.eclipse.sirius.components.view.diagram.RectangularNodeStyleDescriptio
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.springframework.stereotype.Service;
 
 /**
  * Builder of the "State machine" diagram representation description.
  *
  * @author Laurent Fasani
  */
+@Service
 public class SMDDiagramDescriptionBuilder extends AbstractRepresentationDescriptionBuilder {
 
     public static final String SMD_REP_NAME = "State Machine Diagram";

@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.papyrus.uml.domain.services.EMFUtils;
-import org.eclipse.papyrus.web.application.representations.PapyrusRepresentationDescriptionRegistry;
+import org.eclipse.papyrus.web.application.representations.IDiagramConvertedElementProvider;
 import org.eclipse.papyrus.web.application.representations.aqlservices.statemachine.StateMachineDiagramService;
 import org.eclipse.papyrus.web.application.representations.aqlservices.utils.GenericDiagramService;
 import org.eclipse.papyrus.web.application.representations.uml.CDDiagramDescriptionBuilder;
@@ -49,6 +49,7 @@ import org.eclipse.sirius.components.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.components.events.ICause;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.sirius.web.application.project.services.api.IProjectTemplateInitializer;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
@@ -79,8 +80,6 @@ public class UMLCppProjectTemplateInitializer implements IProjectTemplateInitial
 
     private final TemplateInitializer initializerHelper;
 
-    private final PapyrusRepresentationDescriptionRegistry papyrusRepresentationRegistry;
-
     private final StateMachineDiagramService stateMachineDiagramService;
 
     private final IDiagramBuilderService diagramBuilderService;
@@ -95,22 +94,24 @@ public class UMLCppProjectTemplateInitializer implements IProjectTemplateInitial
 
     private final IRepresentationMetadataPersistenceService representationMetadataPersistenceService;
 
+    private final IDiagramConvertedElementProvider convertedNodeProvider;
+
     public UMLCppProjectTemplateInitializer(TemplateInitializer templateInitializer,
             StateMachineDiagramService stateMachineDiagramService,
             GenericDiagramService packageDiagramService,
             IDiagramBuilderService diagramBuilderService,
             IDiagramNavigationService diagramNavigationService,
-            PapyrusRepresentationDescriptionRegistry papyrusRepresentationRegistry,
-            PapyrusProjectTemplateInitializerParameters papyrusProjectTemplateInitializerParameters) {
+            PapyrusProjectTemplateInitializerParameters papyrusProjectTemplateInitializerParameters,
+            IDiagramConvertedElementProvider convertedNodeProvider) {
         this.stateMachineDiagramService = Objects.requireNonNull(stateMachineDiagramService);
         this.classDiagramService = Objects.requireNonNull(packageDiagramService);
         this.diagramBuilderService = Objects.requireNonNull(diagramBuilderService);
         this.diagramNavigationService = Objects.requireNonNull(diagramNavigationService);
-        this.papyrusRepresentationRegistry = Objects.requireNonNull(papyrusRepresentationRegistry);
         this.initializerHelper = Objects.requireNonNull(templateInitializer);
         this.representationPersistenceService = papyrusProjectTemplateInitializerParameters.representationPersistenceService();
         this.representationDescriptionSearchService = papyrusProjectTemplateInitializerParameters.representationDescriptionSearchService();
         this.representationMetadataPersistenceService = papyrusProjectTemplateInitializerParameters.representationMetadataPersistenceService();
+        this.convertedNodeProvider = convertedNodeProvider;
     }
 
     @Override
@@ -121,15 +122,17 @@ public class UMLCppProjectTemplateInitializer implements IProjectTemplateInitial
     @Override
     public Optional<RepresentationMetadata> handle(ICause cause, String templateId, IEditingContext editingContext) {
         Optional<RepresentationMetadata> result = Optional.empty();
-        if (UMLCppProjectTemplateProvider.UML_CPP_TEMPLATE_ID.equals(templateId)) {
-            result = this.initializeCppProjectContents(editingContext, cause);
-        } else if (UMLCppProjectTemplateProvider.UML_CPP_SM_TEMPLATE_ID.equals(templateId)) {
-            result = this.initializeCppSMProjectContents(editingContext, cause);
+        if (editingContext instanceof EditingContext siriusEditingContext) {
+            if (UMLCppProjectTemplateProvider.UML_CPP_TEMPLATE_ID.equals(templateId)) {
+                result = this.initializeCppProjectContents(siriusEditingContext, cause);
+            } else if (UMLCppProjectTemplateProvider.UML_CPP_SM_TEMPLATE_ID.equals(templateId)) {
+                result = this.initializeCppSMProjectContents(siriusEditingContext, cause);
+            }
         }
         return result;
     }
 
-    private Optional<RepresentationMetadata> initializeCppProjectContents(IEditingContext editingContext, ICause cause) {
+    private Optional<RepresentationMetadata> initializeCppProjectContents(EditingContext editingContext, ICause cause) {
         try {
             Optional<Resource> resource = this.initializerHelper.initializeResourceFromClasspathFile(editingContext, CPP_TEMPLATE_FILE, CPP_TEMPLATE_FILE, cause);
             var optionalDiagram = resource.flatMap(r -> this.createMainCppClassDiagram(editingContext, r, cause));
@@ -149,9 +152,9 @@ public class UMLCppProjectTemplateInitializer implements IProjectTemplateInitial
         return Optional.empty();
     }
 
-    private Optional<Diagram> createMainCppClassDiagram(IEditingContext editingContext, Resource r, ICause cause) {
-        Map<NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> convertedNodes = this.papyrusRepresentationRegistry
-                .getConvertedNode(CDDiagramDescriptionBuilder.CD_REP_NAME);
+    private Optional<Diagram> createMainCppClassDiagram(EditingContext editingContext, Resource r, ICause cause) {
+        Map<NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> convertedNodes = this.convertedNodeProvider
+                .getConvertedNode(CDDiagramDescriptionBuilder.CD_REP_NAME, editingContext);
         return this.diagramBuilderService
                 .createDiagram(editingContext, diagramDescription -> CDDiagramDescriptionBuilder.CD_REP_NAME.equals(diagramDescription.getLabel()), r.getContents().get(0), "Main")
                 .flatMap(diagram -> this.semanticDropMainClassAndComment(editingContext, r, convertedNodes, diagram));
@@ -196,7 +199,7 @@ public class UMLCppProjectTemplateInitializer implements IProjectTemplateInitial
         return "CD_Class_Operations_SHARED_CompartmentNode".equals(diagramNav.getDescription(v).get().getName());
     }
 
-    private Optional<RepresentationMetadata> initializeCppSMProjectContents(IEditingContext editingContext, ICause cause) {
+    private Optional<RepresentationMetadata> initializeCppSMProjectContents(EditingContext editingContext, ICause cause) {
         List<Diagram> diagrams = new ArrayList<>();
         Optional<Resource> optionalResource = Optional.empty();
         try {
@@ -215,13 +218,13 @@ public class UMLCppProjectTemplateInitializer implements IProjectTemplateInitial
         });
     }
 
-    private Optional<RepresentationMetadata> createMainCppSMClassDiagram(IEditingContext editingContext, Resource r, ICause cause) {
+    private Optional<RepresentationMetadata> createMainCppSMClassDiagram(EditingContext editingContext, Resource r, ICause cause) {
 
         Predicate<DiagramDescription> descriptionMatcher = diagramDescription -> CDDiagramDescriptionBuilder.CD_REP_NAME.equals(diagramDescription.getLabel());
         Optional<Diagram> optDiagram = this.diagramBuilderService.createDiagram(editingContext, descriptionMatcher, r.getContents().get(0), "SimpleSM_");
 
-        Map<NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> convertedNodes = this.papyrusRepresentationRegistry
-                .getConvertedNode(CDDiagramDescriptionBuilder.CD_REP_NAME);
+        Map<NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> convertedNodes = this.convertedNodeProvider
+                .getConvertedNode(CDDiagramDescriptionBuilder.CD_REP_NAME, editingContext);
         Model model = (Model) r.getContents().get(0);
 
         return optDiagram.flatMap(diagram -> this.dropModelAndComment(editingContext, convertedNodes, model, diagram))
@@ -271,7 +274,7 @@ public class UMLCppProjectTemplateInitializer implements IProjectTemplateInitial
         });
     }
 
-    private void createStateMachineDiagram(StateMachine stateMachine, IEditingContext editingContext, ICause cause) {
+    private void createStateMachineDiagram(StateMachine stateMachine, EditingContext editingContext, ICause cause) {
         Optional<Diagram> optionalDiagram = this.diagramBuilderService.createDiagram(editingContext, diagramDescription -> SMDDiagramDescriptionBuilder.SMD_REP_NAME.equals(diagramDescription.getLabel()),
                 stateMachine, "SM Diagram");
 
@@ -287,9 +290,9 @@ public class UMLCppProjectTemplateInitializer implements IProjectTemplateInitial
                 });
     }
 
-    private void fillStateMachineDiagram(StateMachine stateMachine, IEditingContext editingContext, Diagram diagram, DiagramContext diagramContext) {
-        Map<NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> convertedNodes = this.papyrusRepresentationRegistry
-                .getConvertedNode(SMDDiagramDescriptionBuilder.SMD_REP_NAME);
+    private void fillStateMachineDiagram(StateMachine stateMachine, EditingContext editingContext, Diagram diagram, DiagramContext diagramContext) {
+        Map<NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> convertedNodes = this.convertedNodeProvider
+                .getConvertedNode(SMDDiagramDescriptionBuilder.SMD_REP_NAME, editingContext);
         // Display all state in each region
         for (Region region : stateMachine.getRegions()) {
             NodeMatcher regionNodeMatcher = NodeMatcher.buildSemanticMatcher(BorderNodeStatus.BASIC_NODE, o -> o == region);

@@ -38,12 +38,14 @@ import org.eclipse.uml2.uml.Interaction;
 import org.eclipse.uml2.uml.Lifeline;
 import org.eclipse.uml2.uml.TimeObservation;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.springframework.stereotype.Service;
 
 /**
  * Builder of the "Communication" diagram representation.
  *
  * @author <a href="mailto:jessy.mallet@obeo.fr">Jessy Mallet</a>
  */
+@Service
 public final class CODDiagramDescriptionBuilder extends AbstractRepresentationDescriptionBuilder {
 
     /**

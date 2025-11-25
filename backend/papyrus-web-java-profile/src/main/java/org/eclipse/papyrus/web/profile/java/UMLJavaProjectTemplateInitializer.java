@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2022, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.papyrus.web.application.representations.PapyrusRepresentationDescriptionRegistry;
+import org.eclipse.papyrus.web.application.representations.IDiagramConvertedElementProvider;
 import org.eclipse.papyrus.web.application.representations.aqlservices.utils.GenericDiagramService;
 import org.eclipse.papyrus.web.application.representations.uml.CDDiagramDescriptionBuilder;
 import org.eclipse.papyrus.web.application.templates.projects.PapyrusProjectTemplateInitializerParameters;
@@ -41,6 +41,7 @@ import org.eclipse.sirius.components.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.components.events.ICause;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.sirius.web.application.project.services.api.IProjectTemplateInitializer;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
@@ -67,8 +68,6 @@ public class UMLJavaProjectTemplateInitializer implements IProjectTemplateInitia
 
     private final GenericDiagramService classDiagramService;
 
-    private final PapyrusRepresentationDescriptionRegistry papyrusRepresentationRegistry;
-
     private final IDiagramNavigationService diagramNavigationService;
 
     private final IRepresentationPersistenceService representationPersistenceService;
@@ -77,20 +76,22 @@ public class UMLJavaProjectTemplateInitializer implements IProjectTemplateInitia
 
     private final IRepresentationMetadataPersistenceService representationMetadataPersistenceService;
 
+    private final IDiagramConvertedElementProvider convertedNodeProvider;
+
     public UMLJavaProjectTemplateInitializer(TemplateInitializer initializerHelper, //
             IDiagramBuilderService diagramBuilderService, //
             IDiagramNavigationService diagramNavigationService, //
-            PapyrusRepresentationDescriptionRegistry papyrusRepresentationRegistry, //
             GenericDiagramService classDiagramService, //
-            PapyrusProjectTemplateInitializerParameters papyrusProjectTemplateInitializerParameters) {
+            PapyrusProjectTemplateInitializerParameters papyrusProjectTemplateInitializerParameters,
+            IDiagramConvertedElementProvider convertedNodeProvider) {
         this.initializerHelper = Objects.requireNonNull(initializerHelper);
         this.diagramBuilderService = Objects.requireNonNull(diagramBuilderService);
         this.diagramNavigationService = Objects.requireNonNull(diagramNavigationService);
-        this.papyrusRepresentationRegistry = Objects.requireNonNull(papyrusRepresentationRegistry);
         this.classDiagramService = Objects.requireNonNull(classDiagramService);
         this.representationPersistenceService = papyrusProjectTemplateInitializerParameters.representationPersistenceService();
         this.representationDescriptionSearchService = papyrusProjectTemplateInitializerParameters.representationDescriptionSearchService();
         this.representationMetadataPersistenceService = papyrusProjectTemplateInitializerParameters.representationMetadataPersistenceService();
+        this.convertedNodeProvider = convertedNodeProvider;
     }
 
     @Override
@@ -101,13 +102,13 @@ public class UMLJavaProjectTemplateInitializer implements IProjectTemplateInitia
     @Override
     public Optional<RepresentationMetadata> handle(ICause cause, String templateId, IEditingContext editingContext) {
         Optional<RepresentationMetadata> result = Optional.empty();
-        if (UMLJavaTemplateProvider.UML_JAVA_TEMPLATE_ID.equals(templateId)) {
-            result = this.initializeUMLJavaProjectContents(editingContext, cause);
+        if (UMLJavaTemplateProvider.UML_JAVA_TEMPLATE_ID.equals(templateId) && editingContext instanceof EditingContext siriusEditingContext) {
+            result = this.initializeUMLJavaProjectContents(siriusEditingContext, cause);
         }
         return result;
     }
 
-    private Optional<RepresentationMetadata> initializeUMLJavaProjectContents(IEditingContext editingContext, ICause cause) {
+    private Optional<RepresentationMetadata> initializeUMLJavaProjectContents(EditingContext editingContext, ICause cause) {
         try {
             Optional<Resource> resource = this.initializerHelper.initializeResourceFromClasspathFile(editingContext, UML_MODEL_TITLE, "JavaTemplate.uml", cause);
             var optionalDiagram = resource.flatMap(r -> this.createMainClassDiagram(editingContext, r, cause));
@@ -127,9 +128,9 @@ public class UMLJavaProjectTemplateInitializer implements IProjectTemplateInitia
         return Optional.empty();
     }
 
-    private Optional<Diagram> createMainClassDiagram(IEditingContext editingContext, Resource r, ICause cause) {
-        Map<NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> convertedNodes = this.papyrusRepresentationRegistry
-                .getConvertedNode(CDDiagramDescriptionBuilder.CD_REP_NAME);
+    private Optional<Diagram> createMainClassDiagram(EditingContext editingContext, Resource r, ICause cause) {
+        Map<NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> convertedNodes = this.convertedNodeProvider
+                .getConvertedNode(CDDiagramDescriptionBuilder.CD_REP_NAME, editingContext);
         Model model = (Model) r.getContents().get(0);
         return this.diagramBuilderService.createDiagram(editingContext, diagramDescription -> CDDiagramDescriptionBuilder.CD_REP_NAME.equals(diagramDescription.getLabel()), model, "Main")
                 .flatMap(diagram -> this.semanticDropClassAndComment(editingContext, convertedNodes, model, diagram));

@@ -106,12 +106,14 @@ import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.ValueSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * Builder of the "Activity Diagram" diagram representation.
  *
  * @author <a href="mailto:gwendal.daniel@obeosoft.com">Gwendal Daniel</a>
  */
+@Service
 public class ADDiagramDescriptionBuilder extends AbstractRepresentationDescriptionBuilder {
 
     /**

@@ -62,12 +62,14 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.springframework.stereotype.Service;
 
 /**
  * Builder of the "Class Diagram " diagram representation.
  *
  * @author Arthur Daussy
  */
+@Service
 public final class CDDiagramDescriptionBuilder extends AbstractRepresentationDescriptionBuilder {
 
     public static final String ATTRIBUTES_COMPARTMENT_SUFFIX = "Attributes";

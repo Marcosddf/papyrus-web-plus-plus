@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2022, 2024 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -42,12 +42,14 @@ import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.sirius.components.view.diagram.OutsideLabelDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.springframework.stereotype.Service;
 
 /**
  * Builder of the "Composite Structure Diagram" diagram representation.
  *
  * @author Arthur Daussy
  */
+@Service
 public class CSDDiagramDescriptionBuilder extends AbstractRepresentationDescriptionBuilder {
 
     public static final String CSD_PREFIX = "CSD_";

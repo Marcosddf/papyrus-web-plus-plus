@@ -87,8 +87,9 @@ public class PapyrusStudioProjectTemplatesInitializer implements IProjectTemplat
 
                     this.addToResouce(resourceSet, view, formName);
 
-                    for (org.eclipse.sirius.components.view.diagram.DiagramDescription diagram : this.papyrusRepresentationRegistry.getViewDiagrams()) {
-                        View copiedView = (View) EcoreUtil.copy(diagram.eContainer());
+                    for (var papyrusView : this.papyrusRepresentationRegistry.getPapyrusViews()) {
+                        View copiedView = (View) EcoreUtil.copy(papyrusView);
+
                         RepresentationDescription copiedDiagram = copiedView.getDescriptions().get(0);
                         String name = copiedDiagram.getName() + STUDIO_PREFIX;
                         copiedDiagram.setName(name);

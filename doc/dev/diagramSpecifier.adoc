@@ -20,7 +20,9 @@ These classes extend `AbstractRepresentationDescriptionBuilder`, which provides 
 
 The `fillDescription` method is the entry point of the builder. It is called by the Papyrus Web framework on startup, and typically calls other methods that are responsible for the creation of a specific element (e.g. `createDiagramActorDescription` creates the description for an _Actor_ represented on the diagram background). Note that this is where you can use <<_how_to_use_shared_descriptions, shared descriptions>> to organize your builder code.
 
-The builder is hooked into the Papyrus Web framework via the `PapyrusRepresentationDescriptionRegistryConfigurer` class in the `papyrus-web-application` module, which maps the name of the representation with the builder.
+The builder is hooked into the Papyrus Web framework via the `PapyrusRepresentationDescriptionRegistryConfigurer` class in the `papyrus-web-application` module.
+All @service implementing _IPapyrusViewRepresentationDescriptionBuilder_ will be called to build a representation and then registered in _PapyrusRepresentationDescriptionRegistry_.
+This registry is then used to install the representation descriptions in each editing context of a Papyrus Web project. 
 
 ==== The services
 

@@ -41,7 +41,6 @@ import org.eclipse.papyrus.web.sirius.contributions.IViewDiagramDescriptionServi
 import org.eclipse.papyrus.web.sirius.contributions.query.NodeMatcher;
 import org.eclipse.papyrus.web.sirius.contributions.query.NodeMatcher.BorderNodeStatus;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
-import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IIdentityService;
 import org.eclipse.sirius.components.core.api.ILabelService;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
@@ -55,6 +54,8 @@ import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramPackage;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
 import org.eclipse.sirius.components.view.emf.diagram.IDiagramIdProvider;
+import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramConversionData;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.springframework.data.util.Pair;
 
 import graphql.AssertException;
@@ -81,7 +82,7 @@ public class DiagramTestHelper {
 
     private Diagram diagram;
 
-    private final IEditingContext editingContext;
+    private final EditingContext editingContext;
 
     private final IIdentityService identityService;
 
@@ -102,7 +103,7 @@ public class DiagramTestHelper {
     private final IViewDiagramDescriptionService viewDiagramDescriptionService;
 
     // CHECKSTYLE:OFF FOR now
-    public DiagramTestHelper(IEditingContext editingContext, IIdentityService identityService,
+    public DiagramTestHelper(EditingContext editingContext, IIdentityService identityService,
             ILabelService labelService, IObjectSearchService objectSearchService,
             PapyrusRepresentationDescriptionRegistry viewRegistry, IDiagramBuilderService diagramBuilderService,
             IDiagramOperationsService diagramOpService, IDiagramNavigationService diagramNavigationService, IViewDiagramDescriptionService viewDiagramDescriptionService,
@@ -131,15 +132,23 @@ public class DiagramTestHelper {
      */
     public void init(EObject newOwner, String diagramName) {
         this.diagramOwner = newOwner;
-        this.diagramDescription = this.viewRegistry.getViewDiagramDescriptionByName(diagramName).orElseThrow();
-        this.convertedDiagramDescription = (org.eclipse.sirius.components.diagrams.description.DiagramDescription) this.viewRegistry.getApiDiagramDescriptionByName(diagramName).orElseThrow();
+        this.diagramDescription = editingContext.getViews().stream()
+                .flatMap(view -> view.getDescriptions().stream())
+                .filter(DiagramDescription.class::isInstance)
+                .map(DiagramDescription.class::cast)
+                .filter(diagramDescription1 -> diagramName.equals(diagramDescription1.getName()))
+                .findFirst()
+                .get();
+        String diagramDescriptionId = idProvider.getId(diagramDescription);
+        this.convertedDiagramDescription =
+                (org.eclipse.sirius.components.diagrams.description.DiagramDescription) editingContext.getRepresentationDescriptions().get(diagramDescriptionId);
 
         this.nodeIdToDescriptions = new HashMap<>();
         this.edgeIdToDescriptions = new HashMap<>();
         DiagramDescriptionVisitor diagramDescriptionVisitor = new DiagramDescriptionVisitor(this.convertedDiagramDescription);
         diagramDescriptionVisitor.visitNodes(n -> this.nodeIdToDescriptions.put(n.getId(), n));
         diagramDescriptionVisitor.visitEdges(e -> this.edgeIdToDescriptions.put(e.getId(), e));
-        this.converterNodes = this.viewRegistry.getConvertedNode(diagramName);
+        this.converterNodes = ((ViewDiagramConversionData) editingContext.getViewConversionData().get(diagramDescriptionId)).convertedNodes();
 
         this.diagram = this.diagramBuilderService.createDiagram(this.editingContext, d -> this.matchDiagramLabel(diagramName, d), this.diagramOwner, diagramName).get();
     }

@@ -27,7 +27,6 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.papyrus.web.application.templates.projects.PapyrusUMLNatures;
 import org.eclipse.papyrus.web.tests.utils.UMLTestHelper;
 import org.eclipse.papyrus.web.utils.mutations.PapyrusCreateProjectMutationRunner;
-import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IEditingContextSearchService;
 import org.eclipse.sirius.components.core.api.IIdentityService;
 import org.eclipse.sirius.components.core.api.ILabelService;
@@ -36,6 +35,7 @@ import org.eclipse.sirius.components.emf.services.JSONResourceFactory;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.components.events.ICause;
 import org.eclipse.sirius.emfjson.resource.JsonResource;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.sirius.web.domain.boundedcontexts.project.Project;
 import org.eclipse.sirius.web.domain.boundedcontexts.project.services.api.IProjectCreationService;
 import org.eclipse.sirius.web.domain.boundedcontexts.projectsemanticdata.ProjectSemanticData;
@@ -78,7 +78,7 @@ public class AbstractWebUMLTest extends AbstractIntegrationTest {
     @Autowired
     private ILabelService labelService;
 
-    private IEditingContext editingContext;
+    private EditingContext editingContext;
 
     @Autowired
     private PapyrusCreateProjectMutationRunner projectCreator;
@@ -106,7 +106,7 @@ public class AbstractWebUMLTest extends AbstractIntegrationTest {
         return objectSearchService;
     }
 
-    public IEditingContext getEditingContext() {
+    public EditingContext getEditingContext() {
         return this.editingContext;
     }
 
@@ -120,12 +120,14 @@ public class AbstractWebUMLTest extends AbstractIntegrationTest {
                 new ClassPathResourceFactory(localEditingDomain.getResourceSet().getResourceFactoryRegistry()));
     }
 
-    protected @NotNull IEditingContext getEditingContext(String projectId) {
+    protected @NotNull EditingContext getEditingContext(String projectId) {
         return this.projectSemanticDataSearchService.findByProjectId(AggregateReference.to(projectId))
                 .map(ProjectSemanticData::getSemanticData)
                 .map(AggregateReference::getId)
                 .map(UUID::toString)
                 .flatMap(this.editingContextSearchService::findById)
+                .filter(EditingContext.class::isInstance)
+                .map(EditingContext.class::cast)
                 .orElseThrow();
     }
 

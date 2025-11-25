@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2022, 2024 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2022, 2025 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -40,12 +40,14 @@ import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.springframework.stereotype.Service;
 
 /**
  * Builder of the "Package Diagram" diagram representation.
  *
  * @author Arthur Daussy
  */
+@Service
 public class PADDiagramDescriptionBuilder extends AbstractRepresentationDescriptionBuilder {
 
     public static final String PD_REP_NAME = "Package Diagram";

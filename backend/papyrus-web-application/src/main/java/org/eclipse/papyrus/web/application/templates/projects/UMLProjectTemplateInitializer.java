@@ -16,26 +16,13 @@ package org.eclipse.papyrus.web.application.templates.projects;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.papyrus.web.application.representations.PapyrusRepresentationDescriptionRegistry;
-import org.eclipse.papyrus.web.application.representations.aqlservices.utils.GenericDiagramService;
-import org.eclipse.papyrus.web.application.representations.uml.PADDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.sirius.contributions.IDiagramBuilderService;
-import org.eclipse.sirius.components.collaborative.api.IRepresentationMetadataPersistenceService;
-import org.eclipse.sirius.components.collaborative.api.IRepresentationPersistenceService;
 import org.eclipse.sirius.components.core.RepresentationMetadata;
 import org.eclipse.sirius.components.core.api.IEditingContext;
-import org.eclipse.sirius.components.core.api.IRepresentationDescriptionSearchService;
-import org.eclipse.sirius.components.diagrams.Diagram;
-import org.eclipse.sirius.components.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.components.events.ICause;
-import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.web.application.project.services.api.IProjectTemplateInitializer;
-import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -53,30 +40,8 @@ public class UMLProjectTemplateInitializer implements IProjectTemplateInitialize
 
     private final TemplateInitializer initializerHelper;
 
-    private final IDiagramBuilderService diagramBuilderService;
-
-    private final GenericDiagramService packageDiagramService;
-
-    private final PapyrusRepresentationDescriptionRegistry papyrusRepresentationRegistry;
-
-    private final IRepresentationPersistenceService representationPersistenceService;
-
-    private final IRepresentationDescriptionSearchService representationDescriptionSearchService;
-
-    private final IRepresentationMetadataPersistenceService representationMetadataPersistenceService;
-
-    public UMLProjectTemplateInitializer(TemplateInitializer initializerHelper,
-            IDiagramBuilderService diagramBuilderService,
-            PapyrusRepresentationDescriptionRegistry papyrusRepresentationRegistry,
-            GenericDiagramService packageDiagramService,
-            PapyrusProjectTemplateInitializerParameters papyrusProjectTemplateInitializerParameters) {
-        this.initializerHelper = initializerHelper;
-        this.diagramBuilderService = diagramBuilderService;
-        this.papyrusRepresentationRegistry = papyrusRepresentationRegistry;
-        this.packageDiagramService = packageDiagramService;
-        this.representationPersistenceService = papyrusProjectTemplateInitializerParameters.representationPersistenceService();
-        this.representationDescriptionSearchService = papyrusProjectTemplateInitializerParameters.representationDescriptionSearchService();
-        this.representationMetadataPersistenceService = papyrusProjectTemplateInitializerParameters.representationMetadataPersistenceService();
+    public UMLProjectTemplateInitializer(TemplateInitializer initializerHelper) {
+        this.initializerHelper = Objects.requireNonNull(initializerHelper);
     }
 
     @Override
@@ -97,56 +62,11 @@ public class UMLProjectTemplateInitializer implements IProjectTemplateInitialize
 
     private Optional<RepresentationMetadata> initializeUMLWithPrimitivesProjectContents(IEditingContext editingContext, ICause cause) {
         try {
-            Optional<Resource> resource = this.initializerHelper.initializeResourceFromClasspathFile(editingContext, UML_MODEL_TITLE, "DefaultUMLWithPrimitive.uml", cause);
-            // var optionalDiagram = resource.flatMap(r -> this.createPackageDiagram(editingContext, r, cause));
-            /*
-             * if (optionalDiagram.isPresent()) { var diagram = optionalDiagram.get(); Object semanticTarget =
-             * resource.map(r -> r.getContents().get(0)).orElse(null); var optionalRepresentationMetadata =
-             * this.createRepresentationMetadata(editingContext, diagram, semanticTarget);
-             * optionalRepresentationMetadata.ifPresent(rm -> {
-             * this.representationMetadataPersistenceService.save(cause, editingContext, rm,
-             * diagram.getTargetObjectId()); this.representationPersistenceService.save(cause, editingContext, diagram);
-             * }); return optionalRepresentationMetadata; }
-             */
+            this.initializerHelper.initializeResourceFromClasspathFile(editingContext, UML_MODEL_TITLE, "DefaultUMLWithPrimitive.uml", cause);
         } catch (IOException e) {
             this.logger.error("Error while creating template", e);
         }
         return Optional.empty();
     }
 
-    private Optional<? extends Diagram> createPackageDiagram(IEditingContext editingContext, Resource r, ICause cause) {
-        Model model = (Model) r.getContents().get(0);
-        Package primitiveTypePackage = model.getImportedPackages().get(0);
-
-        Map<org.eclipse.sirius.components.view.diagram.NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> convertedNodes = this.papyrusRepresentationRegistry
-                .getConvertedNode(PADDiagramDescriptionBuilder.PD_REP_NAME);
-
-        return this.diagramBuilderService
-                .createDiagram(editingContext, diagramDescription -> PADDiagramDescriptionBuilder.PD_REP_NAME.equals(diagramDescription.getLabel()), model, "Root Package Diagram")
-                .flatMap(diagram -> {
-                    return this.diagramBuilderService.updateDiagram(diagram, editingContext, diagramContext -> {
-                        this.packageDiagramService.semanticDrop(model, null, editingContext, diagramContext, convertedNodes);
-                        this.packageDiagramService.semanticDrop(primitiveTypePackage, null, editingContext, diagramContext, convertedNodes);
-                    });
-                });
-    }
-
-    private Optional<RepresentationMetadata> createRepresentationMetadata(IEditingContext editingContext, Diagram diagram, Object semanticTarget) {
-        return this.representationDescriptionSearchService.findById(editingContext, diagram.getDescriptionId())
-                .filter(DiagramDescription.class::isInstance)
-                .map(DiagramDescription.class::cast)
-                .map(diagramDescription -> {
-                    var variableManager = new VariableManager();
-                    variableManager.put(VariableManager.SELF, semanticTarget);
-                    variableManager.put(DiagramDescription.LABEL, diagramDescription.getLabel());
-                    String label = diagramDescription.getLabelProvider().apply(variableManager);
-                    List<String> iconURLs = diagramDescription.getIconURLsProvider().apply(variableManager);
-                    return RepresentationMetadata.newRepresentationMetadata(diagram.getId())
-                            .kind(diagram.getKind())
-                            .label(label)
-                            .descriptionId(diagram.getDescriptionId())
-                            .iconURLs(iconURLs)
-                            .build();
-                });
-    }
 }

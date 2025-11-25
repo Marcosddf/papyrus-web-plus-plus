@@ -22,16 +22,22 @@ import static org.eclipse.papyrus.web.application.representations.view.aql.Varia
 
 import java.text.MessageFormat;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.papyrus.uml.domain.services.EMFUtils;
 import org.eclipse.papyrus.uml.domain.services.UMLHelper;
@@ -51,7 +57,9 @@ import org.eclipse.papyrus.web.application.representations.view.builders.NoteSty
 import org.eclipse.papyrus.web.application.representations.view.builders.ViewBuilder;
 import org.eclipse.papyrus.web.customnodes.papyruscustomnodes.NoteNodeStyleDescription;
 import org.eclipse.papyrus.web.customnodes.papyruscustomnodes.PackageNodeStyleDescription;
+import org.eclipse.sirius.components.emf.services.JSONResourceFactory;
 import org.eclipse.sirius.components.view.ChangeContext;
+import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.sirius.components.view.diagram.ArrowStyle;
@@ -78,6 +86,7 @@ import org.eclipse.sirius.components.view.diagram.RectangularNodeStyleDescriptio
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.Tool;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
+import org.eclipse.sirius.emfjson.resource.JsonResource;
 import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -87,7 +96,7 @@ import org.eclipse.uml2.uml.UMLPackage;
  *
  * @author Arthur Daussy
  */
-public abstract class AbstractRepresentationDescriptionBuilder {
+public abstract class AbstractRepresentationDescriptionBuilder implements IPapyrusViewRepresentationDescriptionBuilder {
 
     /**
      * Prefix used to identify children of packages and model.
@@ -220,6 +229,57 @@ public abstract class AbstractRepresentationDescriptionBuilder {
 
     protected void registerCallback(EObject owner, Runnable r) {
         owner.eAdapters().add(new CallbackAdapter(r));
+    }
+
+    @Override
+    public View buildRepresentationDescriptionView() {
+        View view = this.createView();
+        DiagramDescription diagramDescription = createDiagramDescription(view);
+        Resource eResource = view.eResource();
+        this.generateStaticIds(diagramDescription, eResource);
+
+        return view;
+    }
+
+    private View createView() {
+        // Required to have a unique URIs - workaround https://github.com/eclipse-sirius/sirius-components/issues/1345
+        View view = ViewFactory.eINSTANCE.createView();
+        JSONResourceFactory jsonResourceFactory = new JSONResourceFactory();
+        var uri = jsonResourceFactory.createResourceURI(UUID.nameUUIDFromBytes(getRepresentationName().getBytes()).toString());
+
+        Map<String, Object> customOptions = Map.of(JsonResource.OPTION_FORCE_DEFAULT_REFERENCE_SERIALIZATION, Boolean.TRUE);
+        JsonResource impl = jsonResourceFactory.createResource(uri, customOptions);
+
+        impl.getContents().add(view);
+
+        return view;
+    }
+
+    private void generateStaticIds(RepresentationDescription diagramDescription, Resource eResource) {
+        TreeIterator<EObject> contentIterator = eResource.getAllContents();
+        Set<String> uniqueDescriptionIds = new HashSet<>();
+        while (contentIterator.hasNext()) {
+            EObject next = contentIterator.next();
+            final String id;
+            if (next instanceof DiagramElementDescription desc) {
+                id = this.getUniqueIdentifier(diagramDescription, uniqueDescriptionIds, desc);
+            } else {
+                id = EcoreUtil.getURI(next).toString();
+            }
+            ((JsonResource) eResource).setID(next, UUID.nameUUIDFromBytes(id.getBytes()).toString());
+        }
+    }
+
+    private String getUniqueIdentifier(RepresentationDescription diagramDescription, Set<String> uniqueDescriptionIds, DiagramElementDescription desc) {
+        String name = desc.getName();
+
+        if (name == null || name.isBlank()) {
+            throw new IllegalStateException("Description with no name are forbidden " + desc);
+        } else if (uniqueDescriptionIds.contains(name)) {
+            throw new IllegalStateException("Duplicated description name " + name + " in representation " + diagramDescription.getName());
+        } else {
+            return name;
+        }
     }
 
     public DiagramDescription createDiagramDescription(View view) {

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2024 CEA LIST, Obeo.
+ * Copyright (c) 2024, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,26 +15,13 @@ package org.eclipse.papyrus.web.application.representations;
 
 import java.util.Objects;
 
-import org.eclipse.papyrus.web.application.representations.uml.ADDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.application.representations.uml.CDDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.application.representations.uml.CODDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.application.representations.uml.CPDDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.application.representations.uml.CSDDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.application.representations.uml.DDDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.application.representations.uml.PADDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.application.representations.uml.PRDDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.application.representations.uml.SMDDiagramDescriptionBuilder;
-import org.eclipse.papyrus.web.application.representations.uml.UCDDiagramDescriptionBuilder;
 import org.eclipse.papyrus.web.application.templates.service.api.IUMLProjectCheckerService;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IEditingContextProcessor;
-import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
 
 /**
  * Set up Papyrus representations in the editing context.
@@ -56,48 +43,13 @@ public class PapyrusRepresentationInstaller implements IEditingContextProcessor 
         this.umlChecker = Objects.requireNonNull(umlChecker);
     }
 
-    @PostConstruct
-    private void fillPapyrusRegistry() {
-        // Create the view models only once
-        this.papyrusRepresentationRegistry.registerDiagram(new CSDDiagramDescriptionBuilder());
-        this.papyrusRepresentationRegistry.registerDiagram(new PADDiagramDescriptionBuilder());
-        this.papyrusRepresentationRegistry.registerDiagram(new SMDDiagramDescriptionBuilder());
-        this.papyrusRepresentationRegistry.registerDiagram(new CDDiagramDescriptionBuilder());
-        this.papyrusRepresentationRegistry.registerDiagram(new UCDDiagramDescriptionBuilder());
-        this.papyrusRepresentationRegistry.registerDiagram(new PRDDiagramDescriptionBuilder());
-        this.papyrusRepresentationRegistry.registerDiagram(new CODDiagramDescriptionBuilder());
-        this.papyrusRepresentationRegistry.registerDiagram(new ADDiagramDescriptionBuilder());
-        this.papyrusRepresentationRegistry.registerDiagram(new CPDDiagramDescriptionBuilder());
-        this.papyrusRepresentationRegistry.registerDiagram(new DDDiagramDescriptionBuilder());
-    }
-
     @Override
     public void preProcess(IEditingContext editingContext) {
         if (editingContext instanceof EditingContext siriusWebEditingContext && this.umlChecker.isPapyrusProject(editingContext.getId())) {
-            // Add all view models in the editing context
-            this.papyrusRepresentationRegistry.getViewDiagrams().stream()
-                    .map(e -> (View) e.eContainer())
-                    .forEach(v -> {
-                        siriusWebEditingContext.getViews().add(v);
-                        LOGGER.info("{} description added to editing context {}", v.getDescriptions().get(0).getName(), editingContext.getId());
-                    });
-            this.papyrusRepresentationRegistry.getForms().stream()
-                    .map(e -> (View) e.eContainer())
-                    .forEach(v -> {
-                        siriusWebEditingContext.getViews().add(v);
-                        LOGGER.info("{} form description added to editing context {}", v.getDescriptions().get(0).getName(), editingContext.getId());
-                    });
+            // Registered in pre-process phase so they will be converted during the editing context loading process
+            siriusWebEditingContext.getViews().addAll(papyrusRepresentationRegistry.getPapyrusViews());
         }
     }
 
-    @Override
-    public void postProcess(IEditingContext editingContext) {
-        if (editingContext instanceof EditingContext siriusWebEditingContext && this.umlChecker.isPapyrusProject(editingContext.getId())) {
-            // Add all representation in the editing context
-            this.papyrusRepresentationRegistry.getApiDiagrams().stream()
-                    .forEach(diag -> siriusWebEditingContext.getRepresentationDescriptions().put(diag.getId(), diag));
-        }
-
-    }
 
 }

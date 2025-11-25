@@ -46,12 +46,14 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.springframework.stereotype.Service;
 
 /**
  * Builder of the "Profile Diagram" diagram representation.
  *
  * @author <a href="mailto:gwendal.daniel@obeosoft.com">Gwendal Daniel</a>
  */
+@Service
 public class PRDDiagramDescriptionBuilder extends AbstractRepresentationDescriptionBuilder {
 
     /**

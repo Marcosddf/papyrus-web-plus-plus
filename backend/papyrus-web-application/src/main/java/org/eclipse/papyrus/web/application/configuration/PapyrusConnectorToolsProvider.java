@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.papyrus.uml.domain.services.properties.ILogger.ILogLevel;
 import org.eclipse.papyrus.web.application.representations.PapyrusRepresentationDescriptionRegistry;
-import org.eclipse.papyrus.web.application.representations.aqlservices.AbstractDiagramService;
 import org.eclipse.papyrus.web.application.representations.aqlservices.ServiceLogger;
 import org.eclipse.sirius.components.collaborative.diagrams.api.IConnectorToolsProvider;
 import org.eclipse.sirius.components.collaborative.diagrams.api.IDiagramDescriptionService;
@@ -47,7 +46,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PapyrusConnectorToolsProvider implements IConnectorToolsProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDiagramService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PapyrusConnectorToolsProvider.class);
 
     private final PapyrusRepresentationDescriptionRegistry papyrusViewRegistry;
 
@@ -58,19 +57,19 @@ public class PapyrusConnectorToolsProvider implements IConnectorToolsProvider {
     /**
      * Logger used to report errors and warnings to the user.
      */
-    private ServiceLogger logger;
+    private final ServiceLogger logger;
 
     public PapyrusConnectorToolsProvider(PapyrusRepresentationDescriptionRegistry papyrusViewRegistry, IRepresentationDescriptionSearchService representationDescriptionSearchService,
             IDiagramDescriptionService diagramDescriptionService, ServiceLogger serviceLogger) {
         this.papyrusViewRegistry = Objects.requireNonNull(papyrusViewRegistry);
         this.representationDescriptionSearchService = Objects.requireNonNull(representationDescriptionSearchService);
         this.diagramDescriptionService = Objects.requireNonNull(diagramDescriptionService);
-        this.logger = serviceLogger;
+        this.logger = Objects.requireNonNull(serviceLogger);
     }
 
     @Override
     public boolean canHandle(DiagramDescription diagramDescription) {
-        return this.papyrusViewRegistry.getApiDiagramDescriptionById(diagramDescription.getId()).isPresent();
+        return papyrusViewRegistry.isPapyrusWebDiagramDescriptionId(diagramDescription.getId());
     }
 
     @Override
@@ -82,9 +81,8 @@ public class PapyrusConnectorToolsProvider implements IConnectorToolsProvider {
 
         boolean diagramElementDescriptionsPresent = optDiagramDescription.isPresent() && optSourceDiagramElementDescriptionId.isPresent() && optTargetDiagramElementDescriptionId.isPresent();
         List<ITool> result = List.of();
-        if (diagramElementDescriptionsPresent && optDiagramDescription.get() instanceof DiagramDescription) {
+        if (diagramElementDescriptionsPresent && optDiagramDescription.get() instanceof DiagramDescription diagramDescription) {
 
-            DiagramDescription diagramDescription = (DiagramDescription) optDiagramDescription.get();
             var optSourceDiagramElementDescription = this.mapDescriptionIdToDescription(optSourceDiagramElementDescriptionId.get(), diagramDescription, sourceDiagramElement);
             var optTargetDiagramElementDescription = this.mapDescriptionIdToDescription(optTargetDiagramElementDescriptionId.get(), diagramDescription, targetDiagramElement);
 

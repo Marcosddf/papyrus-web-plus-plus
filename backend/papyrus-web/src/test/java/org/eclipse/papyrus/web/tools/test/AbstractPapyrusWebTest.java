@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.papyrus.web.application.representations.IDiagramConvertedElementProvider;
 import org.eclipse.papyrus.web.application.representations.PapyrusRepresentationDescriptionRegistry;
 import org.eclipse.papyrus.web.application.representations.view.IdBuilder;
 import org.eclipse.papyrus.web.application.templates.documents.UMLStereotypeProvider;
@@ -64,6 +65,7 @@ import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.components.events.ICause;
 import org.eclipse.sirius.components.representations.IRepresentation;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.sirius.web.domain.boundedcontexts.project.repositories.IProjectRepository;
 import org.eclipse.sirius.web.domain.boundedcontexts.projectsemanticdata.services.api.IProjectSemanticDataSearchService;
 import org.eclipse.uml2.uml.NamedElement;
@@ -169,7 +171,10 @@ public abstract class AbstractPapyrusWebTest extends AbstractWebUMLTest {
     @Autowired
     private IProjectSemanticDataSearchService projectSemanticDataSearchService;
 
-    private Map<String, IEditingContext> editingContextCache;
+    @Autowired
+    private IDiagramConvertedElementProvider convertedNodeProvider;
+
+    private Map<String, EditingContext> editingContextCache;
 
     /**
      * Initializes the test with the provided {@code documentName}, {@code representationName}, and
@@ -536,7 +541,7 @@ public abstract class AbstractPapyrusWebTest extends AbstractWebUMLTest {
      * @return the current {@link IEditingContext}
      */
     @Override
-    public IEditingContext getEditingContext() {
+    public EditingContext getEditingContext() {
         return this.editingContextCache.get(this.editingContextId.toString());
     }
 
@@ -547,7 +552,7 @@ public abstract class AbstractPapyrusWebTest extends AbstractWebUMLTest {
      * @see PapyrusRepresentationDescriptionRegistry
      */
     public Map<org.eclipse.sirius.components.view.diagram.NodeDescription, org.eclipse.sirius.components.diagrams.description.NodeDescription> getCapturedNodes() {
-        return this.papyrusRepresentationDescriptionRegistry.getConvertedNode(this.representationName);
+        return this.convertedNodeProvider.getConvertedNode(this.representationName, getEditingContext());
     }
 
     /**
@@ -557,7 +562,7 @@ public abstract class AbstractPapyrusWebTest extends AbstractWebUMLTest {
      * @see PapyrusRepresentationDescriptionRegistry
      */
     public Map<org.eclipse.sirius.components.view.diagram.EdgeDescription, org.eclipse.sirius.components.diagrams.description.EdgeDescription> getCapturedEdges() {
-        return this.papyrusRepresentationDescriptionRegistry.getConvertedEdges(this.representationName);
+        return this.convertedNodeProvider.getConvertedEdges(this.representationName, getEditingContext());
     }
 
     /**

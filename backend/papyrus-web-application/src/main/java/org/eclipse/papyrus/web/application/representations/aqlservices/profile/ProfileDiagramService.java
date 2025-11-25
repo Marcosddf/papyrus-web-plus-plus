@@ -24,9 +24,9 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.papyrus.uml.domain.services.IEditableChecker;
 import org.eclipse.papyrus.uml.domain.services.properties.ILogger;
+import org.eclipse.papyrus.web.application.representations.IDiagramConvertedElementProvider;
 import org.eclipse.papyrus.web.application.representations.IWebExternalSourceToRepresentationDropBehaviorProvider;
 import org.eclipse.papyrus.web.application.representations.IWebInternalSourceToRepresentationDropBehaviorProvider;
-import org.eclipse.papyrus.web.application.representations.PapyrusRepresentationDescriptionRegistry;
 import org.eclipse.papyrus.web.application.representations.aqlservices.AbstractDiagramService;
 import org.eclipse.papyrus.web.application.representations.aqlservices.utils.IViewHelper;
 import org.eclipse.papyrus.web.application.representations.aqlservices.utils.ViewHelper;
@@ -49,7 +49,7 @@ import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.diagrams.description.NodeDescription;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.components.representations.IRepresentationDescription;
-import org.eclipse.sirius.components.view.diagram.DiagramDescription;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ElementImport;
 import org.eclipse.uml2.uml.Namespace;
@@ -71,12 +71,12 @@ public class ProfileDiagramService extends AbstractDiagramService {
 
     private final IRepresentationDescriptionSearchService representationDescriptionSearchService;
 
-    private final PapyrusRepresentationDescriptionRegistry papyrusRepresentationRegistry;
-
     /**
      * Logger used to report errors and warnings to the user.
      */
     private final ILogger logger;
+
+    private final IDiagramConvertedElementProvider convertedNodeProvider;
 
     /**
      * Constructor.
@@ -88,36 +88,36 @@ public class ProfileDiagramService extends AbstractDiagramService {
      * @param objectSearchService
      *         the service in charge of getting an object from its id
      * @param diagramNavigationService
-     *            helper that must introspect the current diagram's structure and its description
+     *         helper that must introspect the current diagram's structure and its description
      * @param diagramOperationsService
-     *            helper that must modify the current diagram, most notably create or delete views for unsynchronized
-     *            elements
+     *         helper that must modify the current diagram, most notably create or delete views for unsynchronized
+     *         elements
      * @param editableChecker
-     *            Object that check if an element can be edited
+     *         Object that check if an element can be edited
      * @param viewDiagramService
-     *            Service used to navigate in DiagramDescription
+     *         Service used to navigate in DiagramDescription
      * @param representationSearchService
-     *            helper used to find representation
+     *         helper used to find representation
      * @param representationDescriptionSearchService
-     *            helper used to find representation descriptions
-     * @param papyrusRepresentationRegistry
-     *            registry that keeps track of all {@link DiagramDescription}s used in Papyrus application
+     *         helper used to find representation descriptions
      * @param logger
-     *            Logger used to report errors and warnings to the user
+     *         Logger used to report errors and warnings to the user
+     * @param convertedNodeProvider
+     *         provider of converted elements
      */
     // CHECKSTYLE:OFF
     public ProfileDiagramService(IIdentityService identityService, ILabelService labelService,
             IObjectSearchService objectSearchService, IDiagramNavigationService diagramNavigationService,
             IDiagramOperationsService diagramOperationsService, IEditableChecker editableChecker,
             IViewDiagramDescriptionService viewDiagramService, IRepresentationSearchService representationSearchService, IRepresentationDescriptionSearchService representationDescriptionSearchService,
-            PapyrusRepresentationDescriptionRegistry papyrusRepresentationRegistry, ILogger logger) {
+            ILogger logger, IDiagramConvertedElementProvider convertedNodeProvider) {
         // CHECKSTYLE:ON
         super(identityService, labelService, objectSearchService, diagramNavigationService, diagramOperationsService,
                 editableChecker, viewDiagramService, logger);
         this.representationSearchService = representationSearchService;
         this.representationDescriptionSearchService = representationDescriptionSearchService;
-        this.papyrusRepresentationRegistry = papyrusRepresentationRegistry;
         this.logger = logger;
+        this.convertedNodeProvider = convertedNodeProvider;
     }
 
     @Override
@@ -150,9 +150,9 @@ public class ProfileDiagramService extends AbstractDiagramService {
      * Checks if the provided {@code representationId} is inside a Profile model.
      *
      * @param editingContext
-     *            the current editing context
+     *         the current editing context
      * @param representationId
-     *            the identifier of the representation to check
+     *         the identifier of the representation to check
      * @return {@code true} if the {@code representationId} is inside a profile model, {@code false} otherwise
      */
     public boolean isProfileModel(IEditingContext editingContext, String representationId) {
@@ -173,7 +173,7 @@ public class ProfileDiagramService extends AbstractDiagramService {
      * Provides Metaclass candidates.
      *
      * @param container
-     *            the current container in which looking for the Metaclass.
+     *         the current container in which looking for the Metaclass.
      * @return the Metaclass list.
      */
     public List<? extends Class> getMetaclassPRD(EObject container) {
@@ -193,8 +193,7 @@ public class ProfileDiagramService extends AbstractDiagramService {
      * Check if the resource of a given {@link Object} is a Profile model.
      *
      * @param context
-     *            context used to create diagram on
-     *
+     *         context used to create diagram on
      * @return <code>true</code> if the resource is a profile model, <code>false</code> otherwise.
      */
     public boolean isProfileModel(EObject context) {
@@ -210,7 +209,7 @@ public class ProfileDiagramService extends AbstractDiagramService {
      * </p>
      *
      * @param editingContext
-     *            the editing context to search into
+     *         the editing context to search into
      * @return the list of metaclasses from the UML metamodel
      */
     public List<? extends Class> getMetaclasses(IEditingContext editingContext) {
@@ -232,15 +231,15 @@ public class ProfileDiagramService extends AbstractDiagramService {
      * </p>
      *
      * @param editingContext
-     *            the editing context used to perform the operation
+     *         the editing context used to perform the operation
      * @param representationId
-     *            the identifier of the graphical representation where the {@link ElementImport} view is created
+     *         the identifier of the graphical representation where the {@link ElementImport} view is created
      * @param diagramElementId
-     *            the identifier of the graphical container where the {@link ElementImport} view is created
+     *         the identifier of the graphical container where the {@link ElementImport} view is created
      * @param metaclassId
-     *            the identifier of the UML metaclass to reference in the created {@link ElementImport}
+     *         the identifier of the UML metaclass to reference in the created {@link ElementImport}
      * @param diagramContext
-     *            the graphical context
+     *         the graphical context
      * @return {@code true} if the {@link ElementImport} and its view are successfully created, {@code false} otherwise
      */
     public boolean createMetaclassImport(IEditingContext editingContext, String representationId, String diagramElementId, String metaclassId, DiagramContext diagramContext) {
@@ -283,7 +282,7 @@ public class ProfileDiagramService extends AbstractDiagramService {
                                 .anyMatch(p -> optMetaclass.get().getName().equals(p.getTargetObjectLabel()));
                     }
                     if (!isNodePresentInParent) {
-                        result = this.createMetaclassNode(diagramContext, diagramElement, elementImport);
+                        result = this.createMetaclassNode(diagramContext, diagramElement, elementImport, editingContext);
                     }
                 }
             }
@@ -296,24 +295,28 @@ public class ProfileDiagramService extends AbstractDiagramService {
      * {@code elementImport}.
      *
      * @param diagramContext
-     *            the graphical context
+     *         the graphical context
      * @param parentNode
-     *            the parent node of the Metaclass node
+     *         the parent node of the Metaclass node
      * @param elementImport
-     *            the semantic {@link ElementImport} with imported element represented by the Metaclass node
+     *         the semantic {@link ElementImport} with imported element represented by the Metaclass node
+     * @param editingContext
+     *         the current editing context
      * @return {@code true} if a creation request has been made, {@code false} otherwise
      */
-    private boolean createMetaclassNode(DiagramContext diagramContext, Node parentNode, ElementImport elementImport) {
-        boolean result;
-        Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes = this.papyrusRepresentationRegistry
-                .getConvertedNode(PRDDiagramDescriptionBuilder.PRD_REP_NAME);
+    private boolean createMetaclassNode(DiagramContext diagramContext, Node parentNode, ElementImport elementImport, IEditingContext editingContext) {
+        boolean result = false;
 
-        IViewHelper createViewHelper = ViewHelper.create(this.getIdentityService(), getLabelService(),
-                this.getViewDiagramService(), this.getDiagramOperationsService(), diagramContext, convertedNodes);
-        if (parentNode == null) {
-            result = createViewHelper.createRootView(elementImport.getImportedElement(), PRDDiagramDescriptionBuilder.PRD_METACLASS);
-        } else {
-            result = createViewHelper.createChildView(elementImport.getImportedElement(), parentNode, PRDDiagramDescriptionBuilder.PRD_SHARED_METACLASS);
+        if (editingContext instanceof EditingContext siriusWebEditingContext) {
+            Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes = this.convertedNodeProvider.getConvertedNode(PRDDiagramDescriptionBuilder.PRD_REP_NAME, siriusWebEditingContext);
+
+            IViewHelper createViewHelper = ViewHelper.create(this.getIdentityService(), getLabelService(),
+                    this.getViewDiagramService(), this.getDiagramOperationsService(), diagramContext, convertedNodes);
+            if (parentNode == null) {
+                result = createViewHelper.createRootView(elementImport.getImportedElement(), PRDDiagramDescriptionBuilder.PRD_METACLASS);
+            } else {
+                result = createViewHelper.createChildView(elementImport.getImportedElement(), parentNode, PRDDiagramDescriptionBuilder.PRD_SHARED_METACLASS);
+            }
         }
         return result;
     }
@@ -325,12 +328,12 @@ public class ProfileDiagramService extends AbstractDiagramService {
      * </p>
      *
      * @param editingContext
-     *            the editing context
+     *         the editing context
      * @param objectId
-     *            the object identifier to retrieve the {@link Profile} from
+     *         the object identifier to retrieve the {@link Profile} from
      * @return the {@link Profile} if it exists, or an empty {@link Optional} otherwise
      * @throws NullPointerException
-     *             if {@code editingContext} or {@code objectId} is {@code null}
+     *         if {@code editingContext} or {@code objectId} is {@code null}
      */
     private Optional<Profile> getProfile(IEditingContext editingContext, String objectId) {
         Objects.requireNonNull(editingContext);
@@ -344,11 +347,11 @@ public class ProfileDiagramService extends AbstractDiagramService {
      * Get {@link ElementImport} contained by the provided {@code profile} for the provided {@code metaclass}.
      *
      * @param profile
-     *            the {@link Profile} to check
+     *         the {@link Profile} to check
      * @param metaclass
-     *            the metaclass to find in the provided {@link Profile}
+     *         the metaclass to find in the provided {@link Profile}
      * @return {@link ElementImport} contained by the provided {@code profile} for the provided {@code metaclass}, , or
-     *         an empty {@link Optional} if not found.
+     * an empty {@link Optional} if not found.
      */
     private Optional<ElementImport> getImportElementForMetaclass(Profile profile, Class metaclass) {
         return profile.getElementImports().stream() //

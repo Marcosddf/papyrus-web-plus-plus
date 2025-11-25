@@ -51,12 +51,14 @@ import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Manifestation;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.springframework.stereotype.Service;
 
 /**
  * Builder of the "Deployment" diagram representation.
  *
  * @author <a href="mailto:jessy.mallet@obeo.fr">Jessy Mallet</a>
  */
+@Service
 public final class DDDiagramDescriptionBuilder extends AbstractRepresentationDescriptionBuilder {
 
     /**

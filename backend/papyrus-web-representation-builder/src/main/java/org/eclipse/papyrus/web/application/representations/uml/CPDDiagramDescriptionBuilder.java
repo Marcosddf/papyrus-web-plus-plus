@@ -59,12 +59,14 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Substitution;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Usage;
+import org.springframework.stereotype.Service;
 
 /**
  * Builder of the "Component" diagram representation.
  *
  * @author <a href="mailto:jessy.mallet@obeo.fr">Jessy Mallet</a>
  */
+@Service
 public final class CPDDiagramDescriptionBuilder extends AbstractRepresentationDescriptionBuilder {
 
     /**

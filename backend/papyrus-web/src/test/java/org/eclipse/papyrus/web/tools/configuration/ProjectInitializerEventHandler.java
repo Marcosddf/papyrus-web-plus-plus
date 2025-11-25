@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2024 CEA LIST, Obeo.
+ * Copyright (c) 2024, 2025 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import org.eclipse.sirius.components.collaborative.api.IEditingContextEventHandl
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IInput;
 import org.eclipse.sirius.components.core.api.IPayload;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 
 import reactor.core.publisher.Sinks.Many;
 import reactor.core.publisher.Sinks.One;
@@ -31,12 +32,12 @@ public class ProjectInitializerEventHandler implements IEditingContextEventHandl
 
     @Override
     public boolean canHandle(IEditingContext editingContext, IInput input) {
-        return input instanceof ProjectInitializerInput;
+        return input instanceof ProjectInitializerInput && editingContext instanceof EditingContext;
     }
 
     @Override
     public void handle(One<IPayload> payloadSink, Many<ChangeDescription> changeDescriptionSink, IEditingContext editingContext, IInput input) {
-        payloadSink.tryEmitValue(((ProjectInitializerInput) input).cache(editingContext));
+        payloadSink.tryEmitValue(((ProjectInitializerInput) input).cache((EditingContext) editingContext));
     }
 
 }

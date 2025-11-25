@@ -20,9 +20,9 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.papyrus.uml.domain.services.EMFUtils;
+import org.eclipse.papyrus.web.application.representations.IDiagramConvertedElementProvider;
 import org.eclipse.papyrus.web.application.representations.aqlservices.profile.ProfileDiagramService;
 import org.eclipse.papyrus.web.services.AbstractDiagramTest;
-import org.eclipse.papyrus.web.tests.utils.MockLogger;
 import org.eclipse.uml2.uml.Artifact;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ElementImport;
@@ -91,7 +91,7 @@ public class ProfileDiagramServiceTests extends AbstractDiagramTest {
         return new ProfileDiagramService(this.getIdentityService(), getLabelService(), getObjectSearchService(),
                 this.getDiagramNavigationService(), this.getDiagramOperationsService(), e -> true,
                 this.getViewDiagramDescriptionService(), null,
-                null, null, new MockLogger());
+                null, null, new IDiagramConvertedElementProvider.NoOp());
     }
 
     @Override
