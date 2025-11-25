@@ -40,27 +40,38 @@ public class LabelGraphicalChecker implements Checker {
      *            the expected label to check
      */
     public LabelGraphicalChecker(String expectedLabel) {
-        this.expectedLabel = expectedLabel;
+        this.expectedLabel = normalize(expectedLabel);
     }
 
     @Override
     public void validateRepresentationElement(IDiagramElement element) {
         if (element instanceof Node node) {
             if (node.getInsideLabel() != null) {
-                String labelError = MessageFormat.format(LABEL_ERROR_TEMPLATE, node.getInsideLabel().getText(), node.getId(), this.expectedLabel);
-                assertThat(node.getInsideLabel().getText()).as(labelError).isEqualTo(this.expectedLabel);
+                String insideLabel = normalize(node.getInsideLabel().getText());
+                String labelError = MessageFormat.format(LABEL_ERROR_TEMPLATE, insideLabel, node.getId(), this.expectedLabel);
+                assertThat(insideLabel).as(labelError).isEqualTo(this.expectedLabel);
             } else if (node.getOutsideLabels() != null) {
                 String labelError = MessageFormat.format(LABEL_ERROR_TEMPLATE, node.getOutsideLabels(), node.getId(), this.expectedLabel);
-                assertThat(node.getOutsideLabels()).as(labelError).anyMatch(outsideLabel -> outsideLabel.text().equals(this.expectedLabel));
+                assertThat(node.getOutsideLabels()).hasSize(1)
+                        .as(labelError).anyMatch(outsideLabel -> normalize(outsideLabel.text()).equals(this.expectedLabel));
             } else {
                 fail("No label found in element " + element.getId());
             }
         } else if (element instanceof Edge edge) {
-            String labelError = MessageFormat.format(LABEL_ERROR_TEMPLATE, edge.getCenterLabel().text(), edge.getId(), this.expectedLabel);
-            assertThat(edge.getCenterLabel().text()).as(labelError).isEqualTo(this.expectedLabel);
+            String centerLabel = normalize(edge.getCenterLabel().text());
+            String labelError = MessageFormat.format(LABEL_ERROR_TEMPLATE, centerLabel, edge.getId(), this.expectedLabel);
+            assertThat(centerLabel).as(labelError).isEqualTo(this.expectedLabel);
         } else {
             fail("Unknown IDiagramElement type " + element.getClass().getSimpleName());
         }
     }
 
+    private String normalize(String inputLabel) {
+        if (inputLabel != null) {
+            return inputLabel.replace("\r\n", "\n")
+                    .replace("\r", "\n");
+        } else {
+            return inputLabel;
+        }
+    }
 }

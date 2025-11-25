@@ -72,7 +72,16 @@ public class LabelSemanticChecker implements Checker {
         assertThat(optObject.get()).as("The semantic object with id " + semanticId + " isn't a NamedElement").isInstanceOf(NamedElement.class);
         NamedElement namedElement = (NamedElement) optObject.get();
         String labelError = MessageFormat.format("Label {0} of element {1} doesn't match the expected value {2}", namedElement.getName(), namedElement, this.expectedLabel);
-        assertThat(namedElement.getName()).as(labelError).isEqualTo(this.expectedLabel);
+        assertThat(normalize(namedElement.getName())).as(labelError).isEqualTo(normalize(this.expectedLabel));
+    }
+
+    private String normalize(String inputLabel) {
+        if (inputLabel != null) {
+            return inputLabel.replace("\r\n", "\n")
+                    .replace("\r", "\n");
+        } else {
+            return inputLabel;
+        }
     }
 
 }

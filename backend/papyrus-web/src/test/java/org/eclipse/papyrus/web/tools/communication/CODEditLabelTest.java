@@ -93,6 +93,8 @@ public class CODEditLabelTest extends EditLabelTest {
         String expectedGraphicalLabel = switch (elementName) {
             case CONSTRAINT -> NEW_LABEL + CONSTRAINT_LABEL_SUFFIX;
             case ROOT_INTERACTION -> INTERACTION_LABEL_PREFIX + NEW_LABEL;
+            case DURATION_OBSERVATION -> NEW_LABEL + " = duration";
+            case TIME_OBSERVATION -> NEW_LABEL + " = now";
             default -> NEW_LABEL;
         };
         LabelGraphicalChecker graphicalChecker = new LabelGraphicalChecker(expectedGraphicalLabel);
