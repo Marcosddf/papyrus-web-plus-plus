@@ -444,6 +444,24 @@
         </dependencies>
     </dependencyManagement>
 
+    <distributionManagement>
+    <!--Distribution management must be defined here in 2 locations, to be able to deploy all components during a snapshot build-->
+    <!--We define them in 2 locations: -->
+    <!--papyrus-web-parent/pom.xml -->
+    <!--backend/pom.xml -->
+        <repository>
+            <id>repo.eclipse.org</id>
+            <name>Papyrus Repository - Releases</name>
+            <url>https://repo.eclipse.org/content/repositories/papyrus-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>repo.eclipse.org</id>
+            <name>Papyrus Repository - Snapshots</name>
+            <url>https://repo.eclipse.org/content/repositories/papyrus-snapshots/</url>
+            <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>

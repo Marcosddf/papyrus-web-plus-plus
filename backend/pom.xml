@@ -65,6 +65,10 @@
 
 	
 	<distributionManagement>
+	<!--Distribution management must be defined here in 2 locations, to be able to deploy all components during a snapshot build-->
+    <!--We define them in 2 locations: -->
+    <!--papyrus-web-parent/pom.xml -->
+    <!--backend/pom.xml -->
 		<repository>
 			<id>repo.eclipse.org</id>
 			<name>Papyrus Repository - Releases</name>
@@ -92,18 +96,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		
-		<!-- Prevent deployment of the parent POM -->
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>3.1.2</version>
-				<configuration>
-					<skipPomDeploy>true</skipPomDeploy>
-				</configuration>
-			</plugin>
-		</plugins>
 	</build>
 
 </project>
