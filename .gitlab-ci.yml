@@ -48,8 +48,8 @@ variables:
 stages:
   - compliance
   - build
-  - deploy
   - test
+  - deploy
 
 # Job to check ECA (Eclipse Contribution Agreement) for merge request.
 # Note: this job has compliance stage (cf. parent job '.eca').
@@ -116,7 +116,7 @@ build:
 
  # Only on schedule and commit tag
 deploy docker:
-  stage: build
+  stage: deploy
   tags:
     - ctx:medium
   needs:
@@ -143,7 +143,7 @@ deploy docker:
 
 # Only on schedule and commit tag
 deploy maven:
-  stage: build
+  stage: deploy
   tags:
     - ctx:medium
   needs:
@@ -151,9 +151,9 @@ deploy maven:
   image: maven:3.9.9-eclipse-temurin-21
   extends: .ef-repo-eclipse-org
   variables:
-    MAVEN_OPTS: "-DskipTests -Dcheckstyle.skip -Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+    MAVEN_OPTS: "-Dcheckstyle.skip -Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
     # Conditional Maven goals - compile for nightly, deploy for releases
-    MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DskipTests"
+    MAVEN_CLI_OPTS: "-DskipTests --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
     NODE_VERSION: "22.16.0"
     NODE_DIR: "$CI_PROJECT_DIR/.node"
   secrets:
@@ -189,24 +189,20 @@ deploy maven:
     - |
       if [ -z "${CI_COMMIT_TAG+x}" ]; then
         # commit tag is unset (null)
-        # Nightly build - just compile/verify
-        echo "tag is unset - build without deploying"
-         mvn $MAVEN_CLI_OPTS deploy -DdeployAtEnd=true -DaltDeploymentRepository=repo.eclipse.org::https://repo.eclipse.org/content/repositories/papyrus-snapshots/ --settings ../settings.xml
+        # Snapshot build - build a snapshot
+        echo "tag is unset - build and deploy a snapshot"
+        mvn $MAVEN_CLI_OPTS clean deploy -DaltDeploymentRepository=repo.eclipse.org::https://repo.eclipse.org/content/repositories/papyrus-snapshots/ --settings ../settings.xml
       else
         # Release build - deploy with repository configuration
-        echo "tag is set - build with deploy"
-        mvn $MAVEN_CLI_OPTS deploy -DdeployAtEnd=true -DaltDeploymentRepository=repo.eclipse.org::https://repo.eclipse.org/content/repositories/papyrus-releases/ --settings ../settings.xml
+        echo "tag is set - build and deploy a release"
+        mvn $MAVEN_CLI_OPTS clean deploy -DaltDeploymentRepository=repo.eclipse.org::https://repo.eclipse.org/content/repositories/papyrus-releases/ --settings ../settings.xml
       fi
   artifacts:
-    name: "papyrus-web.jar"
     paths:
       - backend/papyrus-web/target/papyrus-web-*.jar
       - backend/papyrus-web/target/classes/
       - backend/papyrus-web/target/test-classes/
       - backend/papyrus-web/target/surefire-reports/
-    reports:
-      junit:
-        - backend/**/target/surefire-reports/*.xml
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
