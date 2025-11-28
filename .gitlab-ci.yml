@@ -194,11 +194,12 @@ deploy maven:
         
         WEBAPP_DECLARED_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         if [[ "$WEBAPP_DECLARED_VERSION" == *-SNAPSHOT ]]; then
-           # already a snapshot -> append commit SHA
-           SNAPSHOT_VERSION="$WEBAPP_DECLARED_VERSION-${CI_COMMIT_SHORT_SHA}"
+           # already a snapshot -> insert commit SHA
+           BASE_VERSION="${WEBAPP_DECLARED_VERSION%-SNAPSHOT}"
+           SNAPSHOT_VERSION="${BASE_VERSION}-${CI_COMMIT_SHORT_SHA}-SNAPSHOT"
         else
            # it is a release version, convert it to a snapshot version + append commit SHA
-           SNAPSHOT_VERSION="${WEBAPP_DECLARED_VERSION}-SNAPSHOT-${CI_COMMIT_SHORT_SHA}"
+           SNAPSHOT_VERSION="${WEBAPP_DECLARED_VERSION}-${CI_COMMIT_SHORT_SHA}-SNAPSHOT"
         fi
         echo "tag is unset - build and deploy a snapshot"
         echo "Setting Maven version to: $SNAPSHOT_VERSION"
