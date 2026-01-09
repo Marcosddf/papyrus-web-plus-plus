@@ -9,18 +9,61 @@ Check that all templates are available from the home page
 .Recipe
 . Home Papyrus Web home page
 ** [ ] Check that following project cards are available:
+*** _+ UML_
+*** _+ Profile_
+*** _+ UML Empty_
 *** _+ {cpp}_
-*** _+ {cpp} SM_
-*** _+ Java_
++** [ ] In addition, check that these actions cards are available:
++*** _+ Upload Project_
++*** _+ Show all templates_
+
+
 . Click on _Show all templates_
 ** [ ] All previous cards should be available
 ** [ ] Check that the following project cards are available:
-*** _+ _UML_
-*** _+ _Profile_
-*** _+ _Papyrus Studio_
-*** _+ _Studio_
+*** _+ {cpp} SM_
+*** _+ Java_
+*** _+ Papyrus Studio_
 
-== PT10 - _{cpp}_ template
+== PT10 - _UML_ template
+
+.Purpose
+Check the content of the _UML_ template
+
+.Recipe
+. Using the _+ UML_ card create a new _UML_ project
+** [ ] Check that the model contains UML primitives types:
+
+image::imgs/diag-PT10.png[]
+
+== PT20 - _Profile_ template
+
+.Purpose
+Check the content of the _Profile_ template
+
+.Recipe
+. Using the _+ Profile_ card create a new _Profile_ project
+** [ ] Check that the model contains the following package imports:
+*** _<Package Import> PrimitiveTypes_
+*** _<Package Import> UML_
+. Open the default Profile Diagram
+** [ ] Check that the diagram is empty (no predefined elements):
+
+image::imgs/diag-PT20.png[]
+
+== PT30 - _UML Empty_ template
+
+.Purpose
+Check the content of the _UML Empty_ template
+
+.Recipe
+. Using the _+ UML Empty_ card create a new _UML Empty_ project
+** [ ] Check that the project structure is empty
+
+image::imgs/diag-PT30.png[]
+
+
+== PT40 - _{cpp}_ template
 
 .Purpose
 Check the content of the _{cpp}_ template
@@ -31,9 +74,9 @@ Check the content of the _{cpp}_ template
 . Open the _Main_ Class Diagram
 ** [ ] Check that the diagram display the same elements as:
 
-image::imgs/diag-PT10.png[]
+image::imgs/diag-PT40.png[]
 
-== PT20 - _{cpp} SM_ template
+== PT50 - _{cpp} SM_ template
 
 .Purpose
 Check the content of the _{cpp} SM_ template
@@ -44,9 +87,9 @@ Check the content of the _{cpp} SM_ template
 . Open the _Simple SM_ Class Diagram
 ** [ ] Check that the diagram display the same elements as:
 
-image::imgs/diag-PT20.png[]
+image::imgs/diag-PT50.png[]
 
-== PT30 - _Java_ template
+== PT60 - _Java_ template
 
 .Purpose
 Check the content of the _Java_ template
@@ -57,4 +100,20 @@ Check the content of the _Java_ template
 . Open the _Main_ Class Diagram
 ** [ ] Check that the diagram display the same elements as:
 
-image::imgs/diag-PT30.png[]
+image::imgs/diag-PT60.png[]
+
+
+== PT70 - _Papyrus Studio_ template
+
+.Purpose
+Check the content of the _Papyrus Studio_ template
+
+.Recipe
+. Using the _+ Papyrus Studio_ card create a new _Papyrus Studio_ project (available in "Show all templates")
+** [ ] Check that the project contains multiple diagram types in alphabetical order:
+*** _Activity Diagram Studio_
+*** _Class Diagram Studio_
+*** _Communication Diagram Studio_
+*** _etc._
+
+image::imgs/diag-PT70.png[]
