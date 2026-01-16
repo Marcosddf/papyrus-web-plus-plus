@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2022, 2025 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2022, 2025, 2026 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,7 @@
  *  Obeo - Initial API and implementation
  *  Aurelien Didier (Artal Technologies) - Issue 199, 229, 232
  *  Titouan BOUETE-GIRAUD (Artal Technologies) - titouan.bouete-giraud@artal.fr - Issues 219, 227
+ *  Vincent LORENZO (CEA LIST) - vincent.lorenzo@cea.fr - Issue 294
  *****************************************************************************/
 package org.eclipse.papyrus.web.application.representations.uml;
 
@@ -122,7 +123,7 @@ public class SMDDiagramDescriptionBuilder extends AbstractRepresentationDescript
 
         this.createCommentSubNodeDescription(diagramDescription, this.smSharedDescription, NODES,
                 this.getIdBuilder().getSpecializedDomainNodeName(this.umlPackage.getComment(), SHARED_SUFFIX),
-                List.of(this.umlPackage.getRegion(), this.umlPackage.getStateMachine()));
+                List.of(this.umlPackage.getRegion()));
 
         DiagramToolSection showHideToolSection = this.getViewBuilder().createDiagramToolSection(SHOW_HIDE);
         diagramDescription.getPalette().getToolSections().add(showHideToolSection);
