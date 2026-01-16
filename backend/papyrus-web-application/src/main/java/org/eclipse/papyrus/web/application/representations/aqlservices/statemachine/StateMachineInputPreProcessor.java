@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2025 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2025, 2026 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -11,11 +11,13 @@
  * Contributors:
  *  Obeo - Initial API and implementation
  *  Artal Technologies - Issue 232 : Enable State Machine diagram creation from Model
+ *  Vincent LORENZO (CEA LIST) - vincent.lorenzo@cea.fr - Issue 297
  *****************************************************************************/
 package org.eclipse.papyrus.web.application.representations.aqlservices.statemachine;
 
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.papyrus.uml.domain.services.labels.ElementDefaultNameProvider;
 import org.eclipse.papyrus.web.application.representations.uml.SMDDiagramDescriptionBuilder;
 import org.eclipse.sirius.components.collaborative.api.ChangeDescription;
@@ -29,6 +31,8 @@ import org.eclipse.uml2.uml.BehavioredClassifier;
 import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.ProtocolStateMachine;
+import org.eclipse.uml2.uml.Region;
+import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.springframework.stereotype.Service;
@@ -75,6 +79,12 @@ public class StateMachineInputPreProcessor implements IInputPreProcessor {
                     return new CreateRepresentationInput(createRepresentationInput.id(), createRepresentationInput.editingContextId(), createRepresentationInput.representationDescriptionId(),
                             smIdExplorer, createRepresentationInput.representationName());
                 }
+                if (this.shouldCreateTheFirstRegion(optionalTarget)) {
+                    final Object parent = optionalTarget.get();
+                    if (parent instanceof EObject eobject) {
+                        this.createRegion(eobject);
+                    }
+                }
             }
         }
         return input;
@@ -99,6 +109,23 @@ public class StateMachineInputPreProcessor implements IInputPreProcessor {
     }
 
     /**
+     * Check if a first {@link Region} should be created in the selected StateMachine.
+     *
+     * @param target
+     *            the context used initially to launch StateMachine diagram creation
+     *
+     * @return {@code true} if a first Region {@link Region} should be created, {@code false} otherwise
+     */
+    private boolean shouldCreateTheFirstRegion(Optional<Object> target) {
+        boolean needRegion = false;
+        if (target.isPresent()) {
+            Object parent = target.get();
+            needRegion = (parent instanceof StateMachine sm && sm.getRegions().isEmpty()) || (parent instanceof State state && state.getRegions().isEmpty());
+        }
+        return needRegion;
+    }
+
+    /**
      * Create an intermediate {@link StateMachine} on the given {@code target}.
      *
      * @param target
@@ -120,7 +147,20 @@ public class StateMachineInputPreProcessor implements IInputPreProcessor {
             newSM.setName(elementDefaultNameProvider.getDefaultName(newSM, inter));
             inter.setProtocol((ProtocolStateMachine) newSM);
         }
+        this.createRegion(newSM);
         return newSM;
+    }
+
+    private Region createRegion(EObject target) {
+        Region newRegion = UMLFactory.eINSTANCE.createRegion();
+        ElementDefaultNameProvider elementDefaultNameProvider = new ElementDefaultNameProvider();
+        newRegion.setName(elementDefaultNameProvider.getDefaultName(newRegion, target));
+        if (target instanceof State state) {
+            state.getRegions().add(newRegion);
+        } else if (target instanceof StateMachine sm) {
+            sm.getRegions().add(newRegion);
+        }
+        return newRegion;
     }
 
 }
