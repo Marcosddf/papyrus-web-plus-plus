@@ -12,7 +12,7 @@
  *  Obeo - Initial API and implementation
  *  Aurelien Didier (Artal Technologies) - Issue 199, 229, 232
  *  Titouan BOUETE-GIRAUD (Artal Technologies) - titouan.bouete-giraud@artal.fr - Issues 219, 227
- *  Vincent LORENZO (CEA LIST) - vincent.lorenzo@cea.fr - Issue 294
+ *  Vincent LORENZO (CEA LIST) - vincent.lorenzo@cea.fr - Issue 294, 296
  *****************************************************************************/
 package org.eclipse.papyrus.web.application.representations.uml;
 
@@ -63,8 +63,6 @@ public class SMDDiagramDescriptionBuilder extends AbstractRepresentationDescript
     public static final String SYMBOLS_COMPARTMENT_SUFFIX = "Symbols";
 
     public static final int STATEMACHINE_NODE_BORDER_RADIUS = 10;
-
-    public static final String SHOW_HIDE = "SHOW_HIDE";
 
     private static final String PSEUDO_STATE = "Pseudostate";
 
