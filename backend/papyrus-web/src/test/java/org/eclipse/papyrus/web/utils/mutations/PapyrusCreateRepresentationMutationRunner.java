@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import org.eclipse.sirius.components.collaborative.dto.CreateRepresentationInput;
 import org.eclipse.sirius.components.graphql.tests.CreateRepresentationMutationRunner;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.eclipse.sirius.components.graphql.tests.api.IGraphQLRequestor;
 import org.springframework.stereotype.Service;
 
@@ -63,15 +64,15 @@ public class PapyrusCreateRepresentationMutationRunner {
     public String createRepresentation(String editingContextId, String targetObject, String representationDescriptionName, String representationName) {
 
         Map<String, Object> parameters = Map.of("editingContextId", editingContextId, "objectId", targetObject);
-        String jsonResult0 = this.graphQLRequestor.execute(representationQuery, parameters);
+        GraphQLResult representationQueryResult = this.graphQLRequestor.execute(representationQuery, parameters);
 
-        var matches = (JSONArray) JsonPath.read(jsonResult0, "$.data.viewer.editingContext.representationDescriptions.edges[?(@.node.label=='" + representationDescriptionName + "')].node.id");
+        var matches = (JSONArray) JsonPath.read(representationQueryResult.data(), "$.data.viewer.editingContext.representationDescriptions.edges[?(@.node.label=='" + representationDescriptionName + "')].node.id");
         String representationDescriptionId = (String) matches.get(0);
 
         var input = new CreateRepresentationInput(UUID.randomUUID(), editingContextId, representationDescriptionId, targetObject, representationName);
 
-        var jsonResult = this.runner.run(input);
-        String representationId = JsonPath.read(jsonResult, "$.data.createRepresentation.representation.id");
+        GraphQLResult createRepresentationResult = this.runner.run(input);
+        String representationId = JsonPath.read(createRepresentationResult.data(), "$.data.createRepresentation.representation.id");
 
         return representationId;
     }

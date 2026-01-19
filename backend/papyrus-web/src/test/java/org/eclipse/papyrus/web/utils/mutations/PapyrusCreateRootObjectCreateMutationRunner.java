@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import com.jayway.jsonpath.JsonPath;
 import java.util.UUID;
 
 import org.eclipse.sirius.components.collaborative.dto.CreateRootObjectInput;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.eclipse.sirius.web.tests.graphql.CreateRootObjectMutationRunner;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +43,11 @@ public class PapyrusCreateRootObjectCreateMutationRunner {
 
         var createRootObjectInput = new CreateRootObjectInput(UUID.randomUUID(), editingContextId, UUID.fromString(documentId), ePackageNsURI, type);
         String rootObjectId = null;
-        var jsonResult = this.createRootObjectMutationRunner.run(createRootObjectInput);
-        String responseTypeName = JsonPath.read(jsonResult, "$.data.createRootObject.__typename");
+        GraphQLResult result = this.createRootObjectMutationRunner.run(createRootObjectInput);
+        String responseTypeName = JsonPath.read(result.data(), "$.data.createRootObject.__typename");
         assertThat(responseTypeName).isEqualTo("CreateRootObjectSuccessPayload");
 
-        rootObjectId = JsonPath.read(jsonResult, "$.data.createRootObject.object.id");
+        rootObjectId = JsonPath.read(result.data(), "$.data.createRootObject.object.id");
         return rootObjectId;
     }
 

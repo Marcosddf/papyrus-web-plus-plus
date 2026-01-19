@@ -176,7 +176,6 @@ export const ApplyStereotypeModal = ({
   };
 
   useEffect(() => {
-    console.log(applyStereotypeModal);
     if (applyStereotypeModal === 'success') {
       onAppliedStereotype();
     }

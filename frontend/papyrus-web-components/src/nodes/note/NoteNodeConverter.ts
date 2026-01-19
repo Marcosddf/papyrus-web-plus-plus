@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -59,8 +59,6 @@ const toNoteNode = (
     deletable,
   } = gqlNode;
 
-  console.log('GLNode', gqlNode);
-
   const handleLayoutData: GQLHandleLayoutData[] = gqlDiagram.layoutData.nodeLayoutData
     .filter((nodeLayoutData) => nodeLayoutData.id === id)
     .flatMap((nodeLayoutData) => nodeLayoutData.handleLayoutData);
@@ -112,6 +110,7 @@ const toNoteNode = (
     minComputedWidth: gqlNodeLayoutData?.minComputedSize.width ?? null,
     minComputedHeight: gqlNodeLayoutData?.minComputedSize.height ?? null,
     deletable,
+    isLastNodeSelected: false,
   };
 
   data.insideLabel = convertInsideLabel(
@@ -119,8 +118,6 @@ const toNoteNode = (
     data,
     `${style.borderSize}px ${style.borderStyle} ${style.borderColor}`
   );
-
-  console.log('Converter', data.insideLabel);
 
   const node: Node<NoteNodeData> = {
     id,

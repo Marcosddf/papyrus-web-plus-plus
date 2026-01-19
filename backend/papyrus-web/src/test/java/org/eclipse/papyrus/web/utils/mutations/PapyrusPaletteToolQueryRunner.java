@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.sirius.components.diagrams.tests.graphql.PaletteQueryRunner;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.springframework.stereotype.Service;
 
 import net.minidev.json.JSONArray;
@@ -46,20 +47,23 @@ public class PapyrusPaletteToolQueryRunner {
     }
 
     /**
-     * Returns the raw JSON of the palette associated to the {@code diagramElementId} element.
+     * Returns the result of the GraphQL query retrieving the palette associated with the given
+     * diagram elements.
      * <p>
-     * This method produces a test failure if the underlying GraphQL query returns an error.
+     * This method produces a test failure if the underlying GraphQL query returns one or more errors.
+     * The returned {@link GraphQLResult} contains the raw data, potential errors, and extensions
+     * returned by the GraphQL execution.
      * </p>
      *
      * @param editingContextId
-     *         the project containing the element to retrieve the palette from
+     *         the project containing the elements from which to retrieve the palette
      * @param representationId
-     *         the representation containing the element
+     *         the representation containing the elements
      * @param diagramElementIds
-     *         the graphical identifier of the element to retrieve the palette from
-     * @return the raw JSON of the palette
+     *         the graphical identifiers of the elements for which the palette is retrieved
+     * @return the {@link GraphQLResult} of the palette query execution
      */
-    private String getPalette(String editingContextId, String representationId, List<String> diagramElementIds) {
+    private GraphQLResult getPalette(String editingContextId, String representationId, List<String> diagramElementIds) {
         Map<String, Object> parameters = Map.of("editingContextId", editingContextId, "representationId", representationId, "diagramElementIds", diagramElementIds);
         return this.runner.run(parameters);
     }
@@ -74,8 +78,8 @@ public class PapyrusPaletteToolQueryRunner {
      *         the project containing the element to retrieve the palette tool from
      * @param representationId
      *         the representation containing the element
-     * @param diagramElementId
-     *         the graphical identifier of the element to retrieve the palette tool from
+     * @param diagramElementIds
+     *         the graphical identifiers of the elements to retrieve the palette tool from
      * @param toolSectionName
      *         the name of the tool section containing the tool
      * @param toolName
@@ -83,7 +87,7 @@ public class PapyrusPaletteToolQueryRunner {
      * @return the identifier of the tool if it exists, or an {@code empty} {@link Optional}
      */
     public Optional<String> getTool(String editingContextId, String representationId, List<String> diagramElementIds, String toolSectionName, String toolName) {
-        String rawPalette = this.getPalette(editingContextId, representationId, diagramElementIds);
+        String rawPalette = this.getPalette(editingContextId, representationId, diagramElementIds).data();
         Object palette = JsonPath.read(rawPalette,
                 "$.data.viewer.editingContext.representation.description.palette.paletteEntries[?(@.label=='" + toolSectionName + "')].tools[?(@.label=='" + toolName + "')]");
         assertThat(palette).isInstanceOf(JSONArray.class);
@@ -111,14 +115,14 @@ public class PapyrusPaletteToolQueryRunner {
      *         the project containing the element to retrieve the palette tool from
      * @param representationId
      *         the representation containing the element
-     * @param diagramElementId
-     *         the graphical identifier of the element to retrieve the palette tool from
+     * @param diagramElementIds
+     *         the graphical identifiers of the elements to retrieve the palette tool from
      * @param toolName
      *         the name of the tool
      * @return the identifier of the tool if it exists, or an {@code empty} {@link Optional}
      */
     public Optional<String> getQuickAccessTool(String editingContextId, String representationId, List<String> diagramElementIds, String toolName) {
-        String rawPalette = this.getPalette(editingContextId, representationId, diagramElementIds);
+        String rawPalette = this.getPalette(editingContextId, representationId, diagramElementIds).data();
         Object palette = JsonPath.read(rawPalette,
                 "$.data.viewer.editingContext.representation.description.palette.quickAccessTools[?(@.label=='" + toolName + "')]");
         assertThat(palette).isInstanceOf(JSONArray.class);

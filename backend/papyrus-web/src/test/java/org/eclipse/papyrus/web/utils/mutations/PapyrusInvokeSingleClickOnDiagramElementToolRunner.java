@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import org.eclipse.sirius.components.collaborative.diagrams.dto.InvokeSingleClickOnDiagramElementToolInput;
 import org.eclipse.sirius.components.diagrams.tests.graphql.InvokeSingleClickOnDiagramElementToolMutationRunner;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.springframework.stereotype.Service;
 
 /**
@@ -68,9 +69,9 @@ public class PapyrusInvokeSingleClickOnDiagramElementToolRunner {
         InvokeSingleClickOnDiagramElementToolInput invokeSingleClickOnDiagramElementToolInput = new InvokeSingleClickOnDiagramElementToolInput(UUID.randomUUID(), editingContextId, representationId,
                 diagramElementIds, toolId, 0, 0, List.of());
 
-        String jsonResult = this.runner.run(invokeSingleClickOnDiagramElementToolInput);
+        GraphQLResult result = this.runner.run(invokeSingleClickOnDiagramElementToolInput);
 
-        String responseTypeName = JsonPath.read(jsonResult, "$.data.invokeSingleClickOnDiagramElementTool.__typename");
+        String responseTypeName = JsonPath.read(result.data(), "$.data.invokeSingleClickOnDiagramElementTool.__typename");
         assertThat(responseTypeName).isEqualTo("InvokeSingleClickOnDiagramElementToolSuccessPayload");
     }
 

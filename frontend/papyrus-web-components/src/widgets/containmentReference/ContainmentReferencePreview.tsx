@@ -66,7 +66,7 @@ export const ContainmentReferencePreview = ({ widget }: PropertySectionComponent
   }, [selection, widget]);
 
   const values = ['element-1', 'element-2', 'element-3'];
-  console.log(widget);
+
   return (
     <div>
       <div className={classes.propertySectionLabel}>

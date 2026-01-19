@@ -44,7 +44,7 @@ public class UMLExplorerTreeRepresentationMetadataProvider implements IRepresent
     }
 
     @Override
-    public Optional<RepresentationMetadata> getMetadata(String representationId) {
+    public Optional<RepresentationMetadata> getMetadata(String editingContextId, String representationId) {
         var viewTreeDescriptionId = this.umlDefaultTreeExplorerInstaller.getDescriptionId();
         if (this.getTreeDescriptionIdFromRepresentationId(representationId).equals(viewTreeDescriptionId)) {
             var representationMetadata = RepresentationMetadata.newRepresentationMetadata(representationId)

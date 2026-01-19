@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2024, 2025 CEA LIST.
+ * Copyright (c) 2024, 2026 CEA LIST.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -37,6 +37,7 @@ import org.eclipse.sirius.components.core.api.labels.StyledString;
 import org.eclipse.sirius.components.core.api.labels.StyledStringFragment;
 import org.eclipse.sirius.components.core.api.labels.StyledStringFragmentStyle;
 import org.eclipse.sirius.components.core.api.labels.UnderLineStyle;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.eclipse.sirius.components.trees.Tree;
 import org.eclipse.sirius.components.trees.TreeItem;
 import org.eclipse.sirius.components.view.emf.tree.ITreeIdProvider;
@@ -104,8 +105,8 @@ public class UMLDefaultExplorerTests extends AbstractIntegrationTest {
 
         Map<String, Object> explorerVariables = Map.of(
                 "editingContextId", SimpleUMLProjectIdentifiers.UML_DEFAULT_EDITING_CONTEXT_ID.toString());
-        var explorerResult = this.explorerDescriptionsQueryRunner.run(explorerVariables);
-        List<String> explorerIds = JsonPath.read(explorerResult, "$.data.viewer.editingContext.explorerDescriptions[*].id");
+        GraphQLResult explorerResult = this.explorerDescriptionsQueryRunner.run(explorerVariables);
+        List<String> explorerIds = JsonPath.read(explorerResult.data(), "$.data.viewer.editingContext.explorerDescriptions[*].id");
         assertThat(explorerIds).hasSize(2);
         assertThat(explorerIds.get(0)).isEqualTo(this.treeDescriptionId);
         assertThat(explorerIds.get(1)).isEqualTo(ExplorerDescriptionProvider.DESCRIPTION_ID);
@@ -126,7 +127,7 @@ public class UMLDefaultExplorerTests extends AbstractIntegrationTest {
                 List.of(SimpleUMLProjectIdentifiers.MODEL_DOCUMENT_ID.toString()), List.of());
 
         var input = new ExplorerEventInput(UUID.randomUUID(), SimpleUMLProjectIdentifiers.UML_DEFAULT_EDITING_CONTEXT_ID.toString(), explorerRepresentationId);
-        var flux = this.treeEventSubscriptionRunner.run(input);
+        var flux = this.treeEventSubscriptionRunner.run(input).flux();
 
         var initialTreeContentConsumer = this.getTreeSubscriptionConsumer(tree -> {
             assertThat(tree).isNotNull();
@@ -179,7 +180,7 @@ public class UMLDefaultExplorerTests extends AbstractIntegrationTest {
                 List.of(PapyrusTreeFilterProvider.HIDE_PATHMAP_URI_TREE_ITEM_FILTER_ID));
 
         var input = new ExplorerEventInput(UUID.randomUUID(), SimpleUMLProjectIdentifiers.UML_DEFAULT_EDITING_CONTEXT_ID.toString(), explorerRepresentationId);
-        var flux = this.treeEventSubscriptionRunner.run(input);
+        var flux = this.treeEventSubscriptionRunner.run(input).flux();
 
         var initialTreeContentConsumer = this.getTreeSubscriptionConsumer(tree -> {
             assertThat(tree).isNotNull();

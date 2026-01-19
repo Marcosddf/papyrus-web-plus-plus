@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,8 @@
  *  Obeo - Initial API and implementation
  *****************************************************************************/
 package org.eclipse.papyrus.web.application.representations.dto;
+
+import java.util.List;
 
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.collaborative.diagrams.api.IDiagramInputReferencePositionProvider;
@@ -41,7 +43,7 @@ public class CreateMetaclassToolReferencePositionProvider implements IDiagramInp
                 // null parentId means that the parent is the diagram
                 parentId = createMetaclassImportInput.diagramElementId();
             }
-            return new ReferencePosition(parentId, new Position(createMetaclassImportInput.x(), createMetaclassImportInput.y()), diagramInput.getClass().getSimpleName());
+            return new ReferencePosition(parentId, List.of(new Position(createMetaclassImportInput.x(), createMetaclassImportInput.y())), diagramInput.getClass().getSimpleName());
         }
         return null;
     }

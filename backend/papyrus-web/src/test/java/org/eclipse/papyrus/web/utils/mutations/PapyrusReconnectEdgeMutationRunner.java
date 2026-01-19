@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.ReconnectEdgeInput;
 import org.eclipse.sirius.components.diagrams.events.ReconnectEdgeKind;
 import org.eclipse.sirius.components.diagrams.tests.graphql.ReconnectEdgeMutationRunner;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.springframework.stereotype.Service;
 
 /**
@@ -84,9 +85,9 @@ public class PapyrusReconnectEdgeMutationRunner {
     public void reconnectEdge(String editingContext, String representationId, String edgeId, String newEdgeEndId, ReconnectEdgeKind reconnectEdgeKind) {
         ReconnectEdgeInput reconnectEdgeInput = new ReconnectEdgeInput(UUID.randomUUID(), editingContext.toString(), representationId.toString(), edgeId.toString(), newEdgeEndId.toString(),
                 reconnectEdgeKind);
-        String jsonResult = this.runner.run(reconnectEdgeInput);
+        GraphQLResult result = this.runner.run(reconnectEdgeInput);
 
-        String responseTypeName = JsonPath.read(jsonResult, "$.data.reconnectEdge.__typename");
+        String responseTypeName = JsonPath.read(result.data(), "$.data.reconnectEdge.__typename");
         assertThat(responseTypeName).isEqualTo("SuccessPayload");
     }
 

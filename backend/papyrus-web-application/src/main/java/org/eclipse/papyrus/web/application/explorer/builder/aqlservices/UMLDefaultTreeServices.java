@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2024, 2025 CEA LIST.
+ * Copyright (c) 2024, 2026 CEA LIST.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -50,11 +50,10 @@ import org.eclipse.sirius.components.domain.NamedElement;
 import org.eclipse.sirius.components.emf.ResourceMetadataAdapter;
 import org.eclipse.sirius.components.emf.services.JSONResourceFactory;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
-import org.eclipse.sirius.components.emf.services.api.IEMFKindService;
 import org.eclipse.sirius.components.trees.TreeItem;
 import org.eclipse.sirius.web.application.UUIDParser;
 import org.eclipse.sirius.web.application.editingcontext.EditingContext;
-import org.eclipse.sirius.web.application.views.explorer.services.ExplorerDescriptionProvider;
+import org.eclipse.sirius.web.application.views.explorer.services.api.IExplorerServices;
 import org.eclipse.sirius.web.domain.boundedcontexts.representationdata.RepresentationMetadata;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ElementImport;
@@ -119,17 +118,17 @@ public class UMLDefaultTreeServices {
 
     private final IContentService contentService;
 
-    private final IEMFKindService kindService;
-
     private final IObjectSearchService objectSearchService;
+
+    private final IExplorerServices explorerServices;
 
     // CHECKSTYLE:OFF Parameters required to be injected
     public UMLDefaultTreeServices(List<IRepresentationImageProvider> representationImageProviders,
             ILabelService labelService,
             IPapyrusReadOnlyChecker readOnlyChecker, IURLParser urlParser,
             IDefaultObjectSearchService defaultObjectSearchService, IIdentityService identityService,
-            IContentService contentService,
-            IEMFKindService kindService, IObjectSearchService objectSearchService) {
+            IContentService contentService, IObjectSearchService objectSearchService,
+            IExplorerServices explorerServices) {
         // CHECKSTYLE:ON
         this.representationImageProviders = Objects.requireNonNull(representationImageProviders);
         this.labelService = Objects.requireNonNull(labelService);
@@ -138,8 +137,8 @@ public class UMLDefaultTreeServices {
         this.defaultObjectSearchService = Objects.requireNonNull(defaultObjectSearchService);
         this.identityService = Objects.requireNonNull(identityService);
         this.contentService = Objects.requireNonNull(contentService);
-        this.kindService = Objects.requireNonNull(kindService);
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
+        this.explorerServices = Objects.requireNonNull(explorerServices);
     }
 
     /**
@@ -326,14 +325,10 @@ public class UMLDefaultTreeServices {
      */
     public String getItemKind(Object self) {
         String kind = "";
-        if (self instanceof RepresentationMetadata representationMetadata) {
-            kind = representationMetadata.getKind();
-        } else if (self instanceof Resource) {
-            kind = ExplorerDescriptionProvider.DOCUMENT_KIND;
-        } else if (self instanceof ImportedElementTreeItem) {
+        if (self instanceof ImportedElementTreeItem) {
             kind = "ImportedElement";
         } else {
-            kind = this.identityService.getKind(self);
+            kind = this.explorerServices.getKind(self);
         }
         return kind;
     }
@@ -383,15 +378,11 @@ public class UMLDefaultTreeServices {
      * @return an id
      */
     public String getItemId(Object self) {
-        String id = null;
-        if (self instanceof RepresentationMetadata representationMetadata) {
-            id = Objects.requireNonNull(representationMetadata.getId()).toString();
-        } else if (self instanceof Resource resource) {
-            id = resource.getURI().path().substring(1);
-        } else if (self instanceof EObject) {
-            id = this.identityService.getId(self);
-        } else if (self instanceof ImportedElementTreeItem importElement) {
+        String id;
+        if (self instanceof ImportedElementTreeItem importElement) {
             id = this.getImporterElementId(importElement);
+        } else {
+            id = this.explorerServices.getTreeItemId(self);
         }
         return id;
     }

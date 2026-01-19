@@ -113,6 +113,7 @@ const toRectangleWithExternalLabelNode = (
     minComputedWidth: gqlNodeLayoutData?.minComputedSize.width ?? null,
     minComputedHeight: gqlNodeLayoutData?.minComputedSize.height ?? null,
     deletable,
+    isLastNodeSelected: false,
   };
 
   data.insideLabel = convertInsideLabel(

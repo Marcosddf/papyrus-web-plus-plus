@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.collaborative.dto.CreateChildInput;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.eclipse.sirius.web.tests.graphql.CreateChildMutationRunner;
 import org.springframework.stereotype.Service;
 
@@ -77,8 +78,8 @@ public class PapyrusCreateChildMutationRunner {
         String childCreationDescriptionId = containmentReference.getName() + "-" + childType.getName();
         CreateChildInput createChildInput = new CreateChildInput(UUID.randomUUID(), editingContextId, parentElementId, childCreationDescriptionId);
 
-        String jsonResult = this.runner.run(createChildInput);
-        String responseTypeName = JsonPath.read(jsonResult, "$.data.createChild.__typename");
+        GraphQLResult result = this.runner.run(createChildInput);
+        String responseTypeName = JsonPath.read(result.data(), "$.data.createChild.__typename");
         assertThat(responseTypeName).isEqualTo("CreateChildSuccessPayload");
     }
 

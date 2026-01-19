@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import org.eclipse.sirius.components.collaborative.diagrams.dto.InvokeSingleClickOnTwoDiagramElementsToolInput;
 import org.eclipse.sirius.components.diagrams.tests.graphql.InvokeSingleClickOnTwoDiagramElementsToolMutationRunner;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.springframework.stereotype.Service;
 
 /**
@@ -74,9 +75,9 @@ public class PapyrusInvokeSingleClickOnTwoDiagramElementsToolRunner {
         InvokeSingleClickOnTwoDiagramElementsToolInput invokeSingleClickOnTwoDiagramElementsToolInput = new InvokeSingleClickOnTwoDiagramElementsToolInput(UUID.randomUUID(), editingContextId,
                 representationId, diagramSourceElementId, diagramTargetElementId, 0, 0, 0, 0, toolId, List.of());
 
-        String jsonResult = this.runner.run(invokeSingleClickOnTwoDiagramElementsToolInput);
+        GraphQLResult result = this.runner.run(invokeSingleClickOnTwoDiagramElementsToolInput);
 
-        String responseTypeName = JsonPath.read(jsonResult, "$.data.invokeSingleClickOnTwoDiagramElementsTool.__typename");
+        String responseTypeName = JsonPath.read(result.data(), "$.data.invokeSingleClickOnTwoDiagramElementsTool.__typename");
         assertThat(responseTypeName).isEqualTo("InvokeSingleClickOnTwoDiagramElementsToolSuccessPayload");
     }
 

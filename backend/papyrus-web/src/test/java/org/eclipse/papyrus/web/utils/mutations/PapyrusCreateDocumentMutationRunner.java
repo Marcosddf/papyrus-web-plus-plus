@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2024 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,7 @@ import com.jayway.jsonpath.JsonPath;
 
 import java.util.UUID;
 
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.eclipse.sirius.web.application.document.dto.CreateDocumentInput;
 import org.eclipse.sirius.web.tests.graphql.CreateDocumentMutationRunner;
 import org.springframework.stereotype.Service;
@@ -43,11 +44,11 @@ public class PapyrusCreateDocumentMutationRunner {
 
         var createDocumentInput = new CreateDocumentInput(UUID.randomUUID(), editingContextId, stereotypeId, documentName);
 
-        var jsonResult = this.siriusDocumentMutationRunner.run(createDocumentInput);
-        String responseTypeName = JsonPath.read(jsonResult, "$.data.createDocument.__typename");
+        GraphQLResult result = this.siriusDocumentMutationRunner.run(createDocumentInput);
+        String responseTypeName = JsonPath.read(result.data(), "$.data.createDocument.__typename");
         assertThat(responseTypeName).isEqualTo("CreateDocumentSuccessPayload");
 
-        return JsonPath.read(jsonResult, "$.data.createDocument.document.id");
+        return JsonPath.read(result.data(), "$.data.createDocument.document.id");
     }
 
 }

@@ -20,6 +20,7 @@ import com.jayway.jsonpath.JsonPath;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
 import org.eclipse.sirius.web.application.project.dto.CreateProjectInput;
 import org.eclipse.sirius.web.tests.graphql.CreateProjectMutationRunner;
 import org.springframework.stereotype.Service;
@@ -44,11 +45,11 @@ public class PapyrusCreateProjectMutationRunner {
         var input = new CreateProjectInput(UUID.randomUUID(), projectName, templateId, List.of());
 
         String editingContextId = null;
-        var jsonResult = this.runner.run(input);
-        String responseTypeName = JsonPath.read(jsonResult, "$.data.createProject.__typename");
+        GraphQLResult result = this.runner.run(input);
+        String responseTypeName = JsonPath.read(result.data(), "$.data.createProject.__typename");
         assertThat(responseTypeName).isEqualTo("CreateProjectSuccessPayload");
 
-        editingContextId = JsonPath.read(jsonResult, "$.data.createProject.project.id");
+        editingContextId = JsonPath.read(result.data(), "$.data.createProject.project.id");
         return editingContextId;
     }
 
