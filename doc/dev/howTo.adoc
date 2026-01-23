@@ -84,3 +84,20 @@ public boolean showDecisionNodeNote(DecisionNode decisionNode, DiagramContext di
 
 [TIP]
 Additional information on how to contribute custom menus in the _Explorer_ view in the https://github.com/eclipse-sirius/sirius-web/blob/master/doc/how-to/extend-the-frontend.adoc#how-to-use-the-tree-item-context-menu-extension-point[Sirius Web documentation].
+
+==== How to download model with dependences ====
+
+The download button in the model explorer only download the current model, however it is possible to download the model and its dependencies (imported packages and applied profiles). 
+
+This is a new Rest API defined here :
+-----
+org.eclipse.papyrus.web.application.document.controllers.DocumentDownloadWithReferencesController
+-----
+
+To use it you should address : 
+-----
+/api/editingcontexts/{editingContextId}/documentsWithReferences/{documentId}
+-----
+
+The easiest way to get the *editingContextId* and the *documentId* is check the download button implementation.
+

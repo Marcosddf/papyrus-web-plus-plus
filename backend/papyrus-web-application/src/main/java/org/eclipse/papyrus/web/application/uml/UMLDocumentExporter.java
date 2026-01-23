@@ -10,6 +10,7 @@
  *
  * Contributors:
  *  Obeo - Initial API and implementation
+ *  Pauline DEVILLE (CEA LIST) <pauline.deville@cea.fr> - Issue #278
  *****************************************************************************/
 package org.eclipse.papyrus.web.application.uml;
 
@@ -27,6 +28,7 @@ import org.eclipse.emf.ecore.util.BasicExtendedMetaData;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.papyrus.uml.domain.services.EMFUtils;
+import org.eclipse.papyrus.web.application.pathmap.services.api.IStaticPathmapChecker;
 import org.eclipse.sirius.components.core.api.IIdentityService;
 import org.eclipse.sirius.emfjson.resource.JsonResource;
 import org.eclipse.sirius.web.application.document.services.api.IDocumentExporter;
@@ -50,9 +52,12 @@ public class UMLDocumentExporter implements IDocumentExporter {
 
     private final IIdentityService identityService;
 
-    public UMLDocumentExporter(IIdentityService identityService) {
+    private final IStaticPathmapChecker pathmapChecker;
+
+    public UMLDocumentExporter(IIdentityService identityService, IStaticPathmapChecker pathmapChecker) {
         super();
         this.identityService = Objects.requireNonNull(identityService);
+        this.pathmapChecker = Objects.requireNonNull(pathmapChecker);
     }
 
     @Override
@@ -88,11 +93,19 @@ public class UMLDocumentExporter implements IDocumentExporter {
         return optionalBytes;
     }
 
+    /**
+     * This method allow to keep the ID stable from one export to an other.
+     *
+     * @param outputResource
+     * @param notifier
+     */
     private void forceStableId(XMLResource outputResource, Notifier notifier) {
-        if (notifier instanceof EObject eObject) {
-            String id = this.identityService.getId(eObject);
-            if (id != null && !id.isEmpty()) {
-                outputResource.setID(eObject, id);
+        if (!this.pathmapChecker.isPathmapResource(outputResource)) {
+            if (notifier instanceof EObject eObject) {
+                String id = this.identityService.getId(eObject);
+                if (id != null && !id.isEmpty()) {
+                    outputResource.setID(eObject, id);
+                }
             }
         }
     }
