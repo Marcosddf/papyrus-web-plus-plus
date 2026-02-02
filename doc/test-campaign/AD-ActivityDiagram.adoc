@@ -159,3 +159,25 @@ Check that it is not possible to graphically drag and drop the note associated t
 * Graphically delete the _ActivityParameterNode_ and the _ExpansionNode_
 * Semantically drop the _ControlFlow_ edge on the diagram
 ** [ ] The _ActivityParameterNode_ and the _ExpansionNode_ are graphically created and the edge is visible
+
+== AD14 Symbol Association to Elements
+.Purpose
+Check that a _Symbol_ can be graphically created on an Activity Diagram and correctly associated with a selected element.
+
+.Recipe
+* Create/open an AD diagram
+* Create an _ActivityPartition_ on the root _Activity_
+* Open the _Details_ view and select the _Symbol_ widget
+* Click on the `Upload` icon, upload image `./resources/test-custom-image-widget.svg` and enter the label "test-symbol"
+* Select the _ActivityPartition_ node
+* In the _Symbol_ widget, click on the `More` icon and click on the drop-down menu
+** [ ] The "test-symbol" image is available in the list
+* Select the "test-symbol" image
+** [ ] A new compartment is created in _ActivityPartition_
+** [ ] The "test-symbol" image is displayed inside the compartment
+
+image::imgs/AD14-symbol-node.png[]
+
+* In the _Symbol_ widget, click on the `Delete` icon
+** [ ] The compartment in the _ActivityPartition_ is deleted
+** [ ] No symbol remains associated with the _ActivityPartition_
