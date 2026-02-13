@@ -1,0 +1,78 @@
+/*******************************************************************************
+ * Copyright (c) 2026 CEA LIST.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *  Dilan EESHVARAN (dilan.eeshvaran@cea.fr) - Issue 299
+ *******************************************************************************/
+
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";
+@import "https://cdn.jsdelivr.net/gh/asciidoctor/asciidoctor@2.0/data/stylesheets/asciidoctor-default.css";
+
+/*
+ * Custom css for the docs to enhances visual differentiation between heading hierarchy levels
+ * This extends the default AsciiDoctor stylesheet so that our changes only affects the selected elements.
+ *
+ * @author Dilan EESHVARAN
+ */
+
+/* main section headings (===) - h3 */
+#content h3 {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: #ba3925;
+}
+
+/* sub-section headings (====) - h4 */
+#content h4 {
+    font-size: 1.25em;
+    font-weight: 500;
+    color: #ba3925;
+}
+
+/* sub-sub-section headings (=====) - h5 */
+#content h5 {
+    font-size: 1.1em;
+    font-weight: 400;
+    color: #ba3925;
+    font-style: italic;
+}
+
+/* sub-sub-sub-section headings (======) - h6 */
+#content h6 {
+    font-size: 1em;
+    font-weight: 400;
+    color: #ba3925;
+    font-style: italic;
+}
+
+/* add numbers tree for the headings */
+body{counter-reset: h2 h3;}
+
+#content h2:before {
+  content: counter(h2) "  ";
+  counter-increment: h2;
+}
+#content h3:before {
+  content: counter(h2) "." counter(h3) "  ";
+  counter-increment: h3;
+}
+
+#content h2 {
+  counter-reset: h3;
+}
+/* reset numbering for unnumbered headings */
+#content h2.unnumbered, #content h3.unnumbered {
+  counter-reset: none;
+}
+#content h2.unnumbered:before, 
+#content h3.unnumbered:before{
+  content: none;
+  counter-increment: none;
+}
