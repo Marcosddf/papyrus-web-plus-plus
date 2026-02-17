@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2022, 2024 CEA LIST, Obeo.
+ Copyright (c) 2022, 2026 CEA LIST, Obeo.
  This program and the accompanying materials
  are made available under the terms of the Eclipse Public License v2.0
  which accompanies this distribution, and is available at
@@ -40,12 +40,8 @@
             <artifactId>papyrus-web-properties-builder</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.papyrus.papyrus-web</groupId>
-            <artifactId>papyrus-web-frontend</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
+
+		<dependency>
             <groupId>org.eclipse.papyrus.papyrus-web</groupId>
             <artifactId>papyrus-web-graphics</artifactId>
             <version>${project.version}</version>

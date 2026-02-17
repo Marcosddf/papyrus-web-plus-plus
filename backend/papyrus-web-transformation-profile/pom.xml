@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2022, 2023 CEA LIST, Obeo.
+ Copyright (c) 2022, 2026 CEA LIST, Obeo.
  This program and the accompanying materials
  are made available under the terms of the Eclipse Public License v2.0
  which accompanies this distribution, and is available at
@@ -25,10 +25,6 @@
 
 	<name>papyrus-web-transformation-profile</name>
 	<description>Papyrus Web Transformation profile</description>
-
-
-
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,16 +50,6 @@
 		<dependency>
 			<groupId>org.eclipse.uml2.plugins</groupId>
 			<artifactId>org.eclipse.uml2.types</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.papyrus.papyrus-web</groupId>
-			<artifactId>papyrus-web-representation-builder</artifactId>
-			<version>2026.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.papyrus.papyrus-web</groupId>
-			<artifactId>papyrus-web-sirius-contributions</artifactId>
-			<version>2026.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.papyrus.designer</groupId>

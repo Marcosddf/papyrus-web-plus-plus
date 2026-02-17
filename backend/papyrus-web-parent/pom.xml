@@ -326,11 +326,6 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.sirius</groupId>
-                <artifactId>sirius-web</artifactId>
-                <version>${sirius.components.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.sirius</groupId>
                 <artifactId>sirius-web-view-fork</artifactId>
                 <version>${sirius.components.version}</version>
             </dependency>
@@ -389,6 +384,11 @@
                         <groupId>org.osgi</groupId>
                         <artifactId>org.osgi.service.prefs</artifactId>
                     </exclusion>
+                    <!-- Avoid error log on multi SL4J implementation -->
+					<exclusion>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-slf4j-impl</artifactId>
+					</exclusion>
                 </exclusions>
             </dependency>
 
