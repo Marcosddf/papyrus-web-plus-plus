@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,8 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { IconOverlay, getCSSColor, useMultiToast, useSelection } from '@eclipse-sirius/sirius-components-core';
 import {
+  GQLWidget,
+  PropertySectionComponent,
   PropertySectionComponentProps,
   PropertySectionLabel,
   getTextDecorationLineValue,
@@ -191,7 +193,20 @@ const isSuccessPayload = (
   payload: GQLClickContainmentReferenceItemPayload | GQLRemoveContainmentReferenceItemPayload
 ): payload is GQLSuccessPayload => payload.__typename === 'SuccessPayload';
 
-const ContainmentReferenceSection = ({
+export const isContainmentReferenceSection = (widget: GQLWidget): widget is GQLContainmentReferenceWidget =>
+  widget.__typename === 'ContainmentReferenceWidget';
+
+export const ContainmentReferenceSection: PropertySectionComponent<GQLWidget> = ({
+  widget,
+  ...props
+}: PropertySectionComponentProps<GQLWidget>) => {
+  if (isContainmentReferenceSection(widget)) {
+    return <RawContainmentReferenceSection widget={widget} {...props} />;
+  }
+  return null;
+};
+
+const RawContainmentReferenceSection = ({
   editingContextId,
   formId,
   widget,
@@ -289,11 +304,12 @@ const ContainmentReferenceSection = ({
       }
       if (childCreationDescriptionsData) {
         const { referenceWidgetChildCreationDescriptions } = childCreationDescriptionsData.viewer.editingContext;
+        const [firstChildCreationDescription] = referenceWidgetChildCreationDescriptions;
         if (referenceWidgetChildCreationDescriptions.length > 1) {
           setChildTypes(referenceWidgetChildCreationDescriptions);
           setOpenDialog('NEW_INSTANCE');
-        } else if (referenceWidgetChildCreationDescriptions.length === 1) {
-          callCreateElementInReference(referenceWidgetChildCreationDescriptions[0].id);
+        } else if (firstChildCreationDescription) {
+          callCreateElementInReference(firstChildCreationDescription.id);
         }
       }
     }
@@ -504,5 +520,3 @@ const ContainmentReferenceSection = ({
     </>
   );
 };
-
-export default ContainmentReferenceSection;

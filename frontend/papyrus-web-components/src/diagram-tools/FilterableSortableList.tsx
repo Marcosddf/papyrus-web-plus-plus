@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023, 2025 Obeo.
+ * Copyright (c) 2023, 2026 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -68,6 +68,7 @@ const HighlightedLabel = ({ label, textToHighlight }: HighlightedLabelProps) => 
     textToHighlight === null ||
     textToHighlight === '' ||
     (splitLabelWithTextToHighlight.length === 1 &&
+      splitLabelWithTextToHighlight[0] &&
       splitLabelWithTextToHighlight[0].toLocaleLowerCase() !== label.toLocaleLowerCase())
   ) {
     itemLabel = <>{label}</>;
@@ -141,6 +142,7 @@ export const FilterableSortableList = ({
               return (
                 splitLabelWithTextToHighlight.length > 1 ||
                 (splitLabelWithTextToHighlight.length === 1 &&
+                  splitLabelWithTextToHighlight[0] &&
                   splitLabelWithTextToHighlight[0].toLocaleLowerCase() === state.filterBarText.toLocaleLowerCase())
               );
             })

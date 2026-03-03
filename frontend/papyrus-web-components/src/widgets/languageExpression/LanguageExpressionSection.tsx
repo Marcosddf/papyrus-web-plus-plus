@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,12 @@
  *  Obeo - Initial API and implementation
  ***************************************************************************/
 
-import { PropertySectionComponentProps, PropertySectionLabel } from '@eclipse-sirius/sirius-components-forms';
+import {
+  GQLWidget,
+  PropertySectionComponent,
+  PropertySectionComponentProps,
+  PropertySectionLabel,
+} from '@eclipse-sirius/sirius-components-forms';
 
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -196,7 +201,19 @@ export const moveLanguageMutation = gql`
     }
   }
 `;
-export const LanguageExpressionSection = ({
+export const isLanguageExpressionWidget = (widget: GQLWidget): widget is GQLLanguageExpression =>
+  widget.__typename === 'LanguageExpression';
+
+export const LanguageExpressionSection: PropertySectionComponent<GQLWidget> = ({
+  widget,
+  ...props
+}: PropertySectionComponentProps<GQLWidget>) => {
+  if (isLanguageExpressionWidget(widget)) {
+    return <RawLanguageExpressionSection widget={widget} {...props} />;
+  }
+  return null;
+};
+const RawLanguageExpressionSection = ({
   editingContextId,
   formId,
   widget,

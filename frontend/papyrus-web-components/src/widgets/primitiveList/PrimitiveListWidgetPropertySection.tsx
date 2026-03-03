@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,7 +13,14 @@
  *****************************************************************************/
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { IconOverlay, ServerContext, ServerContextValue, useMultiToast } from '@eclipse-sirius/sirius-components-core';
-import { GQLListItem, PropertySectionLabel, getTextDecorationLineValue } from '@eclipse-sirius/sirius-components-forms';
+import {
+  GQLListItem,
+  GQLWidget,
+  PropertySectionComponent,
+  PropertySectionComponentProps,
+  PropertySectionLabel,
+  getTextDecorationLineValue,
+} from '@eclipse-sirius/sirius-components-forms';
 import { Input, InputAdornment } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -30,6 +37,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import { MouseEvent, useContext, useEffect, useState } from 'react';
 import {
+  EditableGQLList,
   GQLActionPrimitiveListItemMutationData,
   GQLActionPrimitiveListItemMutationVariables,
   GQLActionPrimitiveListItemPayload,
@@ -49,7 +57,6 @@ import {
   GQLRepresentationDescription,
   GQLSuccessPayload,
   PrimitiveListAutocompleteState,
-  PrimitiveListPropertySectionProps,
   PrimitiveListStyleProps,
 } from './PrimitiveListWidgetPropertySection.types';
 
@@ -210,12 +217,25 @@ const isSuccessPayload = (
     | GQLActionPrimitiveListItemPayload
 ): payload is GQLSuccessPayload => payload.__typename === 'SuccessPayload';
 
-export const PrimitiveListSection = ({
+export const isPrimitiveListWidget = (widget: GQLWidget): widget is EditableGQLList =>
+  widget.__typename === 'PrimitiveListWidget';
+
+export const PrimitiveListSection: PropertySectionComponent<GQLWidget> = ({
+  widget,
+  ...props
+}: PropertySectionComponentProps<GQLWidget>) => {
+  if (isPrimitiveListWidget(widget)) {
+    return <RawPrimitiveListSection widget={widget} {...props} />;
+  }
+  return null;
+};
+
+const RawPrimitiveListSection = ({
   editingContextId,
   formId,
   widget,
   readOnly,
-}: PrimitiveListPropertySectionProps) => {
+}: PropertySectionComponentProps<EditableGQLList>) => {
   const props: PrimitiveListStyleProps = {
     color: widget.style?.color ?? null,
     fontSize: widget.style?.fontSize ?? null,

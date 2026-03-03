@@ -4,10 +4,7 @@
   "compilerOptions": {
     "emitDeclarationOnly": true,
     "outDir": "./dist",
-    "jsx": "react-jsx",
-    "strict": true,
-    "strictNullChecks": true,
-    "noUncheckedIndexedAccess": false
+    "jsx": "react-jsx"
   },
   "include": ["./src/index.ts"],
   "exclude": ["dist", "build", "node_modules"]

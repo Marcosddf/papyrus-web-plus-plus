@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2025 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo, Artal Technologies.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,8 @@
 import { gql, useMutation } from '@apollo/client';
 import { ServerContext, ServerContextValue, getCSSColor, useMultiToast } from '@eclipse-sirius/sirius-components-core';
 import {
+  GQLWidget,
+  PropertySectionComponent,
   PropertySectionComponentProps,
   PropertySectionLabel,
   getTextDecorationLineValue,
@@ -113,8 +115,20 @@ const useStylesSection = makeStyles<CustomImageWidgetStyleProps>()(
     },
   })
 );
+export const isCustomImage = (widget: GQLWidget): widget is GQLCustomImageWidget =>
+  widget.__typename === 'CustomImageWidget';
 
-export const CustomImageSection = ({
+export const CustomImageSection: PropertySectionComponent<GQLWidget> = ({
+  widget,
+  ...props
+}: PropertySectionComponentProps<GQLWidget>) => {
+  if (isCustomImage(widget)) {
+    return <RawCustomImageSection widget={widget} {...props} />;
+  }
+  return null;
+};
+
+const RawCustomImageSection = ({
   widget,
   editingContextId,
   formId,

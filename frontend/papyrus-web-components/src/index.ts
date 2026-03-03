@@ -25,7 +25,7 @@ export { CustomImageNodeLayoutHandler } from './nodes/customImage/CustomImageNod
 export { CustomImagePreview } from './widgets/customImage/CustomImagePreview';
 export { CustomImageSection } from './widgets/customImage/CustomImageSection';
 export { customWidgetsDocumentTransform } from './widgets/CustomWidgetsDocumentTransform';
-export { default as ContainmentReferenceSection } from './widgets/containmentReference/ContainmentReferenceSection';
+export { ContainmentReferenceSection } from './widgets/containmentReference/ContainmentReferenceSection';
 export { EllipseNode } from './nodes/ellipse/EllipseNode';
 export { EllipseNodeConverter } from './nodes/ellipse/EllipseNodeConverter';
 export { EllipseNodeLayoutHandler } from './nodes/ellipse/EllipseNodeLayoutHandler';
@@ -59,3 +59,6 @@ export { RectangleWithExternalLabelNodeConverter } from './nodes/rectangleWithEx
 export { RectangleWithExternalLabelNodeLayoutHandler } from './nodes/rectangleWithExternalLabel/RectangleWithExternalLabelNodeLayoutHandler';
 export { UMLElementTreeItemContextMenuContribution } from './profile/apply-stereotype/UMLElementTreeItemContextMenuContribution';
 export { UMLModelTreeItemContextMenuContribution } from './profile/apply-profile/UMLModelTreeItemContextMenuContribution';
+export { ExtensionRegistryMergeStrategy } from './registry/ExtensionRegistryMergeStrategy';
+export { papyrusWebExtensionRegistry } from './registry/PapyrusWebExtensionRegistry';
+export { papyrusNodeTypeRegistryValue } from './registry/PapyrusNodeTypeRegistryValue';

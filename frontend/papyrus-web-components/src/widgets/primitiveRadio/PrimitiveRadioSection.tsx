@@ -14,7 +14,12 @@
 
 import { gql, useMutation } from '@apollo/client';
 import { useMultiToast } from '@eclipse-sirius/sirius-components-core';
-import { PropertySectionComponentProps, PropertySectionLabel } from '@eclipse-sirius/sirius-components-forms';
+import {
+  GQLWidget,
+  PropertySectionComponent,
+  PropertySectionComponentProps,
+  PropertySectionLabel,
+} from '@eclipse-sirius/sirius-components-forms';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
@@ -49,8 +54,20 @@ export const newValueMutation = gql`
     }
   }
 `;
+export const isPrimitiveRadioWidget = (widget: GQLWidget): widget is GQLPrimitiveRadio =>
+  widget.__typename === 'PrimitiveRadio';
 
-export const PrimitiveRadioSection = ({
+export const PrimitiveRadioSection: PropertySectionComponent<GQLWidget> = ({
+  widget,
+  ...props
+}: PropertySectionComponentProps<GQLWidget>) => {
+  if (isPrimitiveRadioWidget(widget)) {
+    return <RawPrimitiveRadioSection widget={widget} {...props} />;
+  }
+  return null;
+};
+
+const RawPrimitiveRadioSection = ({
   editingContextId,
   formId,
   widget,

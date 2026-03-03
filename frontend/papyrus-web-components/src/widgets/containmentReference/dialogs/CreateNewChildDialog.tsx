@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -50,7 +50,7 @@ const useStyles = makeStyles()((theme) => ({
 const CreateNewChildDialog = ({ childTypes, onClose }: CreateNewChildDialogProps) => {
   const { classes } = useStyles();
   const { httpOrigin } = useContext<ServerContextValue>(ServerContext);
-  const [selectedChildTypeId, setSelectedChildTypeId] = useState<string>(childTypes[0].id);
+  const [selectedChildTypeId, setSelectedChildTypeId] = useState<string | null>(childTypes[0]?.id ?? null);
 
   return (
     <Dialog

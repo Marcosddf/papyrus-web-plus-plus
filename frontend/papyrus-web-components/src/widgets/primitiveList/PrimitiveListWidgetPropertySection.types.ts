@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,7 @@
  * Contributors:
  *  Obeo - Initial API and implementation
  *****************************************************************************/
-import { Selection, GQLMessage } from '@eclipse-sirius/sirius-components-core';
+import { GQLMessage } from '@eclipse-sirius/sirius-components-core';
 import { GQLListItem, GQLListStyle, GQLWidget } from '@eclipse-sirius/sirius-components-forms';
 
 export interface PrimitiveListStyleProps {
@@ -21,14 +21,6 @@ export interface PrimitiveListStyleProps {
   bold: boolean | null;
   underline: boolean | null;
   strikeThrough: boolean | null;
-}
-
-export interface PrimitiveListPropertySectionProps {
-  editingContextId: string;
-  formId: string;
-  widget: EditableGQLList;
-  readOnly: boolean;
-  setSelection: (selection: Selection) => void;
 }
 
 export interface EditableGQLList extends GQLWidget {

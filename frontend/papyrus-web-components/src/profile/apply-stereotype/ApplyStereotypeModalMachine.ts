@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2021, 2026 CEA LIST, Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -161,8 +161,8 @@ export const applyStereotypeModalMachine = Machine<
       updateStereotypes: assign((_, event) => {
         const { data } = event as FetchedStereotypesEvent;
         const stereotypes = data.viewer.editingContext.stereotypeMetatadas;
-        const selectedStereotypeId = stereotypes.length > 0 ? stereotypes[0].id : '';
-        const name = stereotypes.length > 0 ? stereotypes[0].label : '';
+        const selectedStereotypeId = stereotypes.length > 0 ? stereotypes[0]?.id : '';
+        const name = stereotypes.length > 0 ? stereotypes[0]?.label : '';
         return {
           stereotypes,
           selectedStereotypeId,

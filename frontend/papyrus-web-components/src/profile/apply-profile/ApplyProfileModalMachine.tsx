@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2021, 2026 CEA LIST, Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -156,7 +156,7 @@ export const applyProfileModalMachine = Machine<
       updateProfiles: assign((_, event) => {
         const { data } = event as FetchedProfilesEvent;
         const { profileMetadatas: profiles } = data.viewer;
-        const selectedProfileId = profiles.length > 0 ? profiles[0].uriPath : '';
+        const selectedProfileId = profiles.length > 0 ? profiles[0]?.uriPath : '';
         return { profiles, selectedProfileId };
       }),
       updateProfile: assign((_, event) => {
