@@ -123,6 +123,7 @@ const toListNode = (
       ? gqlNode.style.childrenLayoutStrategy.growableNodeIds
       : [],
     isDropNodeTarget: false,
+    isDragNodeSource: false,
     isDropNodeCandidate: false,
     isHovered: false,
     connectionLinePositionOnNode: 'none',

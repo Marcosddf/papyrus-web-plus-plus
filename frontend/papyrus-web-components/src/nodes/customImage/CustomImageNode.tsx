@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2024, 2025 CEA LIST, Obeo, Artal Technologies.
+ * Copyright (c) 2024, 2026 CEA LIST, Obeo, Artal Technologies.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -82,7 +82,12 @@ export const CustomImageNode: NodeComponentsMap['customImageNode'] = memo(
       validImage: data.shape !== undefined && data.shape !== '',
     });
     const { style: connectionFeedbackStyle } = useConnectorNodeStyle(id, data.nodeDescription.id);
-    const { style: dropFeedbackStyle } = useDropNodeStyle(data.isDropNodeTarget, data.isDropNodeCandidate, dragging);
+    const { style: dropFeedbackStyle } = useDropNodeStyle(
+      data.isDropNodeTarget,
+      data.isDragNodeSource,
+      data.isDropNodeCandidate,
+      dragging
+    );
     const { style: connectionLineActiveNodeStyle } = useConnectionLineNodeStyle(data.connectionLinePositionOnNode);
 
     const onErrorLoadingImage = () => {

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2023, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2023, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -98,7 +98,12 @@ export const RectangleWithExternalLabelNode = memo(
     const theme = useTheme();
     const { onDrop, onDragOver } = useDrop();
     const { style: connectionFeedbackStyle } = useConnectorNodeStyle(id, data.nodeDescription.id);
-    const { style: dropFeedbackStyle } = useDropNodeStyle(data.isDropNodeTarget, data.isDropNodeCandidate, dragging);
+    const { style: dropFeedbackStyle } = useDropNodeStyle(
+      data.isDropNodeTarget,
+      data.isDragNodeSource,
+      data.isDropNodeCandidate,
+      dragging
+    );
 
     const handleOnDrop = (event: React.DragEvent) => {
       onDrop(event, id);

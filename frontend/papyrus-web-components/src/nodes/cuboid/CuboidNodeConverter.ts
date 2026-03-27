@@ -100,6 +100,7 @@ const toCuboidNode = (
     isListChild: isListLayoutStrategy(gqlParentNode?.style.childrenLayoutStrategy),
     isDraggedNode: false,
     isDropNodeTarget: false,
+    isDragNodeSource: false,
     isDropNodeCandidate: false,
     isHovered: false,
     connectionLinePositionOnNode: 'none',

@@ -87,7 +87,7 @@ public class UMLExplorerItemContextMenuEntryProvider implements ITreeItemContext
             result.addAll(this.getLibraryRelatedEntries(emfEditingContext, treeItem));
         }
 
-        result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.EXPAND_ALL, "", List.of(), false));
+        result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.EXPAND_ALL, "", List.of(), false, List.of()));
 
         return result;
     }
@@ -99,8 +99,8 @@ public class UMLExplorerItemContextMenuEntryProvider implements ITreeItemContext
         if (optionalResource.isPresent()) {
 
             List<ITreeItemContextMenuEntry> entries = new ArrayList<>();
-            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT, "", List.of(), false));
-            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DOWNLOAD_DOCUMENT, "", List.of(), false));
+            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT, "", List.of(), false, List.of()));
+            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DOWNLOAD_DOCUMENT, "", List.of(), false, List.of()));
             return entries;
         }
         return List.of();
@@ -113,9 +113,9 @@ public class UMLExplorerItemContextMenuEntryProvider implements ITreeItemContext
         if (optionalEObject.isPresent()) {
 
             return List.of(
-                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT, "", List.of(), false),
-                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_REPRESENTATION, "", List.of(), false),
-                    new SingleClickTreeItemContextMenuEntry(DUPLICATE_OBJECT, "", List.of(), false));
+                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT, "", List.of(), false, List.of()),
+                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_REPRESENTATION, "", List.of(), false, List.of()),
+                    new SingleClickTreeItemContextMenuEntry(DUPLICATE_OBJECT, "", List.of(), false, List.of()));
         }
         return List.of();
     }
@@ -126,7 +126,7 @@ public class UMLExplorerItemContextMenuEntryProvider implements ITreeItemContext
                 .map(RepresentationMetadata.class::cast);
         if (optionalRepresentationMetadata.isPresent()) {
             return List.of(
-                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DUPLICATE_REPRESENTATION, "", List.of(), false));
+                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DUPLICATE_REPRESENTATION, "", List.of(), false, List.of()));
         }
         return List.of();
     }
@@ -155,8 +155,8 @@ public class UMLExplorerItemContextMenuEntryProvider implements ITreeItemContext
             var libraryMetadataAdapter = optionalLibraryMetadataAdapter.get();
             if (this.isDirectDependency(editingContext, libraryMetadataAdapter) && this.readOnlyChecker.isReadOnly(optionalNotifier.get())) {
                 // We do not support the update or removal of a transitive dependency for the moment.
-                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.UPDATE_LIBRARY, "", List.of(), true));
-                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.REMOVE_LIBRARY, "Remove library", List.of("/icons/remove_library.svg"), true));
+                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.UPDATE_LIBRARY, "", List.of(), true, List.of()));
+                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.REMOVE_LIBRARY, "Remove library", List.of("/icons/remove_library.svg"), true, List.of()));
             }
         }
         return result;

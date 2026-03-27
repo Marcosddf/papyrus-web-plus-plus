@@ -15,7 +15,9 @@ Click on the wanted template, here *UML* for the example and you a new dialog ap
 . The project template to use (expanding the section),
 . The library to use (expanding the section).
 
-Click on *Create* and the xref:../user/userdoc.adoc#Workbench[workbench] page appears to start the model edition. 
+Click on *Create* and the xref:../user/userdoc.adoc#Workbench[workbench] page appears to start the model edition.
+
+If you decide not to create the project, click on *Cancel* to close the dialog without creating anything.
 
 image::homepage_createUMLProject.png[title="Create UML Project",800, align="left"]
 

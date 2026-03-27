@@ -106,6 +106,7 @@ const toPackageNode = (
       ? gqlNode.style.childrenLayoutStrategy.areChildNodesDraggable
       : true,
     isDropNodeTarget: false,
+    isDragNodeSource: false,
     isDropNodeCandidate: false,
     isHovered: false,
     connectionLinePositionOnNode: 'none',
