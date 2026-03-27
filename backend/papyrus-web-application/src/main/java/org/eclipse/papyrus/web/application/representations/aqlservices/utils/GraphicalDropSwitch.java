@@ -229,32 +229,27 @@ public final class GraphicalDropSwitch extends AbstractDropSwitch {
         } else {
             isDragAndDropValid = this.defaultCase(umlClass);
         }
-        if (!isDragAndDropValid) {
-            throw new InvalidDropException(errorMessage);
-        }
+
         return isDragAndDropValid;
     }
 
     @Override
     public Boolean defaultCase(EObject object) {
-        Boolean isDragAndDropValid = Boolean.FALSE;
-        Status dropStatus = null;
+        Status dropStatus;
+
         if (this.dropChecker != null && this.dropProvider != null) {
             Objects.requireNonNull(this.crossRef);
             Objects.requireNonNull(this.editableChecker);
             Objects.requireNonNull(this.eObjectResolver);
             dropStatus = this.graphicalDragAndDrop(object);
         } else {
-            // default case when no dropChecker neither dropProvider are defined
-            // ex. :
+            // Default case when no dropChecker or dropProvider is defined
+            // Example:
             // org.eclipse.papyrus.web.application.representations.aqlservices.utils.GenericWebInternalDropBehaviorProvider
             dropStatus = this.defaultGraphicalDragAndDrop(object);
         }
-        isDragAndDropValid = this.createDragAndDropView(dropStatus, object);
-        if (!isDragAndDropValid) {
-            throw new InvalidDropException(GRAPHICAL_DRAG_DROP_FAILED);
-        }
-        return isDragAndDropValid;
+
+        return this.createDragAndDropView(dropStatus, object);
     }
 
     /**
