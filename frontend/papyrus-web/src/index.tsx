@@ -11,6 +11,7 @@
  *     Obeo - initial API and implementation
  *     Titouan BOUETE-GIRAUD (Artal Technologies) - Issue 210
  *     Vincent LORENZO (CEA LIST) vincent.lorenzo@cea.fr - Issue GL-324
+ *     Dilan EESHVARAN (CEA LIST) - Issue 323
  *******************************************************************************/
 import { loadDevMessages, loadErrorMessages } from '@apollo/client/dev';
 
@@ -19,7 +20,10 @@ import {
   footerExtensionPoint,
   navigationBarIconExtensionPoint,
   navigationBarMenuHelpURLExtensionPoint,
+  navigationBarMenuEntryExtensionPoint,
+  routerExtensionPoint,
   SiriusWebApplication,
+  ViewerContextProvider,
 } from '@eclipse-sirius/sirius-web-application';
 import { httpOrigin, wsOrigin } from './core/URL';
 
@@ -37,6 +41,8 @@ import { createRoot } from 'react-dom/client';
 import { Footer } from './footer/Footer';
 import { PapyrusNavigationBarIcon } from './core/PapyrusNavigationBarIcon';
 import { papyrusTheme } from './theme/papyrusTheme';
+import { ProfilesMenuItem } from './profiles/ProfilesMenuItem';
+import { ProfilesPage } from './profiles/ProfilesPage';
 
 if (process.env.NODE_ENV !== 'production') {
   loadDevMessages();
@@ -59,6 +65,27 @@ papyrusWebExtensionRegistry.addComponent(navigationBarIconExtensionPoint, {
 papyrusWebExtensionRegistry.putData(navigationBarMenuHelpURLExtensionPoint, {
   identifier: `papyrus_web_doc_${navigationBarMenuHelpURLExtensionPoint.identifier}`,
   data: `${httpOrigin}/doc/index.html`,
+});
+
+// Profiles menu item contribution
+papyrusWebExtensionRegistry.addComponent(navigationBarMenuEntryExtensionPoint, {
+  identifier: 'papyrus-profiles-menu-item',
+  Component: ProfilesMenuItem,
+});
+
+// Profiles route contribution
+papyrusWebExtensionRegistry.putData(routerExtensionPoint, {
+  identifier: 'papyrus-profiles-route',
+  data: [
+    {
+      path: '/profiles',
+      element: (
+        <ViewerContextProvider>
+          <ProfilesPage />
+        </ViewerContextProvider>
+      ),
+    },
+  ],
 });
 
 const container = document.getElementById('root');

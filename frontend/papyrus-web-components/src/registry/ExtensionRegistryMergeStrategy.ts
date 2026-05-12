@@ -10,10 +10,11 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *     Vincent LORENZO (CEA LIST) vincent.lorenzo@cea.fr - Issue 283
+ *     Dilan EESHVARAN (CEA LIST) - Issue 323
  *******************************************************************************/
 import { DataExtension } from '@eclipse-sirius/sirius-components-core';
 import { omniboxCommandOverrideContributionExtensionPoint } from '@eclipse-sirius/sirius-components-omnibox';
-import { DefaultExtensionRegistryMergeStrategy } from '@eclipse-sirius/sirius-web-application';
+import { DefaultExtensionRegistryMergeStrategy, routerExtensionPoint } from '@eclipse-sirius/sirius-web-application';
 
 export class ExtensionRegistryMergeStrategy extends DefaultExtensionRegistryMergeStrategy {
   public override mergeDataExtensions(
@@ -29,6 +30,9 @@ export class ExtensionRegistryMergeStrategy extends DefaultExtensionRegistryMerg
     }
     if (identifier === omniboxCommandOverrideContributionExtensionPoint.identifier) {
       return this.mergeOmniboxCommandOverrideContributions(existingValues, newValues);
+    }
+    if (identifier === routerExtensionPoint.identifier) {
+      return this.mergeRouteContributions(existingValues, newValues);
     }
     return newValues;
   }
@@ -63,5 +67,15 @@ export class ExtensionRegistryMergeStrategy extends DefaultExtensionRegistryMerg
     };
 
     return result;
+  }
+
+  private mergeRouteContributions(
+    existingRouteContributions: DataExtension<any>,
+    newRouteContributions: DataExtension<any>
+  ): DataExtension<any> {
+    return {
+      identifier: newRouteContributions.identifier,
+      data: [...existingRouteContributions.data, ...newRouteContributions.data],
+    };
   }
 }

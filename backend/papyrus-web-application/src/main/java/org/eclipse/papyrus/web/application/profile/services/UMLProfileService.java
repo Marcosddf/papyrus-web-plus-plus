@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022, 2025 CEA LIST, Obeo.
+ * Copyright (c) 2022, 2025, 2026 CEA LIST, Obeo.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *  Obeo - Initial API and implementation
+ *  Dilan EESHVARAN (CEA LIST) - Issue 323
  *******************************************************************************/
 package org.eclipse.papyrus.web.application.profile.services;
 
@@ -75,6 +76,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author lfasani
  */
+// CHECKSTYLE:OFF
 public class UMLProfileService implements IUMLProfileService {
 
     /**
@@ -129,12 +131,20 @@ public class UMLProfileService implements IUMLProfileService {
             return EMFUtils.allContainedObjectOfType(resource, Profile.class).map(profile -> {
                 String profileId = profile.eResource().getURIFragment(profile);
                 EPackage definition = profile.getDefinition();
-                EAnnotation eAnnotation = definition.getEAnnotation("PapyrusVersion");
+                EAnnotation eAnnotation = definition != null ? definition.getEAnnotation("PapyrusVersion") : null;
                 String version = "";
+                String author = "";
+                String date = "";
+                String comment = "";
+                String copyright = "";
                 if (eAnnotation != null) {
-                    version = eAnnotation.getDetails().get("Version");
+                    version = Objects.toString(eAnnotation.getDetails().get("Version"), "");
+                    author = Objects.toString(eAnnotation.getDetails().get("Author"), "");
+                    date = Objects.toString(eAnnotation.getDetails().get("Date"), "");
+                    comment = Objects.toString(eAnnotation.getDetails().get("Comment"), "");
+                    copyright = Objects.toString(eAnnotation.getDetails().get("Copyright"), "");
                 }
-                return new UMLProfileMetadata(profile.getName(), resource.getURI() + "#" + profileId, version);
+                return new UMLProfileMetadata(profile.getName(), resource.getURI() + "#" + profileId, version, author, date, comment, copyright);
             }).toList();
         } catch (IOException exception) {
             LOGGER.warn(exception.getMessage(), exception);
