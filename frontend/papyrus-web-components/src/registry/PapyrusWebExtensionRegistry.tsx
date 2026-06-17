@@ -10,7 +10,7 @@
  *
  * Contributors:
  *  Obeo - Initial API and implementation
- *  Vincent LORENZO (CEA LIST) vincent.lorenzo@cea.fr - Issue 283
+ *  Vincent LORENZO (CEA LIST) vincent.lorenzo@cea.fr - Issue 283, issue 312
  *******************************************************************************/
 
 import { ExtensionRegistry } from '@eclipse-sirius/sirius-components-core';
@@ -29,6 +29,7 @@ import {
   ApolloClientOptionsConfigurer,
   apolloClientOptionsConfigurersExtensionPoint,
   DefaultExtensionRegistryMergeStrategy,
+  ImportLibraryCommand,
 } from '@eclipse-sirius/sirius-web-application';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { ContainmentReferenceIcon } from '../widgets/containmentReference/ContainmentReferenceIcon';
@@ -229,6 +230,12 @@ const omniboxCommandOverrides: OmniboxCommandOverrideContribution[] = [
       return action.id === 'publishUMLModel';
     },
     component: PublishUMLLibraryCommand,
+  },
+  {
+    canHandle: (action) => {
+      return action.id === 'importUMLLibrary';
+    },
+    component: ImportLibraryCommand,
   },
 ];
 
