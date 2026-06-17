@@ -10,13 +10,16 @@
  *
  * Contributors:
  *  Obeo - Initial API and implementation
+ *  Dilan EESHVARAN (CEA LIST) - Issue 323
  *****************************************************************************/
 package org.eclipse.papyrus.web.application.explorer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+import org.eclipse.papyrus.web.application.profile.services.ProfileAwareUMLProjectCheckerService;
 import org.eclipse.sirius.components.collaborative.trees.api.ITreeFilterProvider;
 import org.eclipse.sirius.components.collaborative.trees.api.TreeFilter;
 import org.eclipse.sirius.components.trees.description.TreeDescription;
@@ -32,10 +35,21 @@ public class PapyrusTreeFilterProvider implements ITreeFilterProvider {
 
     public static final String HIDE_PATHMAP_URI_TREE_ITEM_FILTER_ID = UUID.nameUUIDFromBytes("Papyrus.HideResourceReadonlyResources".getBytes()).toString();
 
+    private final ProfileAwareUMLProjectCheckerService profileChecker;
+
+    public PapyrusTreeFilterProvider(ProfileAwareUMLProjectCheckerService profileChecker) {
+        this.profileChecker = Objects.requireNonNull(profileChecker);
+    }
+
     @Override
     public List<TreeFilter> get(String editingContextId, TreeDescription treeDescription) {
         List<TreeFilter> filters = new ArrayList<>();
-        filters.add(new TreeFilter(HIDE_PATHMAP_URI_TREE_ITEM_FILTER_ID, "Hide read only resources", true));
+        // prevent papyrus web from hiding read only resources in explorer if its a profile viewing context
+        // because the profile itself is read only
+        // in normal projects, we keep hiding read only resources
+        if (!this.profileChecker.isProfileContext(editingContextId)) {
+            filters.add(new TreeFilter(HIDE_PATHMAP_URI_TREE_ITEM_FILTER_ID, "Hide read only resources", true));
+        }
         return filters;
     }
 }

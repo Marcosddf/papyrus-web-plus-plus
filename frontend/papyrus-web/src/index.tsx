@@ -43,6 +43,7 @@ import { PapyrusNavigationBarIcon } from './core/PapyrusNavigationBarIcon';
 import { papyrusTheme } from './theme/papyrusTheme';
 import { ProfilesMenuItem } from './profiles/ProfilesMenuItem';
 import { ProfilesPage } from './profiles/ProfilesPage';
+import { DisplayProfileView } from './profiles/DisplayProfileView';
 
 if (process.env.NODE_ENV !== 'production') {
   loadDevMessages();
@@ -82,6 +83,14 @@ papyrusWebExtensionRegistry.putData(routerExtensionPoint, {
       element: (
         <ViewerContextProvider>
           <ProfilesPage />
+        </ViewerContextProvider>
+      ),
+    },
+    {
+      path: '/profiles/:editingContextId',
+      element: (
+        <ViewerContextProvider>
+          <DisplayProfileView />
         </ViewerContextProvider>
       ),
     },

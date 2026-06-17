@@ -25,6 +25,7 @@ type UMLProfileMetadata {
   date: String
   comment: String
   copyright: String
+  currentEditingContext: EditingContext
 }
 
 extend type EditingContext {

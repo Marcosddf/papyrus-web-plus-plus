@@ -17,8 +17,13 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { MaterialReactTable, MRT_ColumnDef, useMaterialReactTable } from 'material-react-table';
 import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { NavigationBar, footerExtensionPoint } from '@eclipse-sirius/sirius-web-application';
 import { useComponent } from '@eclipse-sirius/sirius-components-core';
+
+interface GQLEditingContext {
+  id: string;
+}
 
 interface GQLProfileMetadata {
   label: string;
@@ -28,6 +33,7 @@ interface GQLProfileMetadata {
   date: string | null;
   comment: string | null;
   copyright: string | null;
+  currentEditingContext: GQLEditingContext | null;
 }
 
 interface GQLViewer {
@@ -49,6 +55,9 @@ const getUMLProfileMetadatasQuery = gql`
         date
         comment
         copyright
+        currentEditingContext {
+          id
+        }
       }
     }
   }
@@ -67,7 +76,19 @@ export const ProfilesPage = () => {
         accessorKey: 'label',
         header: 'Name',
         size: 180,
-        Cell: ({ renderedCellValue }) => <Typography noWrap>{renderedCellValue}</Typography>,
+        Cell: ({ row }) => {
+          const id = row.original.currentEditingContext?.id;
+          if (id) {
+            return (
+              <Link to={`/profiles/${id}`} style={{ textDecoration: 'none' }}>
+                <Typography noWrap color="primary">
+                  {row.original.label}
+                </Typography>
+              </Link>
+            );
+          }
+          return <Typography noWrap>{row.original.label}</Typography>;
+        },
       },
       {
         accessorKey: 'version',
